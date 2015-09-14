@@ -9,3 +9,4 @@ Test of push to library website
 * John
 * Carl
 * Leila
+* Michael
