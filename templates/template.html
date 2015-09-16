@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Welcome, friends!</title>
+        <link rel='stylesheet' href="{{ url_for('static', filename='css/styles.css')}}">
+    </head>
+    <body>
+        <div class='container'>
+            {% for message in get_flashed_messages() %}
+                <div class='flash'>{{ message }}</div>
+            {% endfor %}
+            {% if error %}
+                <p class='error'><strong>Error: </strong>{{ error }}</p>
+            {% endif %}    
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
