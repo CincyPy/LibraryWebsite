@@ -1,0 +1,25 @@
+Cindy:
+Data points
+Suggest a data structure 
+MVFs
+
+Team members:
+Grab MVF's - everyone claim one
+Pull repo and make a branch
+
+Ann:
+Info from librarians
+
+############################################
+Site purpose:
+Profile for librarians
+- about them
+- services they provide
+ 
+Front 
+end for the librarian
+- click to Skype
+- email
+- call
+- text ?
+- chat
