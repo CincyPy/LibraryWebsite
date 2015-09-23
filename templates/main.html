@@ -1,5 +1,11 @@
 {% extends "template.html" %}
 
 {% block content %}
-    <h2>Welcome to the Library Site</h2>
+    <h2>Welcome to the Library Site</h2></br>
+    <h3>Current Staff: </h3>
+    {% for s in staff %}
+        <strong>Name: </strong>{{ s.f_name }} {{ s.l_name }}</br>
+        <strong>Phone #: </strong>{{ s.phone }}</br>
+        </br>
+    {% endfor %}
 {% endblock %}
