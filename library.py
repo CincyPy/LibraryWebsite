@@ -33,14 +33,23 @@ def login_required(test):
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME'] or \
-            request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid Credentials.  Please try again.'
+        username = request.form['username']
+        password = request.form['password']
+        
+        g.db = connect_db()
+        cur = g.db.execute('SELECT password FROM staff WHERE username=?',[username])
+        results = cur.fetchall()
+        for row in results:
+            if row[0] == password:
+                session['logged_in']=True
+                session["logged_in_name"] = username
+                return redirect(url_for('admin'))
         else:
-            session['logged_in']=True
-            return redirect(url_for('admin'))
-    return render_template('login.html', error=error)
-
+            error = 'Invalid Credentials.  Please try again.'
+            return render_template('login.html', error=error)
+        
+    else:
+        return render_template('login.html', error=error)
 
 @app.route('/logout')
 def logout():
@@ -59,6 +68,7 @@ def main():
 
 
 @app.route('/admin')
+@login_required
 def admin():
     g.db = connect_db()
     cur = g.db.execute('SELECT * FROM staff')
@@ -70,10 +80,14 @@ def admin():
 @app.route('/add', methods=['POST'])
 @login_required
 def add():
+    if session["logged_in_name"] != "admin":
+        return redirect(url_for('admin'))
+    username = request.form['username']
+    password = request.form['password']
     f_name = request.form['f_name']
     l_name = request.form['l_name']
     phone = request.form['phone']
-    if not f_name or not l_name or not phone:
+    if not f_name or not l_name or not phone or not username or not password:
         flash('All fields are required. Please try agian.')
         return redirect(url_for('admin'))
     else:
@@ -86,8 +100,8 @@ def add():
             flash('Phone number must include area code. Please try agian.')
             return redirect(url_for('admin'))
     g.db = connect_db()
-    g.db.execute('INSERT INTO staff (f_name, l_name, phone) VALUES (?, ?, ?)', \
-                 [f_name, l_name, phone])
+    g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone) VALUES (?, ?, ?, ?, ?)', \
+                 [username,password,f_name, l_name, phone])
     g.db.commit()
     g.db.close()
     flash('New entry was successfully posted!')
