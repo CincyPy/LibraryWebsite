@@ -2,9 +2,16 @@
 
 {% block content %}
     <h2>Welcome to the Staff Page for the Library Site</h2>
-    <p><a href='/logout'>Logout</a></p>
+    <p>Hello, {{ session.logged_in_name }} <a href='/logout'>Logout</a></p>
+    
+    {% if session.logged_in_name == 'admin' %} 
+    
     <h3>Add a new staff member:</h3>
     <form action="{{ url_for('add')}}" method="POST" class="add">
+        <label><strong>Username: </strong></label>
+        <input name='username' type='text'></br>
+        <label><strong>Password: </strong></label>
+        <input name='password' type='text'></br>
         <label><strong>First Name: </strong></label>
         <input name='f_name' type='text'></br>
         <label><strong>Last Name: </strong></label>
@@ -13,6 +20,9 @@
         <input name='phone' type='text'> Enter numbers only (including area code)</br>
         <input class='button' type='submit' value='Save'>
     </form>
+    
+    {% endif %}
+    
     </br>
     </br>
     <h3>Current Staff: </h3>
