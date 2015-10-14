@@ -61,7 +61,7 @@ def logout():
 @app.route('/')
 def main():
     g.db = connect_db()
-    cur = g.db.execute('SELECT * FROM staff')
+    cur = g.db.execute('SELECT f_name,l_name, phone FROM staff')
     staff = [dict(f_name=row[0], l_name=row[1], phone=row[2]) for row in cur.fetchall()]
     g.db.close()
     return render_template('main.html', staff=staff)
@@ -102,11 +102,28 @@ def add():
     g.db = connect_db()
     g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone) VALUES (?, ?, ?, ?, ?)', \
                  [username,password,f_name, l_name, phone])
+    g.db.execute("INSERT INTO profile(username,bio) VALUES (?, ?)",[username,""])
     g.db.commit()
     g.db.close()
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
 
+@app.route('/edit-profile/<uname>',methods =['GET','POST'])
+@login_required
+def profile(uname):
+    if session["logged_in_name"] != uname:
+        return redirect(url_for('main'))
+    else:
+        g.db = connect_db()
+        cur = g.db.execute("SELECT bio FROM profile WHERE username=?",[uname])
+        rows = cur.fetchall()
+        try:
+            bio = rows[0][0]
+        except KeyError:
+            flash("No profile found for user.")
+            return redirect(url_for('main'))
+            
+        return render_template('profile.html',bio=bio)
 
 if __name__ == '__main__':
     app.run(debug=True)
