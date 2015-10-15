@@ -1,0 +1,10 @@
+{% extends "template.html" %}
+
+{% block content %}
+    <h2>Staff Profile</h2>
+    <form method="POST" action="" >
+        <label for="bio">Bio:</label><br/>
+        <textarea name="bio" id="bio">{{ bio }}</textarea><br/>
+        <input value="Update" type="submit" />
+    </form>
+{% endblock %}
