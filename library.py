@@ -2,13 +2,12 @@ from flask import Flask, render_template, request, session, \
     flash, redirect, url_for, g
 import sqlite3
 import os
+from random import shuffle
 from functools import wraps
 
 # configuration
 DATABASE = 'library.db'
-USERNAME = 'admin'
-PASSWORD = 'admin'
-SECRET_KEY = os.urandom(24)
+SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
 
 app = Flask(__name__)
 
@@ -63,9 +62,10 @@ def logout():
 @app.route('/')
 def main():
     g.db = connect_db()
-    cur = g.db.execute('SELECT f_name,l_name, phone FROM staff')
-    staff = [dict(f_name=row[0], l_name=row[1], phone=row[2]) for row in cur.fetchall()]
+    cur = g.db.execute('SELECT f_name, l_name, phone FROM staff')
+    staff = [dict( f_name=row[0], l_name=row[1], phone=row[2]) for row in cur.fetchall()]
     g.db.close()
+    shuffle(staff)
     return render_template('main.html', staff=staff)
 
 
@@ -73,8 +73,8 @@ def main():
 @login_required
 def admin():
     g.db = connect_db()
-    cur = g.db.execute('SELECT * FROM staff')
-    staff = [dict(f_name=row[0], l_name=row[1], phone=row[2]) for row in cur.fetchall()]
+    cur = g.db.execute('SELECT username, f_name, l_name, phone FROM staff')
+    staff = [dict(username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
     g.db.close()
     return render_template('admin.html', staff=staff)
 
@@ -110,23 +110,45 @@ def add():
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
 
+@app.route("/profile/<uname>", methods=['GET'])
+def profile(uname):
+    g.db = connect_db()
+    cur = g.db.execute("SELECT p.bio, s.f_name, s.l_name, s.phone "  
+                        "FROM profile p JOIN staff s ON p.username=s.username "
+                        "WHERE p.username=?;", [uname])
+    rows = cur.fetchall()
+    
+    c = dict(zip(["bio","f_name","l_name","phone"],rows[0]))
+    
+    return render_template('viewprofile.html',profile=c)
 
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
 @login_required
-def profile(uname):
+def edit_profile(uname):
     if session["logged_in_name"] != uname:
+        flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
     else:
-        g.db = connect_db()
-        cur = g.db.execute("SELECT bio FROM profile WHERE username=?", [uname])
-        rows = cur.fetchall()
-        try:
-            bio = rows[0][0]
-        except KeyError:
-            flash("No profile found for user.")
-            return redirect(url_for('main'))
+        if request.method == "GET": #regular get, present the form to user to edit.
+            g.db = connect_db()
+            cur = g.db.execute("SELECT bio FROM profile WHERE username=?", [uname])
+            rows = cur.fetchall()
+            try:
+                bio = rows[0][0]
+            except KeyError:
+                flash("No profile found for user.")
+                return redirect(url_for('main'))
+    
+            return render_template('profile.html', bio=bio)
+            
+        elif request.method == "POST": #form was submitted, update database
+            new_bio = request.form['bio']
 
-        return render_template('profile.html', bio=bio)
+            g.db = connect_db()
+            cur = g.db.execute("UPDATE profile SET bio=? WHERE username=?", [new_bio,uname])
+            g.db.commit()
+            flash("Profile updated!")
+            return render_template('profile.html', bio=new_bio)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

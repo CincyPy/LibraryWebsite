@@ -29,6 +29,11 @@
     {% for s in staff %}
         <strong>Name: </strong>{{ s.f_name }} {{ s.l_name }}</br>
         <strong>Phone #: </strong>{{ s.phone }}</br>
+        {% if s.username == session.logged_in_name %}
+            <a href="/edit-profile/{{ s.username }}" >Edit Profile </a> 
+        {% else %}
+            <a href="/profile/{{ s.username }}" > View Profile </a>
+        {% endif %}
         </br>
     {% endfor %}
 {% endblock %}
