@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, \
-                flash, redirect, url_for, g
+    flash, redirect, url_for, g
 import sqlite3
 import os
 from functools import wraps
@@ -13,6 +13,7 @@ SECRET_KEY = os.urandom(24)
 app = Flask(__name__)
 
 app.config.from_object(__name__)
+
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -35,21 +36,22 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+
         g.db = connect_db()
-        cur = g.db.execute('SELECT password FROM staff WHERE username=?',[username])
+        cur = g.db.execute('SELECT password FROM staff WHERE username=?', [username])
         results = cur.fetchall()
         for row in results:
             if row[0] == password:
-                session['logged_in']=True
+                session['logged_in'] = True
                 session["logged_in_name"] = username
                 return redirect(url_for('admin'))
         else:
             error = 'Invalid Credentials.  Please try again.'
             return render_template('login.html', error=error)
-        
+
     else:
         return render_template('login.html', error=error)
+
 
 @app.route('/logout')
 def logout():
@@ -95,35 +97,36 @@ def add():
             if len(phone) != 10:
                 flash('Phone number must include area code. Please try agian.')
                 return redirect(url_for('admin'))
-            int(phone) # Confirms that phone is an integer
+            int(phone)  # Confirms that phone is an integer
         except:
             flash('Phone number must include area code. Please try agian.')
             return redirect(url_for('admin'))
     g.db = connect_db()
-    g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone) VALUES (?, ?, ?, ?, ?)', \
-                 [username,password,f_name, l_name, phone])
-    g.db.execute("INSERT INTO profile(username,bio) VALUES (?, ?)",[username,""])
+    g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone) VALUES (?, ?, ?, ?, ?)',
+                 [username, password, f_name, l_name, phone])
+    g.db.execute("INSERT INTO profile(username,bio) VALUES (?, ?)", [username, ""])
     g.db.commit()
     g.db.close()
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
 
-@app.route('/edit-profile/<uname>',methods =['GET','POST'])
+
+@app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
 @login_required
 def profile(uname):
     if session["logged_in_name"] != uname:
         return redirect(url_for('main'))
     else:
         g.db = connect_db()
-        cur = g.db.execute("SELECT bio FROM profile WHERE username=?",[uname])
+        cur = g.db.execute("SELECT bio FROM profile WHERE username=?", [uname])
         rows = cur.fetchall()
         try:
             bio = rows[0][0]
         except KeyError:
             flash("No profile found for user.")
             return redirect(url_for('main'))
-            
-        return render_template('profile.html',bio=bio)
+
+        return render_template('profile.html', bio=bio)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
