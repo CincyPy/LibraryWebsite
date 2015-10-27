@@ -4,22 +4,36 @@
     <h2>Welcome to the Staff Page for the Library Site</h2>
     <p>Hello, {{ session.logged_in_name }} <a href='/logout'>Logout</a></p>
     
-    {% if session.logged_in_name == 'admin' %} 
-    
-    <h3>Add a new staff member:</h3>
-    <form action="{{ url_for('add')}}" method="POST" class="add">
-        <label><strong>Username: </strong></label>
-        <input name='username' type='text'></br>
-        <label><strong>Password: </strong></label>
-        <input name='password' type='text'></br>
-        <label><strong>First Name: </strong></label>
-        <input name='f_name' type='text'></br>
-        <label><strong>Last Name: </strong></label>
-        <input name='l_name' type='text'></br>
-        <label><strong>Phone: </strong></label>
-        <input name='phone' type='text'> Enter numbers only (including area code)</br>
-        <input class='button' type='submit' value='Save'>
-    </form>
+    {% if session.logged_in_name == 'admin' %}
+    <div class="row">
+        <div class="col-sm-6">
+            <h3>Add a new staff member:</h3>
+            <form action="{{ url_for('add')}}" method="POST" class="add">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input class="form-control" name='username' type='text'>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input class="form-control" name='password' type='text'>
+                </div>
+                <div class="form-group">
+                    <label for="f_name">First Name:</label>
+                    <input class="form-control" name='f_name' type='text'>
+                </div>
+                <div class="form-group">
+                    <label for="l_name">Last Name:</label>
+                    <input class="form-control" name='l_name' type='text'>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input class="form-control" name='phone' type='text'>
+                    <p>Enter numbers only (including area code)</p>
+                </div>
+                <input class='btn btn-success' type='submit' value='Save'>
+            </form>
+        </div>
+    </div>
     
     {% endif %}
     
@@ -27,8 +41,8 @@
     </br>
     <h3>Current Staff: </h3>
     {% for s in staff %}
-        <strong>Name: </strong>{{ s.f_name }} {{ s.l_name }}</br>
-        <strong>Phone #: </strong>{{ s.phone }}</br>
+        Name: {{ s.f_name }} {{ s.l_name }}</br>
+        Phone #: {{ s.phone }}</br>
         {% if s.username == session.logged_in_name %}
             <a href="/edit-profile/{{ s.username }}" >Edit Profile </a> 
         {% else %}
