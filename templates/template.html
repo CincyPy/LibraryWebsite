@@ -2,16 +2,19 @@
 <html>
     <head>
         <title>Welcome, friends!</title>
+        <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
         <link rel='stylesheet' href="{{ url_for('static', filename='css/styles.css')}}">
+        <link href='https://fonts.googleapis.com/css?family=Lato:400|Merriweather:700' rel='stylesheet' type='text/css'>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <div class='container'>
             {% for message in get_flashed_messages() %}
-                <div class='flash'>{{ message }}</div>
+                <div class='alert alert-info'>{{ message }}</div>
             {% endfor %}
             {% if error %}
-                <p class='error'><strong>Error: </strong>{{ error }}</p>
-            {% endif %}    
+                <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
+            {% endif %}
             {% block content %}
             {% endblock %}
         </div>

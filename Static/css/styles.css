@@ -1,3 +1,11 @@
+body{
+  font-family: 'Lato', sans-serif;
+}
+
+h1, h2, h3, h4{
+  font-family: 'Merriweather', serif;
+}
+
 .container {
     background: #f4f4f4;
     margin: 2em auto;
@@ -7,7 +15,7 @@
 }
 
 .flash, .error {
-    background: #000;
+    background: #F0D6D6;
     color: red;
     padding: 0.5em;
 }
