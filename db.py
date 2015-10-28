@@ -10,6 +10,6 @@ with sqlite3.connect("library.db") as connection:
 
         c.execute("""CREATE TABLE profile (username TEXT, bio TEXT, FOREIGN KEY(username) REFERENCES staff(username))""")
         c.execute("""INSERT INTO profile (username,bio) VALUES('fred','')""")
-
+        c.execute("""INSERT INTO profile (username) VALUES('admin')""")
     except sqlite3.OperationalError as e:
         print "Failure: " + str(e)
