@@ -1,10 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-
-</body>
-</html>
+<h4>Recommended Readings</h4>
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Book</th>
+        <th>Author</th>
+        <th>Comment</th>
+    </tr>
+    {% for RL in readinglist %}
+    <tr>
+        <td>{{ RL.recdate }}</td>
+        <td>{{ RL.book }}</td>
+        <td>{{ RL.author }}</td>
+        <td>{{ RL.comment }}</td>
+    </tr>
+    {% endfor %}
+</table>

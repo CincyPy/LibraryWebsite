@@ -1,7 +1,8 @@
 {% extends "template.html" %}
 
 {% block content %}
-    <h2>Welcome to the Library Site</h2></br>
+    <h2>Welcome to the Library Site</h2>
+    <a href="/login">Log in</a>
     <h3>Current Staff: </h3>
     {% for profile in staff %}
         {% include "user_profile.html" %}
