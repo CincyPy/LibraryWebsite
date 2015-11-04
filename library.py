@@ -115,7 +115,7 @@ def add():
 @app.route("/profile/<uname>", methods=['GET'])
 def profile(uname):
     g.db = connect_db()
-    #get profile data
+    # get profile data
     cur = g.db.execute("SELECT p.bio, s.f_name, s.l_name, s.phone "
                        "FROM profile p JOIN staff s ON p.username=s.username "
                        "WHERE p.username=?;", [uname])

@@ -14,7 +14,8 @@ with sqlite3.connect("library.db") as connection:
         c.execute("""INSERT INTO profile (username) VALUES('admin')""")
 
         #READINGLIST TABLE
-        c.execute("""CREATE TABLE readinglist (RLID INTEGER PRIMARY KEY AUTOINCREMENT, recdate TEXT, username TEXT, book TEXT, author TEXT, comment TEXT, FOREIGN KEY(username) REFERENCES staff(username))""")
+        c.execute("""CREATE TABLE readinglist (RLID INTEGER PRIMARY KEY AUTOINCREMENT, recdate TEXT, username TEXT,
+                    book TEXT, author TEXT, comment TEXT, sticky INTEGER FOREIGN KEY(username) REFERENCES staff(username))""")
         c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment) VALUES (null,'2015-10-01','fred','ABCs', 'Dr. Suess','best seller')""")
     except sqlite3.OperationalError as e:
         print "Failure: " + str(e)
