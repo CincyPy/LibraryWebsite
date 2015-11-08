@@ -5,4 +5,12 @@
     </br>
     {% include "user_readinglist.html" %}
     <a href="/"/>Back to home</a>
+    <script>
+        $(document).ready(function() {
+            // call the tablesorter plugin
+            $("table").tablesorter({
+            });
+        });
+    </script>
 {% endblock %}
+
