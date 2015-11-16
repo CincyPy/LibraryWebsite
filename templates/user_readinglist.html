@@ -10,7 +10,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for RL in readinglist %}
+        {% for RL in readinglist|sort(attribute='recdate', reverse=True) %}
         <tr>
             <td>{{ RL.recdate }}</td>
             <td>{{ RL.book }}</td>

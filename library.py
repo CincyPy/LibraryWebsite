@@ -1,4 +1,5 @@
 import sqlite3
+import time
 from random import shuffle
 from functools import wraps
 
@@ -10,7 +11,6 @@ DATABASE = 'library.db'
 SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
 
 app = Flask(__name__)
-
 app.config.from_object(__name__)
 
 
@@ -91,24 +91,46 @@ def add():
     l_name = request.form['l_name']
     phone = request.form['phone']
     if not f_name or not l_name or not phone or not username or not password:
-        flash('All fields are required. Please try agian.')
+        flash('All fields are required. Please try again.')
         return redirect(url_for('admin'))
     else:
         try:
             if len(phone) != 10:
-                flash('Phone number must include area code. Please try agian.')
+                flash('Phone number must include area code. Please try again.')
                 return redirect(url_for('admin'))
             int(phone)  # Confirms that phone is an integer
         except:
-            flash('Phone number must include area code. Please try agian.')
+            flash('Phone number must include area code. Please try again.')
             return redirect(url_for('admin'))
     g.db = connect_db()
     g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone) VALUES (?, ?, ?, ?, ?)',
                  [username, password, f_name, l_name, phone])
-    g.db.execute("INSERT INTO profile(username,bio) VALUES (?, ?)", [username, ""])
+    g.db.execute('INSERT INTO profile(username,bio) VALUES (?, ?)', [username, ''])
     g.db.commit()
     g.db.close()
     flash('New entry was successfully posted!')
+    return redirect(url_for('admin'))
+
+
+@app.route('/recread', methods=['POST'])
+@login_required
+def recread():
+    if session["logged_in_name"] == "admin":
+        return redirect(url_for('admin'))
+    book = request.form['book']
+    author = request.form['author']
+    comment = request.form['comment']
+    url = request.form['URL']
+    sticky = request.form['sticky']
+    if not book:
+        flash('Book name is required. Please try again.')
+        return redirect(url_for('admin'))
+    g.db = connect_db()
+    g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, sticky) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                 [None, time.strftime("%Y-%m-%d"), session['logged_in_name'], book, author, comment, url, sticky])
+    g.db.commit()
+    g.db.close()
+    flash('New recommending reading added.')
     return redirect(url_for('admin'))
 
 
