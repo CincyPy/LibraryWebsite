@@ -1,7 +1,15 @@
 import sqlite3
+import sys
 
 # create a new database if the database doesn't already exist
-with sqlite3.connect("library.db") as connection:
+
+if len(sys.argv) < 2:
+	print "Usage: python db.py <db_filename>"
+	sys.exit(1)
+else:
+	dbname = sys.argv[1]
+
+with sqlite3.connect(dbname) as connection:
     c = connection.cursor()
     try:
         c.execute("""CREATE TABLE staff (username TEXT PRIMARY KEY, password TEXT, f_name TEXT, l_name TEXT, phone INT) """)
