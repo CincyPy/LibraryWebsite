@@ -44,7 +44,10 @@ def login():
             if row[0] == password:
                 session['logged_in'] = True
                 session['logged_in_name'] = username
-                return redirect(url_for('admin'))
+                if username == 'admin':
+                    return redirect(url_for('admin'))
+                else:
+                    return redirect(url_for('librarian'))
         else:
             error = 'Invalid Credentials.  Please try again.'
             return render_template('login.html', error=error)
@@ -80,11 +83,22 @@ def admin():
     return render_template('admin.html', staff=staff)
 
 
-@app.route('/add', methods=['POST'])
+@app.route('/librarian')
 @login_required
-def add():
+def librarian():
+    g.db = connect_db()
+    cur = g.db.execute('SELECT recdate, book, author, comment, url, sticky FROM readinglist')
+    readinglist = [dict(recdate=row[0], book=row[1], author=row[2], comment=row[3], url=row[4], sticky=row[5])
+                   for row in cur.fetchall()]
+    g.db.close()
+    return render_template('librarian.html', readinglist=readinglist)
+
+
+@app.route('/adduser', methods=['POST'])
+@login_required
+def adduser():
     if session["logged_in_name"] != "admin":
-        return redirect(url_for('admin'))
+        return redirect(url_for('librarian'))
     username = request.form['username']
     password = request.form['password']
     f_name = request.form['f_name']
@@ -112,9 +126,9 @@ def add():
     return redirect(url_for('admin'))
 
 
-@app.route('/recread', methods=['POST'])
+@app.route('/addrecread', methods=['POST'])
 @login_required
-def recread():
+def addrecread():
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
     book = request.form['book']
@@ -124,14 +138,14 @@ def recread():
     sticky = request.form['sticky']
     if not book:
         flash('Book name is required. Please try again.')
-        return redirect(url_for('admin'))
+        return redirect(url_for('librarian'))
     g.db = connect_db()
     g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, sticky) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                  [None, time.strftime("%Y-%m-%d"), session['logged_in_name'], book, author, comment, url, sticky])
     g.db.commit()
     g.db.close()
     flash('New recommending reading added.')
-    return redirect(url_for('admin'))
+    return redirect(url_for('librarian'))
 
 
 @app.route("/profile/<uname>", methods=['GET'])
