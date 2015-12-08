@@ -19,3 +19,17 @@ class Profile(db.Model):
 
     username = db.Column(db.String, db.ForeignKey('staffs.username'), primary_key=True)
     bio = db.Column(db.Text)
+
+
+def init_db(app):
+    with app.app_context():
+        db.create_all()
+        db.session.add(Staff(username='admin', password='admin', f_name='Admin',
+                             l_name='User', phone=1111111111))
+        db.session.add(Staff(username='fred', password='fred', f_name='Fred',
+                             l_name='Fredderson', phone=2222222222))
+
+        db.session.add(Profile(username='admin', bio=''))
+        db.session.add(Profile(username='fred', bio=''))
+
+        db.session.commit()

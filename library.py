@@ -6,7 +6,7 @@ import os
 from random import shuffle
 from functools import wraps
 
-from models import db, Staff, Profile
+from models import db, Staff, Profile, init_db
 
 # configuration
 SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
@@ -24,20 +24,7 @@ db.init_app(app)
 if os.path.exists(DATABASE):
     os.remove(DATABASE)
 
-def init_db():
-    with app.app_context():
-        db.create_all()
-        db.session.add(Staff(username='admin', password='admin', f_name='Admin',
-                             l_name='User', phone=1111111111))
-        db.session.add(Staff(username='fred', password='fred', f_name='Fred',
-                             l_name='Fredderson', phone=2222222222))
-
-        db.session.add(Profile(username='admin', bio=''))
-        db.session.add(Profile(username='fred', bio=''))
-
-        db.session.commit()
-
-init_db()
+init_db(app)
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -133,23 +120,20 @@ def edit_profile(uname):
     if session["logged_in_name"] != uname:
         flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
-    else:
-        if request.method == "GET": #regular get, present the form to user to edit.
-            profile = Profile.query.get(uname)
-            if profile:
-                return render_template('profile.html', bio=bio)
-            else:
-                flash("No profile found for user.")
-                return redirect(url_for('main'))
 
-        elif request.method == "POST": #form was submitted, update database
-            new_bio = request.form['bio']
+    profile = Profile.query.get(uname)
 
-            g.db = connect_db()
-            cur = g.db.execute("UPDATE profile SET bio=? WHERE username=?", [new_bio,uname])
-            g.db.commit()
-            flash("Profile updated!")
-            return render_template('profile.html', bio=new_bio)
+    if request.method == "GET": #regular get, present the form to user to edit.
+        if profile:
+            return render_template('profile.html', bio=profile.bio)
+        else:
+            flash("No profile found for user.")
+            return redirect(url_for('main'))
+    elif request.method == "POST": #form was submitted, update database
+        profile.bio = request.form['bio']
+        db.session.commit()
+        flash("Profile updated!")
+        return render_template('profile.html', bio=profile.bio)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
