@@ -1,3 +1,4 @@
+import tempfile
 from flask import Flask, render_template, request, session, \
     flash, redirect, url_for, g
 import sqlite3
@@ -5,14 +6,38 @@ import os
 from random import shuffle
 from functools import wraps
 
+from models import db, Staff, Profile
+
 # configuration
-DATABASE = 'library.db'
 SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
+
+DATABASE = os.path.join(tempfile.gettempdir(), 'test.db')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' +  DATABASE
+SQLALCHEMY_ECHO = True
 
 app = Flask(__name__)
 
 app.config.from_object(__name__)
 
+db.init_app(app)
+
+if os.path.exists(DATABASE):
+    os.remove(DATABASE)
+
+def init_db():
+    with app.app_context():
+        db.create_all()
+        db.session.add(Staff(username='admin', password='admin', f_name='Admin',
+                             l_name='User', phone=1111111111))
+        db.session.add(Staff(username='fred', password='fred', f_name='Fred',
+                             l_name='Fredderson', phone=2222222222))
+
+        db.session.add(Profile(username='admin', bio=''))
+        db.session.add(Profile(username='fred', bio=''))
+
+        db.session.commit()
+
+init_db()
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -36,18 +61,15 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        g.db = connect_db()
-        cur = g.db.execute('SELECT password FROM staff WHERE username=?', [username])
-        results = cur.fetchall()
-        for row in results:
-            if row[0] == password:
-                session['logged_in'] = True
-                session["logged_in_name"] = username
-                return redirect(url_for('admin'))
+        user = Staff.query.get(username)
+
+        if user and user.password == password:
+            session['logged_in'] = True
+            session["logged_in_name"] = username
+            return redirect(url_for('admin'))
         else:
             error = 'Invalid Credentials.  Please try again.'
             return render_template('login.html', error=error)
-
     else:
         return render_template('login.html', error=error)
 
@@ -61,10 +83,7 @@ def logout():
 
 @app.route('/')
 def main():
-    g.db = connect_db()
-    cur = g.db.execute('SELECT f_name, l_name, phone FROM staff')
-    staff = [dict( f_name=row[0], l_name=row[1], phone=row[2]) for row in cur.fetchall()]
-    g.db.close()
+    staff = Staff.query.all()
     shuffle(staff)
     return render_template('main.html', staff=staff)
 
@@ -72,11 +91,7 @@ def main():
 @app.route('/admin')
 @login_required
 def admin():
-    g.db = connect_db()
-    cur = g.db.execute('SELECT username, f_name, l_name, phone FROM staff')
-    staff = [dict(username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
-    g.db.close()
-    return render_template('admin.html', staff=staff)
+    return render_template('admin.html', staff=Staff.query.all())
 
 
 @app.route('/add', methods=['POST'])
@@ -101,25 +116,15 @@ def add():
         except:
             flash('Phone number must include area code. Please try agian.')
             return redirect(url_for('admin'))
-    g.db = connect_db()
-    g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone) VALUES (?, ?, ?, ?, ?)',
-                 [username, password, f_name, l_name, phone])
-    g.db.execute("INSERT INTO profile(username,bio) VALUES (?, ?)", [username, ""])
-    g.db.commit()
-    g.db.close()
+    db.session.add(Staff(username=username, password=password, f_name=f_name,
+                         l_name=l_name, phone=phone))
+    db.session.commit()
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
 
 @app.route("/profile/<uname>", methods=['GET'])
 def profile(uname):
-    g.db = connect_db()
-    cur = g.db.execute("SELECT p.bio, s.f_name, s.l_name, s.phone "  
-                        "FROM profile p JOIN staff s ON p.username=s.username "
-                        "WHERE p.username=?;", [uname])
-    rows = cur.fetchall()
-    
-    c = dict(zip(["bio","f_name","l_name","phone"],rows[0]))
-    
+    c = Profile.query.get(uname)
     return render_template('viewprofile.html',profile=c)
 
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
@@ -130,17 +135,13 @@ def edit_profile(uname):
         return redirect(url_for('main'))
     else:
         if request.method == "GET": #regular get, present the form to user to edit.
-            g.db = connect_db()
-            cur = g.db.execute("SELECT bio FROM profile WHERE username=?", [uname])
-            rows = cur.fetchall()
-            try:
-                bio = rows[0][0]
-            except KeyError:
+            profile = Profile.query.get(uname)
+            if profile:
+                return render_template('profile.html', bio=bio)
+            else:
                 flash("No profile found for user.")
                 return redirect(url_for('main'))
-    
-            return render_template('profile.html', bio=bio)
-            
+
         elif request.method == "POST": #form was submitted, update database
             new_bio = request.form['bio']
 
