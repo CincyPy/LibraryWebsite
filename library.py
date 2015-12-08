@@ -1,19 +1,22 @@
-import tempfile
-from flask import Flask, render_template, request, session, \
-    flash, redirect, url_for, g
+import datetime
+import os
 import sqlite3
+import tempfile
 import time
+
 from random import shuffle
 from functools import wraps
+from flask import Flask, render_template, request, session, \
+    flash, redirect, url_for, g
 
-from models import db, Staff, Profile, init_db
+from models import db, Staff, Profile, init_db, ReadingList
 
 # configuration
 SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
 
-DATABASE = os.path.join(tempfile.gettempdir(), 'test.db')
+#DATABASE = os.path.join(tempfile.gettempdir(), 'test.db')
+DATABASE = os.path.abspath('library.db')
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' +  DATABASE
-SQLALCHEMY_ECHO = True
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -22,8 +25,6 @@ db.init_app(app)
 
 if os.path.exists(DATABASE):
     os.remove(DATABASE)
-
-init_db(app)
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -84,12 +85,8 @@ def admin():
 @app.route('/librarian')
 @login_required
 def librarian():
-    g.db = connect_db()
-    cur = g.db.execute('SELECT recdate, book, author, comment, url, sticky FROM readinglist')
-    readinglist = [dict(recdate=row[0], book=row[1], author=row[2], comment=row[3], url=row[4], sticky=row[5])
-                   for row in cur.fetchall()]
-    g.db.close()
-    return render_template('librarian.html', readinglist=readinglist)
+    logged_in_user = Staff.query.get(session['logged_in_name'])
+    return render_template('librarian.html', readinglist=logged_in_user.readinglist)
 
 
 @app.route('/adduser', methods=['POST'])
@@ -114,8 +111,9 @@ def adduser():
         except:
             flash('Phone number must include area code. Please try again.')
             return redirect(url_for('admin'))
-    db.session.add(Staff(username=username, password=password, f_name=f_name,
-                         l_name=l_name, phone=phone))
+    staff = Staff(username=username, password=password, f_name=f_name,
+                         l_name=l_name, phone=phone, profile=Profile(bio=""))
+    db.session.add(staff)
     db.session.commit()
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
@@ -134,20 +132,24 @@ def addrecread():
     if not book:
         flash('Book name is required. Please try again.')
         return redirect(url_for('librarian'))
-    g.db = connect_db()
-    g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, sticky) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                 [None, time.strftime("%Y-%m-%d"), session['logged_in_name'], book, author, comment, url, sticky])
-    g.db.commit()
-    g.db.close()
+
+    logged_in_user = Staff.query.get(session['logged_in_name'])
+    logged_in_user.readinglist.append(ReadingList(recdate=datetime.date.today(),
+                                                  book=book,
+                                                  author=author,
+                                                  comment=comment,
+                                                  url=url,
+                                                  sticky=sticky))
+    db.session.commit()
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
 
 
 @app.route("/profile/<uname>", methods=['GET'])
 def profile(uname):
-    profile = Profile.query.get(uname)
-    if profile:
-        return render_template('viewprofile.html',profile=c)
+    staff = Staff.query.get(uname)
+    if staff:
+        return render_template('viewprofile.html',profile=staff)
     else:
         flash("Profile not found")
         return redirect(url_for('main'))
@@ -160,19 +162,19 @@ def edit_profile(uname):
         flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
 
-    profile = Profile.query.get(uname)
+    staff = Staff.query.get(uname)
 
     if request.method == "GET": #regular get, present the form to user to edit.
-        if profile:
-            return render_template('profile.html', bio=profile.bio)
+        if staff:
+            return render_template('profile.html', bio=staff.profile.bio)
         else:
             flash("No profile found for user.")
             return redirect(url_for('main'))
     elif request.method == "POST": #form was submitted, update database
-        profile.bio = request.form['bio']
+        staff.profile.bio = request.form['bio']
         db.session.commit()
         flash("Profile updated!")
-        return render_template('profile.html', bio=profile.bio)
+        return render_template('profile.html', bio=staff.profile.bio)
 
 
 if __name__ == '__main__':
