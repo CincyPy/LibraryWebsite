@@ -19,3 +19,12 @@ h1, h2, h3, h4{
     color: red;
     padding: 0.5em;
 }
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+}
