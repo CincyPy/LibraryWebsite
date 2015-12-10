@@ -4,13 +4,35 @@ html{
 
 body{
   font-family: 'Lato', sans-serif;
-  padding-top: 60px;
+  padding-top: 50px;
   height: 100%;
 }
 
-h1, h2, h3, h4{
+.navbar-brand, .staff-name{
   font-family: 'Merriweather', serif;
 }
+
+.staff-name{
+  text-decoration: none;
+  color: #1e1e1e;
+}
+
+.staff-name:hover, a:hover{
+  text-decoration: none;
+  color: #bebebe;
+}
+
+a:hover{
+  cursor: pointer;
+}
+
+section#staff:target {
+    padding-top: 50px;
+}
+
+/*h1, h2, h3, h4{
+  font-family: 'Merriweather', serif;
+}*/
 
 .flash, .error {
     background: #F0D6D6;
@@ -21,6 +43,12 @@ h1, h2, h3, h4{
 .navbar-default {
   background: rgba(255, 255, 255, 0.5);;
   border: none;
+}
+
+.container{
+  text-align: center;
+  padding-left: 40px;
+  padding-right: 40px;
 }
 
 #wrap {
@@ -42,4 +70,22 @@ h1, h2, h3, h4{
   line-height: 60px;
   width: 100%;
   overflow: hidden;
+}
+
+section#header{
+  	background-image: url("/static/img/hero.jpeg");
+    background-size: cover;
+    text-align: center;
+    padding: 40px;
+    box-shadow: inset 0px 0px 0 2000px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+}
+
+section#header h2, section#header h3{
+    color: #FFF8DC;
+    text-shadow: 1px 1px 2px black;
+}
+
+section#header h3{
+  margin-bottom: 20px;
 }

@@ -62,8 +62,8 @@ def logout():
 @app.route('/')
 def main():
     g.db = connect_db()
-    cur = g.db.execute('SELECT f_name, l_name, phone FROM staff')
-    staff = [dict( f_name=row[0], l_name=row[1], phone=row[2]) for row in cur.fetchall()]
+    cur = g.db.execute('SELECT username, f_name, l_name, phone FROM staff')
+    staff = [dict( username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
     g.db.close()
     shuffle(staff)
     return render_template('main.html', staff=staff)
@@ -113,14 +113,14 @@ def add():
 @app.route("/profile/<uname>", methods=['GET'])
 def profile(uname):
     g.db = connect_db()
-    cur = g.db.execute("SELECT p.bio, s.f_name, s.l_name, s.phone "  
+    cur = g.db.execute("SELECT p.bio, s.f_name, s.l_name, s.phone "
                         "FROM profile p JOIN staff s ON p.username=s.username "
                         "WHERE p.username=?;", [uname])
     rows = cur.fetchall()
-    
+
     c = dict(zip(["bio","f_name","l_name","phone"],rows[0]))
-    
-    return render_template('viewprofile.html',profile=c)
+
+    return render_template('viewprofile.html',staff=c)
 
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
 @login_required
@@ -138,9 +138,9 @@ def edit_profile(uname):
             except KeyError:
                 flash("No profile found for user.")
                 return redirect(url_for('main'))
-    
+
             return render_template('profile.html', bio=bio)
-            
+
         elif request.method == "POST": #form was submitted, update database
             new_bio = request.form['bio']
 

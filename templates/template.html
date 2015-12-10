@@ -17,16 +17,14 @@
       </nav>
 
       <div id="wrap">
-        <div class="container">
-              {% for message in get_flashed_messages() %}
-                  <div class='alert alert-info'>{{ message }}</div>
-              {% endfor %}
-              {% if error %}
-                  <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
-              {% endif %}
-              {% block content %}
-              {% endblock %}
-        </div>
+          {% for message in get_flashed_messages() %}
+              <div class='alert alert-info'>{{ message }}</div>
+          {% endfor %}
+          {% if error %}
+              <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
+          {% endif %}
+          {% block content %}
+          {% endblock %}
       </div>
         <div class="footer" id="footer">
           <div class="container">
