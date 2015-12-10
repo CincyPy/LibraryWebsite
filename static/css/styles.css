@@ -1,19 +1,16 @@
+html{
+  height: 100%;
+}
+
 body{
   font-family: 'Lato', sans-serif;
   padding-top: 60px;
+  height: 100%;
 }
 
 h1, h2, h3, h4{
   font-family: 'Merriweather', serif;
 }
-
-/*.container {
-    background: #f4f4f4;
-    margin: 2em auto;
-    padding: 0.8em;
-    widows: 30em;
-    border: 2px solid #000;
-}*/
 
 .flash, .error {
     background: #F0D6D6;
@@ -22,15 +19,20 @@ h1, h2, h3, h4{
 }
 
 .navbar-default {
-  background: none;
+  background: rgba(255, 255, 255, 0.5);;
   border: none;
 }
 
 #wrap {
   min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin: 0 auto -60px;
+  margin: 0 auto;
+  margin-bottom: -60px;
+  padding-bottom: 110px;
+}
+
+#wrap:after {
+  content: "";
+  display: block;
 }
 
 #footer {
@@ -38,5 +40,6 @@ h1, h2, h3, h4{
   background-color: #ddd;
   text-align: center;
   line-height: 60px;
-  vertical-align: middle;
+  width: 100%;
+  overflow: hidden;
 }
