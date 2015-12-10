@@ -87,9 +87,9 @@ def admin():
 @login_required
 def librarian():
     g.db = connect_db()
-    cur = g.db.execute('SELECT recdate, book, author, comment, url, sticky FROM readinglist')
-    readinglist = [dict(recdate=row[0], book=row[1], author=row[2], comment=row[3], url=row[4], sticky=row[5])
-                   for row in cur.fetchall()]
+    cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, sticky FROM readinglist')
+    readinglist = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
+                        comment=row[4], url=row[5], sticky=row[6]) for row in cur.fetchall()]
     g.db.close()
     return render_template('librarian.html', readinglist=readinglist)
 
@@ -140,15 +140,26 @@ def addrecread():
         flash('Book name is required. Please try again.')
         return redirect(url_for('librarian'))
     g.db = connect_db()
-    g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, sticky) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, sticky) '
+                 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                  [None, time.strftime("%Y-%m-%d"), session['logged_in_name'], book, author, comment, url, sticky])
     g.db.commit()
     g.db.close()
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
 
+@app.route('/remrecread',methods=['POST'])
+@login_required
+def remrecread():
+    g.db = connect_db()
+    g.db.execute("DELETE FROM readinglist WHERE RLID = 5")
+    g.db.commit()
+    g.db.close()
+    flash('Delete recommended reading 5.')
+    return redirect(url_for('librarian'))
 
-@app.route("/profile/<uname>", methods=['GET'])
+
+@app.route('/profile/<uname>', methods=['GET'])
 def profile(uname):
     g.db = connect_db()
     # get profile data
@@ -159,9 +170,10 @@ def profile(uname):
     c = dict(zip(["bio", "f_name", "l_name", "phone"], rows[0]))
 
     # get reading list data
-    cur = g.db.execute("SELECT recdate, book, author, comment "
+    cur = g.db.execute("SELECT RLID, recdate, book, author, comment, url, sticky "
                        "FROM readinglist WHERE username=?", [uname])
-    d = [dict(recdate=row[0], book=row[1], author=row[2], comment=row[3]) for row in cur.fetchall()]
+    d = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
+              comment=row[4], url=row[5], sticky=row[6]) for row in cur.fetchall()]
     return render_template('viewprofile.html', profile=c, readinglist=d)
 
 

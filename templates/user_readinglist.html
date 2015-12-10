@@ -7,6 +7,9 @@
             <th>Book</th>
             <th>Author</th>
             <th>Comment</th>
+            <th>URL</th>
+            <th>Sticky</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -16,6 +19,13 @@
             <td>{{ RL.book }}</td>
             <td>{{ RL.author }}</td>
             <td>{{ RL.comment }}</td>
+            <td>{{ RL.url }}</td>
+            <td>{{ RL.sticky }}</td>
+            <td>
+                <form action="{{ url_for('remrecread')}}" method="POST" class="recread">
+                    <input class='btn btn-danger' type='submit' value='X'>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
