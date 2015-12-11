@@ -3,33 +3,20 @@ import os
 import sys
 
 import library
+from database import create_engine, scoped_session, sessionmaker
 
 
 class LibrarySiteTests(unittest.TestCase):
     
     def setUp(self):
-        
-        #create db file
-        try:
-            os.system("python db.py test_library.db")
-        except:
-            print "ERROR CREATING DATABASE"
-            sys.exit(1)
-            
-        #change the app config to use test database
-        library.app.config["DATABASE"] = "test_library.db"
-        
+        engine = create_engine('sqlite:///:memory:', convert_unicode=True)
+        db_session = scoped_session(sessionmaker(autocommit=False,
+                                                 autoflush=False,
+                                                 bind=engine))
+        library.db_session = db_session
         #get test client
         self.app = library.app.test_client()
         
-    def tearDown(self):
-        
-        #delete the test database
-        try:
-            os.remove("test_library.db");
-        except:
-            pass
-
     def test_main(self):
         response = self.app.get('/')
         self.assertIn("<h2>Welcome to the Library Site</h2>",response.data)

@@ -1,5 +1,4 @@
 import datetime
-import os
 import sqlite3
 import tempfile
 import time
@@ -9,26 +8,14 @@ from functools import wraps
 from flask import Flask, render_template, request, session, \
     flash, redirect, url_for, g
 
-from models import db, Staff, Profile, init_db, ReadingList
+from database import db_session
+from models import Profile, ReadingList, Staff
 
 # configuration
 SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
 
-#DATABASE = os.path.join(tempfile.gettempdir(), 'test.db')
-DATABASE = os.path.abspath('library.db')
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' +  DATABASE
-
 app = Flask(__name__)
 app.config.from_object(__name__)
-
-db.init_app(app)
-
-if os.path.exists(DATABASE):
-    os.remove(DATABASE)
-
-def connect_db():
-    return sqlite3.connect(app.config['DATABASE'])
-
 
 def login_required(test):
     @wraps(test)
@@ -41,6 +28,9 @@ def login_required(test):
 
     return wrap
 
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -113,8 +103,8 @@ def adduser():
             return redirect(url_for('admin'))
     staff = Staff(username=username, password=password, f_name=f_name,
                          l_name=l_name, phone=phone, profile=Profile(bio=""))
-    db.session.add(staff)
-    db.session.commit()
+    db_session.add(staff)
+    db_session.commit()
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
 
@@ -140,7 +130,7 @@ def addrecread():
                                                   comment=comment,
                                                   url=url,
                                                   sticky=sticky))
-    db.session.commit()
+    db_session.commit()
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
 
@@ -172,7 +162,7 @@ def edit_profile(uname):
             return redirect(url_for('main'))
     elif request.method == "POST": #form was submitted, update database
         staff.profile.bio = request.form['bio']
-        db.session.commit()
+        db_session.commit()
         flash("Profile updated!")
         return render_template('profile.html', bio=staff.profile.bio)
 

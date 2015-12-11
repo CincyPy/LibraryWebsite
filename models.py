@@ -1,72 +1,69 @@
 import datetime
 
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import backref, relationship
 
-db = SQLAlchemy()
+from database import Base
 
-class Staff(db.Model):
-
+class Staff(Base):
     __tablename__ = 'staff'
 
-    username = db.Column(db.String, primary_key=True)
-    password = db.Column(db.String)
-    f_name = db.Column(db.String)
-    l_name = db.Column(db.String)
-    phone = db.Column(db.Integer)
+    username = Column(String, primary_key=True)
+    password = Column(String)
+    f_name = Column(String)
+    l_name = Column(String)
+    phone = Column(Integer)
 
 
-class Profile(db.Model):
-
+class Profile(Base):
     __tablename__ = 'profile'
 
-    username_id = db.Column(db.String, db.ForeignKey('staff.username'),
+    username_id = Column(String, ForeignKey('staff.username'),
                             primary_key=True)
-    username = db.relationship('Staff', backref=db.backref('profile', uselist=False))
-    bio = db.Column(db.Text)
+    username = relationship('Staff', backref=backref('profile', uselist=False))
+    bio = Column(Text)
 
 
-class ReadingList(db.Model):
-
+class ReadingList(Base):
     __tablename__ = 'readinglist'
 
-    RLID = db.Column(db.Integer, primary_key=True)
-    recdate = db.Column(db.Date)
+    RLID = Column(Integer, primary_key=True)
+    recdate = Column(Date)
 
-    username_id = db.Column(db.String, db.ForeignKey('staff.username'))
-    username = db.relationship('Staff', backref='readinglist')
+    username_id = Column(String, ForeignKey('staff.username'))
+    username = relationship('Staff', backref='readinglist')
 
-    book = db.Column(db.Text)
-    author = db.Column(db.Text)
-    comment = db.Column(db.Text)
-    url = db.Column(db.Text)
-    sticky = db.Column(db.Boolean, default=False)
+    book = Column(Text)
+    author = Column(Text)
+    comment = Column(Text)
+    url = Column(Text)
+    sticky = Column(Boolean, default=False)
 
 
-def init_db(app):
-    with app.app_context():
-        db.create_all()
+def init_models():
+    from database import db_session
 
-        rl1 = ReadingList(recdate=datetime.date(2015,10,1),
-                          book='ABCs',
-                          author='Dr. Suess',
-                          comment='best seller',
-                          url='http://www.seussville.com/books/book_detail.php?isbn=9780394800301')
-        db.session.add(rl1)
-        admin = Staff(username='admin', password='admin', f_name='Admin',
-                      l_name='User', phone=1111111111)
-        admin.readinglist = [rl1]
-        db.session.add(admin)
+    rl1 = ReadingList(recdate=datetime.date(2015,10,1),
+                      book='ABCs',
+                      author='Dr. Suess',
+                      comment='best seller',
+                      url='http://www.seussville.com/books/book_detail.php?isbn=9780394800301')
+    db_session.add(rl1)
+    admin = Staff(username='admin', password='admin', f_name='Admin',
+                  l_name='User', phone=1111111111)
+    admin.readinglist.append(rl1)
+    db_session.add(admin)
 
-        fred = Staff(username='fred', password='fred', f_name='Fred', l_name='Fredderson', phone=2222222222)
-        rl2 = ReadingList(recdate=datetime.date(2015,10,2), 
-                          book='Night Before Christmas',
-                          author='Santa',
-                          comment='find holday fun',
-                          url='https://www.overdrive.com/media/1577310/the-night-before-christmas')
-        fred.readinglist = [rl2]
-        db.session.add(fred)
+    fred = Staff(username='fred', password='fred', f_name='Fred', l_name='Fredderson', phone=2222222222)
+    rl2 = ReadingList(recdate=datetime.date(2015,10,2), 
+                      book='Night Before Christmas',
+                      author='Santa',
+                      comment='find holday fun',
+                      url='https://www.overdrive.com/media/1577310/the-night-before-christmas')
+    fred.readinglist.append(rl2)
+    db_session.add(fred)
 
-        db.session.add(Profile(username=admin, bio='Admin bio'))
-        db.session.add(Profile(username=fred, bio='Fred\'s bio'))
+    db_session.add(Profile(username=admin, bio='Admin bio'))
+    db_session.add(Profile(username=fred, bio='Fred\'s bio'))
 
-        db.session.commit()
+    db_session.commit()

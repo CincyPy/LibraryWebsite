@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for RL in readinglist|sort(attribute='recdate', reverse=True) %}
+        {% for RL in profile.readinglist|sort(attribute='recdate', reverse=True) %}
         <tr>
             <td>{{ RL.recdate }}</td>
             <td>{{ RL.book }}</td>
