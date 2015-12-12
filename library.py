@@ -76,7 +76,7 @@ def admin():
 @login_required
 def librarian():
     logged_in_user = Staff.query.get(session['logged_in_name'])
-    return render_template('librarian.html', readinglist=logged_in_user.readinglist)
+    return render_template('librarian.html', profile=logged_in_user)
 
 
 @app.route('/adduser', methods=['POST'])
