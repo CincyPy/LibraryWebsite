@@ -1,7 +1,7 @@
 # LibraryWebsite
 This is the repository for the Library Website project
 
-A group of CincyPy members is creating a website for Kenton County Public Library modeled after ["My Librarian"](https://multcolib.org/my-librarian) project at the Multnomah County Library. 
+A group of CincyPy members is creating a website for [Kenton County Public Library](http://www.kentonlibrary.org/) modeled after ["My Librarian"](https://multcolib.org/my-librarian) project at the Multnomah County Library. We are using Python and [Flask](http://flask.pocoo.org/).
 
 # Authors
 * Ann
