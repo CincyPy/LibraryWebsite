@@ -165,7 +165,7 @@ def profile(uname):
     cur = g.db.execute("SELECT recdate, book, author, comment "
                        "FROM readinglist WHERE username=?", [uname])
     d = [dict(recdate=row[0], book=row[1], author=row[2], comment=row[3]) for row in cur.fetchall()]
-    return render_template('viewprofile.html', profile=c, readinglist=d)
+    return render_template('viewprofile.html', staff=c, readinglist=d)
 
 
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
