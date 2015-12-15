@@ -10,7 +10,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
-engine = create_engine('sqlite:////tmp/library.db', convert_unicode=True)
+engine = create_engine('sqlite:///library.db', convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
