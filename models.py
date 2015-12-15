@@ -18,9 +18,9 @@ class Staff(Base):
 class Profile(Base):
     __tablename__ = 'profile'
 
-    username_id = Column(String, ForeignKey('staff.username'),
+    username = Column(String, ForeignKey('staff.username'),
                             primary_key=True)
-    username = relationship('Staff', backref=backref('profile', uselist=False))
+    staff = relationship('Staff', backref=backref('profile', uselist=False))
     bio = Column(Text)
 
 
@@ -30,8 +30,8 @@ class ReadingList(Base):
     RLID = Column(Integer, primary_key=True)
     recdate = Column(Date)
 
-    username_id = Column(String, ForeignKey('staff.username'))
-    username = relationship('Staff', backref='readinglist')
+    username = Column(String, ForeignKey('staff.username'))
+    staff = relationship('Staff', backref='readinglist')
 
     book = Column(Text)
     author = Column(Text)
@@ -63,7 +63,7 @@ def init_models():
     fred.readinglist.append(rl2)
     db_session.add(fred)
 
-    db_session.add(Profile(username=admin, bio='Admin bio'))
-    db_session.add(Profile(username=fred, bio='Fred\'s bio'))
+    db_session.add(Profile(staff=admin, bio='Admin bio'))
+    db_session.add(Profile(staff=fred, bio='Fred\'s bio'))
 
     db_session.commit()
