@@ -1,0 +1,22 @@
+<h4>Recommended Readings</h4>
+
+<table class="tablesorter" cellspacing="1">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Book</th>
+            <th>Author</th>
+            <th>Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for RL in readinglist|sort(attribute='recdate', reverse=True) %}
+        <tr>
+            <td>{{ RL.recdate }}</td>
+            <td>{{ RL.book }}</td>
+            <td>{{ RL.author }}</td>
+            <td>{{ RL.comment }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

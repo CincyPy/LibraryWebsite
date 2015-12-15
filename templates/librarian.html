@@ -1,0 +1,44 @@
+{% extends "template.html" %}
+
+{% block content %}
+    <h2>Welcome to the Librarian Staff Page for the Library Site</h2>
+    <p>Hello, {{ session.logged_in_name }} <a href='/logout'>Logout</a></p>
+    
+    {% if session.logged_in_name != 'admin' %}
+    <div class="row">
+        <div class="col-sm-6">
+            <h3>Add a recommended reading:</h3>
+            <form action="{{ url_for('addrecread')}}" method="POST" class="recread">
+                <div class="form-group">
+                    <label for="book">Book:</label>
+                    <input class="form-control" name='book' type='text'>
+                </div>
+                <div class="form-group">
+                    <label for="author">Author:</label>
+                    <input class="form-control" name='author' type='text'>
+                </div>
+                <div class="form-group">
+                    <label for="comment">Comment:</label>
+                    <input class="form-control" name='comment' type='text'>
+                </div>
+                <div class="form-group">
+                    <label for="url">URL:</label>
+                    <input class="form-control" name='URL' type='text'>
+                </div>
+                <div class="form-group">
+                    <label for="sticky">Sticky:</label>
+                    <!--input class="form-control" name='sticky' type='text'-->
+                    <input name="sticky" type="radio" value='1'>Yes
+                    <input name="sticky" type="radio" value='0' checked>No
+                </div>
+                <input class='btn btn-success' type='submit' value='Save'>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    </br>
+    </br>
+    <h3>Reading List: </h3>
+    {% include "user_readinglist.html" %}
+{% endblock %}

@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-sm-6">
             <h3>Add a new staff member:</h3>
-            <form action="{{ url_for('add')}}" method="POST" class="add">
+            <form action="{{ url_for('adduser')}}" method="POST" class="add">
                 <div class="form-group">
                     <label for="username">Username:</label>
                     <input class="form-control" name='username' type='text'>
@@ -34,7 +34,6 @@
             </form>
         </div>
     </div>
-    
     {% endif %}
     
     </br>
