@@ -1,18 +1,38 @@
-body{
-  font-family: 'Lato', sans-serif;
+html{
+  height: 100%;
 }
 
-h1, h2, h3, h4{
+body{
+  font-family: 'Lato', sans-serif;
+  padding-top: 50px;
+  height: 100%;
+}
+
+.navbar-brand, .staff-name{
   font-family: 'Merriweather', serif;
 }
 
-.container {
-    background: #f4f4f4;
-    margin: 2em auto;
-    padding: 0.8em;
-    widows: 30em;
-    border: 2px solid #000;
+.staff-name{
+  text-decoration: none;
+  color: #1e1e1e;
 }
+
+.staff-name:hover, a:hover{
+  text-decoration: none;
+  color: #bebebe;
+}
+
+a:hover{
+  cursor: pointer;
+}
+
+section#staff:target {
+    padding-top: 50px;
+}
+
+/*h1, h2, h3, h4{
+  font-family: 'Merriweather', serif;
+}*/
 
 .flash, .error {
     background: #F0D6D6;
@@ -20,11 +40,59 @@ h1, h2, h3, h4{
     padding: 0.5em;
 }
 
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
+.navbar-default {
+  background: rgba(255, 255, 255, 0.5);;
+  border: none;
 }
-th, td {
-    padding: 10px;
-    text-align: left;
+
+.container{
+  text-align: center;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+#wrap {
+  min-height: 100%;
+  margin: 0 auto;
+  margin-bottom: -60px;
+  padding-bottom: 110px;
+}
+
+#wrap:after {
+  content: "";
+  display: block;
+}
+
+#footer {
+  height: 60px;
+  background-color: #ddd;
+  text-align: center;
+  line-height: 60px;
+  width: 100%;
+  overflow: hidden;
+}
+
+section#header{
+  	background-image: url("/static/img/hero.jpeg");
+    background-size: cover;
+    text-align: center;
+    padding: 40px;
+    box-shadow: inset 0px 0px 0 2000px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+}
+
+section#header h2, section#header h3{
+    color: #FFF8DC;
+    text-shadow: 1px 1px 2px black;
+}
+
+section#header h3{
+  margin-bottom: 20px;
+}
+
+.bio{
+  padding-top: 40px;
+  font-size: 16px;
+  text-align: left;
+
 }

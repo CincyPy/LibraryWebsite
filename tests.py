@@ -1,10 +1,8 @@
 import unittest
-import os
-import sys
+import flask
 
 import library
 from database import create_engine, scoped_session, sessionmaker
-
 
 class LibrarySiteTests(unittest.TestCase):
     
@@ -34,11 +32,27 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn('Invalid Credentials.  Please try again.', response.data)
         
         #test valid user
+        with self.app:
+            response = self.app.post('/login', data=dict(
+                username="fred",
+                password="fred",
+        ), follow_redirects=True)
+            self.assertEquals(flask.session["logged_in_name"],"fred")
+        
         response = self.app.post('/login', data=dict(
                 username="fred",
                 password="fred",
         ), follow_redirects=True) 
         self.assertIn('Welcome to the Staff Page for the Library Site', response.data)
+
+        
+
+    def test_logout(self):
+        with self.app:
+            response = self.app.get('/logout',follow_redirects=True)
+            self.assertIn('You were logged out',response.data)  
+            self.assertNotIn("logged_in",flask.session)
+        
 
 if __name__ == '__main__':
     unittest.main()

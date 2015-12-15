@@ -1,10 +1,25 @@
 {% extends "template.html" %}
 
 {% block content %}
-    <h2>Welcome to the Library Site</h2>
-    <a href="/login">Log in</a>
-    <h3>Current Staff: </h3>
-    {% for profile in staff %}
-        {% include "user_profile.html" %}
-    {% endfor %}
+  <section id="header">
+    <h2>Welcome to the Library Site!</h2>
+    <h3>Here you can learn more about your librarians and get personalized book recommendations</h3>
+    <a href="#staff"><button class="btn" >Browse our current staff</button></a>
+    <!-- <h3>Current Staff: </h3> -->
+  </section>
+  <section id="staff">
+    <div class="container">
+      <div class="row">
+      {% for staff in staff %}
+        <div class="col-md-4 col-sm-6">
+          <a href="/profile/{{ staff.username }}">
+          {% include "user_profile.html" %}
+          </a>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </section>
+
+
 {% endblock %}

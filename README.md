@@ -1,7 +1,7 @@
 # LibraryWebsite
 This is the repository for the Library Website project
 
-Test of push to library website
+A group of CincyPy members is creating a website for [Kenton County Public Library](http://www.kentonlibrary.org/) modeled after ["My Librarian"](https://multcolib.org/my-librarian) project at the Multnomah County Library. We are using Python and [Flask](http://flask.pocoo.org/).
 
 ### Initialize Database
 ```
@@ -17,9 +17,13 @@ python library.py
 ```
 
 # Authors
-* Ann S.
+* Ann
 * Cindy
 * John
 * Carl
 * Leila
 * Michael
+* Joe 
+* Brian 
+
+If you'd like to contribute, join [CincyPy] (http://www.meetup.com/CincyPy/) and send us a message or come to our next [meeting](http://www.meetup.com/CincyPy/).
