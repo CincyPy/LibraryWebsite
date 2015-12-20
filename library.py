@@ -139,7 +139,7 @@ def addrecread():
 def profile(uname):
     staff = Staff.query.get(uname)
     if staff:
-        return render_template('viewprofile.html', staff=staff)
+        return render_template('viewprofile.html', staff=staff, readinglist=staff.readinglist)
     else:
         flash("Profile not found")
         return redirect(url_for('main'))
