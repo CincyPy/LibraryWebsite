@@ -66,4 +66,49 @@ def init_models():
     db_session.add(Profile(staff=admin, bio='Admin bio'))
     db_session.add(Profile(staff=fred, bio='Fred\'s bio'))
 
+    loremipsum = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'''
+
+    db_session.add(Staff(username='ernie',
+                         password='ernie',
+                         f_name='Ernie',
+                         l_name='Ernieston',
+                         phone=3333333333,
+                         profile=Profile(bio=loremipsum)))
+    db_session.add(Staff(username='bert',
+                         password='bert',
+                         f_name='Bert',
+                         l_name='Burterson',
+                         phone=4444444444,
+                         profile=Profile(bio=loremipsum)))
+    db_session.add(Staff(username='bigbird',
+                         password='bigbird',
+                         f_name='Big',
+                         l_name='Bird',
+                         phone=5555555555,
+                         profile=Profile(bio=loremipsum)))
+    db_session.add(Staff(username='oscar',
+                         password='oscar',
+                         f_name='Oscar',
+                         l_name='Thegrouch',
+                         phone=6666666666,
+                         profile=Profile(bio=loremipsum)))
+    db_session.add(Staff(username='elmo',
+                         password='elmo',
+                         f_name='Elmo',
+                         l_name='Elmostein',
+                         phone=7777777777,
+                         profile=Profile(bio=loremipsum)))
+
+    db_session.commit()
+    db_session.query(Staff).get('elmo').readinglist = [ReadingList(recdate=datetime.date(2015,12,21),
+                                                                   book='The Invinsible Man',
+                                                                   author='H. G. Wells',
+                                                                   comment='my fav',
+                                                                   url='http://aol.com'),
+                                                       ReadingList(recdate=datetime.date(2015,12,21),
+                                                                   book='Moby Dick',
+                                                                   author='Herman Melville',
+                                                                   comment='a whale of a tale',
+                                                                   url='http://facebook.com')]
+
     db_session.commit()
