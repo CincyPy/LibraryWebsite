@@ -32,19 +32,19 @@ class LibrarySiteTests(unittest.TestCase):
 
     def test_main(self):
         response = self.app.get('/')
-        self.assertIn("<h2>Welcome to the Library Site</h2>",response.data)
+        self.assertIn("Welcome to the Library Site",response.data)
         
     def test_login(self):
         #test initial get request
         response = self.app.get('/login')
-        self.assertIn("Welcome to the Staff Login for the Library Site",response.data)
+        self.assertIn("Welcome to the Staff Login",response.data)
         
         #test invalid user
         response = self.app.post('/login', data=dict(
                 username="invalid",
                 password="invalid",
         ), follow_redirects=True) 
-        self.assertIn('Invalid Credentials.  Please try again.', response.data)
+        self.assertIn('Invalid Credentials', response.data)
         
         #test valid user
         with self.app:
@@ -58,7 +58,7 @@ class LibrarySiteTests(unittest.TestCase):
                 username="fred",
                 password="fred",
         ), follow_redirects=True) 
-        self.assertIn('Welcome to the Staff Page for the Library Site', response.data)
+        self.assertIn('Staff Page', response.data)
 
         
 
