@@ -4,6 +4,7 @@ import sys
 
 import library
 import flask
+import db
 
 class LibrarySiteTests(unittest.TestCase):
     
@@ -11,7 +12,7 @@ class LibrarySiteTests(unittest.TestCase):
         
         #create db file
         try:
-            os.system("python db.py test_library.db")
+            db.create_db("test_library.db")
         except:
             print "ERROR CREATING DATABASE"
             sys.exit(1)
