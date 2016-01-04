@@ -19,7 +19,7 @@ class Profile(Base):
     __tablename__ = 'profile'
 
     username = Column(String, ForeignKey('staff.username'),
-                            primary_key=True)
+                      primary_key=True)
     staff = relationship('Staff', backref=backref('profile', uselist=False))
     bio = Column(Text)
 
@@ -54,8 +54,9 @@ def init_models():
     admin.readinglist.append(rl1)
     db_session.add(admin)
 
-    fred = Staff(username='fred', password='fred', f_name='Fred', l_name='Fredderson', phone=2222222222)
-    rl2 = ReadingList(recdate=datetime.date(2015,10,2), 
+    fred = Staff(username='fred', password='fred', f_name='Fred',
+                 l_name='Fredderson', phone=2222222222)
+    rl2 = ReadingList(recdate=datetime.date(2015,10,2),
                       book='Night Before Christmas',
                       author='Santa',
                       comment='find holday fun',
@@ -100,15 +101,19 @@ def init_models():
                          profile=Profile(bio=loremipsum)))
 
     db_session.commit()
-    db_session.query(Staff).get('elmo').readinglist = [ReadingList(recdate=datetime.date(2015,12,21),
-                                                                   book='The Invinsible Man',
-                                                                   author='H. G. Wells',
-                                                                   comment='my fav',
-                                                                   url='http://aol.com'),
-                                                       ReadingList(recdate=datetime.date(2015,12,21),
-                                                                   book='Moby Dick',
-                                                                   author='Herman Melville',
-                                                                   comment='a whale of a tale',
-                                                                   url='http://facebook.com')]
+    db_session.query(Staff).get('elmo').readinglist = [
+        ReadingList(
+            recdate=datetime.date(2015,12,21),
+            book='The Invinsible Man',
+            author='H. G. Wells',
+            comment='my fav',
+            url='http://aol.com'),
+        ReadingList(
+            recdate=datetime.date(2015,12,21),
+            book='Moby Dick',
+            author='Herman Melville',
+            comment='a whale of a tale',
+            url='http://facebook.com')
+    ]
 
     db_session.commit()
