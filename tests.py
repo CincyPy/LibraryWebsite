@@ -54,7 +54,7 @@ class LibrarySiteTests(unittest.TestCase):
                 username="invalid",
                 password="invalid",
         ), follow_redirects=True) 
-        self.assertIn('Invalid Credentials.  Please try again.', response.data)
+        self.assertIn('Invalid Credentials', response.data)
         
         #test valid user
         with self.app:
@@ -68,6 +68,7 @@ class LibrarySiteTests(unittest.TestCase):
                 username="fred",
                 password="fred",
         ), follow_redirects=True) 
+
         self.assertIn('Welcome to the Librarian Staff Page', response.data)
 
         
