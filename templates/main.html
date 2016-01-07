@@ -1,4 +1,8 @@
 {% extends "template.html" %}
+{%  block nav_right %}
+    {{ session.logged_in_name }}
+    <a href="/login" style="text-decoration: none">Login</a>
+{% endblock %}
 
 {% block content %}
   <section id="header">

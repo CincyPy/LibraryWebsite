@@ -1,5 +1,8 @@
 {% extends "template.html" %}
-
+{%  block nav_right %}
+    {{ session.logged_in_name }}
+    <a href="/edit-profile/{{ session.logged_in_name }}" style="text-decoration: none">Edit Profile</a>
+{% endblock %}
 {% block content %}
     <h2>Welcome to the Librarian Staff Page for the Library Site</h2>
     <p>Hello, {{ session.logged_in_name }} <a href='/logout'>Logout</a></p>

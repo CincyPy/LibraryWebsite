@@ -48,6 +48,7 @@ def login():
                     return redirect(url_for('admin'))
                 else:
                     return redirect(url_for('librarian'))
+
         else:
             error = 'Invalid Credentials.  Please try again.'
             return render_template('login.html', error=error)
@@ -100,7 +101,7 @@ def librarian():
 @login_required
 def adduser():
     if session["logged_in_name"] != "admin":
-        return redirect(url_for('librarian'))
+        return redirect(url_for('main'))
     username = request.form['username']
     password = request.form['password']
     f_name = request.form['f_name']
