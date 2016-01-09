@@ -61,7 +61,7 @@ def login():
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('login'))
+    return redirect(url_for('main'))
 
 
 @app.route('/')
@@ -69,7 +69,7 @@ def main():
     g.db = connect_db()
 
     cur = g.db.execute('SELECT username, f_name, l_name, phone FROM staff')
-    staff = [dict( username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
+    staff = [dict(username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
 
     g.db.close()
     shuffle(staff)
