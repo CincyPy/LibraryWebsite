@@ -1,0 +1,129 @@
+{% extends "template.html" %}
+
+{% block content %}
+<script>
+
+    function contactChange() {
+        var pref = $('input[name="contact"]:checked').val();
+        console.log(pref);
+        if (pref == 'email') {
+            $('#email_input').removeClass('hidden');
+            $('#phone_input').addClass('hidden');
+            $('#chat_input').addClass('hidden');
+            $('#times_input').addClass('hidden');
+        } else {
+            $('#times_input').removeClass('hidden');
+            $('#email_input').addClass('hidden');
+            $('#phone_input').addClass('hidden');
+            $('#chat_input').addClass('hidden');
+            if (pref == 'phone') {
+                $('#phone_input').removeClass('hidden');
+                $('#chat_input').addClass('hidden');
+            } else {
+                if (pref == 'chat') {
+                    $('#phone_input').addClass('hidden');
+                    $('#chat_input').removeClass('hidden');
+                }
+            }
+        }
+    }
+    
+    $(document).ready(function(){
+        $('#submit').click(function(event){
+            //event.preventDefault();
+            $.getJSON("{{ url_for('verify_contact') }}", {
+                data: $('input[name="contact"]:checked').val(),
+                },
+                function(result){
+                    console.log(result);
+                }
+            )
+        });
+    });    
+    
+</script>
+
+    <h2>Contact {{ staff }}</h2>
+    <form method="POST" action="" >
+        <label for="contact">How do you want to have this conversation?</label></br>
+        <input type="radio" name="contact" value="email" onclick="contactChange()">Email</br>
+        <input type="radio" name="contact" value="phone" onclick="contactChange()">Phone</br>
+        <input type="radio" name="contact" value="chat" onclick="contactChange()">Online chat</br>
+        <input type="radio" name="contact" value="irl" onclick="contactChange()">In person</br>
+        Pick one.</br>
+        
+        <div class="hidden" id="email_input">
+            <label for="likes">Tell us about a few books or authors you've enjoyed. What made these books great?</label></br>
+            <input type="textarea" name="likes">
+
+            <br><label for="dislikes">Describe some authors or titles that you DID NOT like and why</label></br>
+            <input type="textarea" name="dislikes">
+
+            <br><label for="comment">Is there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?</label></br>
+            <input type="textarea" name="comment">
+
+            <br><label for="audience">Are you interested in books for adults, teens, or children?</label></br>
+            <input type="textarea" name="audience" value="adults">Adults</br>
+<!--            <input type="checkbox" name="audience" value="teens">Teens</br>
+            <input type="checkbox" name="audience" value="children">Children</br>-->
+            Check all that apply.
+
+            <br><label for="format_pref">Do you have a preferred format?</label></br>
+            <input type="textarea" name="format_pref" value="book">Book</br>
+<!--            <input type="checkbox" name="format_pref" value="lg_print">Large print</br>
+            <input type="checkbox" name="format_pref" value="cd">Audiobook on CD</br>
+            <input type="checkbox" name="format_pref" value="ebook">E-book</br>
+            <input type="checkbox" name="format_pref" value="digital_audio">Digital audiobook</br>-->
+            Check all that apply.
+        </div>
+        
+        <div class="hidden" id="phone_input">
+            <label for="phone">Please enter your phone number (incl area code)</label></br>
+            <input type="text" placeholder="555-555-5555" name="phone">
+        </div>
+
+        <div class="hidden" id="chat_input">
+            <label for="chat_service">Select the online chat service <span class="form-required" title="This field is required.">*</span></label><br>
+            <select id="chat_service" name="chat_service">
+               <option value="" selected="selected">- Select -</option>
+               <option value="google">Google+</option>
+               <option value="skype">Skype</option>
+            </select>
+            <label for="chat">What's your chat handle?</label></br>
+            <input type="text" name="chat">
+        </div>
+
+        <div class="hidden" id="times_input">
+            <label for="times">What time works for you?</label></br>
+            <input type="textarea" placeholder="Suggest a couple days and times. We will email or phone to confirm." name="times">
+        </div>
+
+        <legend>
+            Your Contact Information        
+        </legend>
+        <div class="fieldset-wrapper">
+            <div>
+                <label for="name">Your name <span class="form-required" title="This field is required.">*</span></label><br>
+                <input type="text" id="name" name="name" value="" size="35" maxlength="128">
+            </div>
+            <div>
+                <label for="email">Email Address <span class="form-required" title="This field is required.">*</span></label><br>
+                <input type="email" id="name" name="email" value="" size="35">
+            </div>
+    
+<!--            <div class="form-item webform-component webform-component-select" id="webform-component-your-contact-information--u-county-where-you-reside">
+                <label for="county">County where you reside <span class="form-required" title="This field is required.">*</span></label><br>
+                <select id="county" name="county">
+                   <option value="" selected="selected">- Select -</option>
+                   <option value="boone">Boone</option>
+                   <option value="campbell">Campbell</option>
+                   <option value="kenton">Kenton</option>
+                </select>
+            </div>-->
+            
+        </div>
+        
+        <input type="submit" value="Submit" id="submit" class="btn btn-default"><br>
+    </form>
+    <a href="/admin"/>Back to admin</a>
+{% endblock %}
