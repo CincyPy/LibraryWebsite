@@ -201,46 +201,14 @@ def edit_profile(uname):
             flash("Profile updated!")
             return render_template('profile.html', bio=new_bio)
 
-@app.route('/verify_contact')
-def verify_contact():
-    #if request.is_ajax():  # Confirms all required fields are filled prior to form submission.
-    #import pdb; pdb.set_trace();
-    contact = request.args.get('data')
-    return jsonify(contact=contact)
-    
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
     if request.method == "GET":  # regular get, present the form to user to edit.
-        g.db = connect_db()
-        cur = g.db.execute("SELECT email, phone, chat, irl FROM profile WHERE username=?", [uname])
-        prefs = [dict(email=row[0], phone=row[1], chat=row[2], irl=row[3]) for row in cur.fetchall()]
-
-        return render_template('contact.html', pref=prefs)
+        return render_template('contact.html', staff=uname)
 
     elif request.method == "POST":  # form was submitted, update database
-        import pdb; pdb.set_trace();
-        #phone, times, likes, dislikes, comment, audience, format_pref = None, None, None, None, None, None
-        name = request.form['name']
-        email = request.form['email']
-        contact = request.form['contact']
-        phone = request.form['phone']
-        #if contact == 'email':
-        likes = request.form['likes']
-        dislikes = request.form['dislikes']
-        comment = request.form['comment']
-        audience = request.form['audience']
-        format_pref = request.form['format_pref']
-        #else:
-        times = request.form['times']
-
-        g.db = connect_db()
-        g.db.execute("""INSERT INTO patroncontact (PCID, reqdate, username, name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", [None, time.strftime("%Y-%m-%d"), name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref])
-        g.db.commit()
-        flash("You're contact request was received!")
-        # Send email to staff member regarding request
-        return redirect(url_for('profile')/uname)
+        return redirect('/profile/' + uname)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
