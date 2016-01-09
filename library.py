@@ -219,8 +219,8 @@ def contact(uname):
         return render_template('contact.html', pref=prefs)
 
     elif request.method == "POST":  # form was submitted, update database
-        import pdb; pdb.set_trace();
-        #phone, times, likes, dislikes, comment, audience, format_pref = None, None, None, None, None, None
+        #import pdb; pdb.set_trace();
+        phone, times, likes, dislikes, comment, audience, format_pref = None, None, None, None, None, None
         name = request.form['name']
         email = request.form['email']
         contact = request.form['contact']
@@ -233,14 +233,14 @@ def contact(uname):
         format_pref = request.form['format_pref']
         #else:
         times = request.form['times']
-
+        
         g.db = connect_db()
         g.db.execute("""INSERT INTO patroncontact (PCID, reqdate, username, name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref)
               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", [None, time.strftime("%Y-%m-%d"), name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref])
         g.db.commit()
         flash("You're contact request was received!")
         # Send email to staff member regarding request
-        return redirect(url_for('profile')/uname)
+        return redirect('/profile/' + uname)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
