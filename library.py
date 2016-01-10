@@ -208,7 +208,7 @@ def contact(uname):
         return render_template('contact.html', staff=uname)
 
     elif request.method == "POST":  # form was submitted, update database
-        return redirect('/profile/' + uname)
+        return redirect(url_for('profile', uname=uname))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
