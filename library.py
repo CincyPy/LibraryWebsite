@@ -240,7 +240,7 @@ def contact(uname):
         g.db.commit()
         flash("You're contact request was received!")
         # Send email to staff member regarding request
-        return redirect('/profile/' + uname)
+        return redirect(url_for('profile', uname=uname))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
