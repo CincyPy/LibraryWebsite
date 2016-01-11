@@ -90,9 +90,9 @@ def admin():
 @login_required
 def librarian():
     g.db = connect_db()
-    cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, sticky FROM readinglist')
+    cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, sticky FROM readinglist WHERE username=?', [session['logged_in_name']])
     readinglist = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
-                        comment=row[4], url=row[5], sticky=row[6]) for row in cur.fetchall()]
+                        comment=row[4], url=row[5], category=row[6], sticky=row[7]) for row in cur.fetchall()]
     g.db.close()
     return render_template('librarian.html', readinglist=readinglist)
 
@@ -138,14 +138,16 @@ def addrecread():
     author = request.form['author']
     comment = request.form['comment']
     url = request.form['URL']
+    category = request.form['category']
     sticky = request.form['sticky']
     if not book:
         flash('Book name is required. Please try again.')
         return redirect(url_for('librarian'))
     g.db = connect_db()
-    g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, sticky) '
-                 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                 [None, time.strftime("%Y-%m-%d"), session['logged_in_name'], book, author, comment, url, sticky])
+    g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, category, sticky) '
+                 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                 [None, time.strftime("%Y-%m-%d"), session['logged_in_name'],
+                  book, author, comment, url, category, sticky])
     g.db.commit()
     g.db.close()
     flash('New recommending reading added.')
