@@ -3,6 +3,8 @@ import flask
 
 import library
 from database import create_engine, scoped_session, sessionmaker
+import flask
+import db
 
 class LibrarySiteTests(unittest.TestCase):
 
