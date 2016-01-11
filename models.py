@@ -40,29 +40,31 @@ class ReadingList(Base):
     comment = Column(Text)
     url = Column(Text)
     sticky = Column(Boolean, default=False)
+    category = Column(Text)
 
 
 def init_models():
     from database import db_session
 
-    rl1 = ReadingList(recdate=datetime.date(2015,10,1),
-                      book='ABCs',
-                      author='Dr. Suess',
-                      comment='best seller',
-                      url='http://www.seussville.com/books/book_detail.php?isbn=9780394800301')
-    db_session.add(rl1)
     admin = Staff(username='admin', password='admin', f_name='Admin',
                   l_name='User', phone=1111111111)
-    admin.readinglist.append(rl1)
     db_session.add(admin)
 
     fred = Staff(username='fred', password='fred', f_name='Fred',
                  l_name='Fredderson', phone=2222222222)
+    rl1 = ReadingList(recdate=datetime.date(2015,10,1),
+                      book='ABCs',
+                      author='Dr. Suess',
+                      comment='best seller',
+                      url='http://www.seussville.com/books/book_detail.php?isbn=9780394800301',
+                      category='Mystery')
     rl2 = ReadingList(recdate=datetime.date(2015,10,2),
                       book='Night Before Christmas',
                       author='Santa',
                       comment='find holday fun',
-                      url='https://www.overdrive.com/media/1577310/the-night-before-christmas')
+                      url='https://www.overdrive.com/media/1577310/the-night-before-christmas',
+                      category='Sci-fi')
+    fred.readinglist.append(rl1)
     fred.readinglist.append(rl2)
     db_session.add(fred)
 
@@ -109,13 +111,15 @@ def init_models():
             book='The Invinsible Man',
             author='H. G. Wells',
             comment='my fav',
-            url='http://aol.com'),
+            url='http://aol.com',
+            category='History'),
         ReadingList(
             recdate=datetime.date(2015,12,21),
             book='Moby Dick',
             author='Herman Melville',
             comment='a whale of a tale',
-            url='http://facebook.com')
+            url='http://facebook.com',
+            category='Music')
     ]
 
     db_session.commit()
