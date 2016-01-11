@@ -1,10 +1,11 @@
 {% extends "template.html" %}
+{%  block nav_right %}
+    <a href="/" style="text-decoration: none">Back to Main</a>
+{% endblock %}
 
 {% block content %}
-
-  
-  <h2>Welcome to the Staff Login for the Library Site</h2>
-  <div class="col-sm-6">
+<h2>Welcome to the Staff Login for the Library Site</h2>
+<div class="col-sm-6">
     <form action='' method='POST'>
         <div class='form-group'>
           <label for='username'>Username:</label>
@@ -16,5 +17,5 @@
         </div>
         <input class='btn btn-success' type='submit' value='Login'>
     </form>
-  </div>
+</div>
 {% endblock %}

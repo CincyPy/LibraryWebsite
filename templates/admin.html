@@ -1,9 +1,13 @@
 {% extends "template.html" %}
+{%  block nav_right %}
+    {{ session.logged_in_name }}
+    <a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}" style="text-decoration: none">Edit Profile</a>
+{% endblock %}
 
 {% block content %}
     <h2>Welcome to the Staff Page for the Library Site</h2>
-    <p>Hello, {{ session.logged_in_name }} <a href='/logout'>Logout</a></p>
-    
+    <p>Hello, {{ session.logged_in_name }} <a href={{ url_for('logout') }}>Logout</a></p>
+    <a href="{{ url_for('main') }}">Back to Main</a>
     {% if session.logged_in_name == 'admin' %}
     <div class="row">
         <div class="col-sm-6">
@@ -43,9 +47,9 @@
         Name: {{ s.f_name }} {{ s.l_name }}</br>
         Phone #: {{ s.phone }}</br>
         {% if s.username == session.logged_in_name %}
-            <a href="/edit-profile/{{ s.username }}" >Edit Profile </a> 
+            <a href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>
         {% else %}
-            <a href="/profile/{{ s.username }}" > View Profile </a>
+            <a href="{{ url_for('profile', uname=s.username) }}">View Profile</a>
         {% endif %}
         </br>
     {% endfor %}
