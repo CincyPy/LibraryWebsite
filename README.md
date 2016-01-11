@@ -13,10 +13,7 @@ A group of CincyPy members is creating a website for [Kenton County Public Libra
 
 ### Initialize Database
 ```
->>> from database import init_db
->>> init_db()
->>> from models import init_models
->>> init_models()
+$ python models.py
 ```
 
 # Authors

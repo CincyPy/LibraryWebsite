@@ -1,9 +1,11 @@
+import argparse
 import datetime
+import os
 
 from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
 
-from database import Base
+from database import Base, SQLITE_DATABASE_PATH, engine, init_db
 
 class Staff(Base):
     __tablename__ = 'staff'
@@ -117,3 +119,26 @@ def init_models():
     ]
 
     db_session.commit()
+
+def ArgParser():
+    parser = argparse.ArgumentParser(
+        description=('create and initialize with data a new database for the'
+                     ' library web app'))
+    _a = parser.add_argument
+    _a('--echo', action='store_true', help='echo SQL')
+    return parser
+
+if __name__ == '__main__':
+    parser = ArgParser()
+    args = parser.parse_args()
+
+    if os.path.exists(SQLITE_DATABASE_PATH):
+        if raw_input('Remove "%s" ?' % SQLITE_DATABASE_PATH).lower().startswith('y'):
+            os.remove(SQLITE_DATABASE_PATH)
+        else:
+            raise RuntimeError('"%s" exists.' % SQLITE_DATABASE_PATH)
+
+    engine.echo = args.echo
+
+    Base.metadata.create_all(bind=engine)
+    init_models()
