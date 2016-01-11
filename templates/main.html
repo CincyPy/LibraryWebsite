@@ -1,4 +1,13 @@
 {% extends "template.html" %}
+{%  block nav_right %}
+    {% if session.logged_in == True %}
+        {{ session.logged_in_name }}
+        <a href="{{ url_for('logout') }}" style="text-decoration: none">Logout</a>
+        <a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}">Edit Profile</a>
+    {% else %}
+        <a href="{{ url_for('login') }}" style="text-decoration: none">Login</a>
+    {% endif %}
+{% endblock %}
 
 {% block content %}
   <section id="header">
@@ -12,7 +21,7 @@
       <div class="row">
       {% for staff in staff %}
         <div class="col-md-4 col-sm-6">
-          <a href="/profile/{{ staff.username }}">
+          <a href="{{ url_for('profile', uname=staff.username) }}">
           {% include "user_profile.html" %}
           </a>
         </div>
