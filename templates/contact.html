@@ -7,7 +7,6 @@
 
     function contactChange() {
         var pref = $('input[name="contact"]:checked').val();
-        console.log(pref);
         if (pref == 'email') {
             $('#email_input').removeClass('hidden');
             $('#phone_input').addClass('hidden');
@@ -32,14 +31,23 @@
     
     $(document).ready(function(){
         $('#submit').click(function(event){
+            //var audience = $('input[id="audience1"]:checked').val() + "," +
+            //        $('input[id="audience2"]:checked').val() + "," + $('input[id="audience3"]:checked').val();
+            //document.getElementById('audience').value = audience;
+            //format_pref = $('input[id="format_pref1"]:checked').val() + "," +
+            //        $('input[id="format_pref2"]:checked').val() + "," + $('input[id="format_pref3"]:checked').val() + "," +
+            //        $('input[id="format_pref4"]:checked').val() + "," + $('input[id="format_pref5"]:checked').val();            
+            //document.getElementById('format_pref').value = format_pref;
+            //console.log(audience);
+            //console.log(format_pref);
             //event.preventDefault();
-            $.getJSON("{{ url_for('verify_contact') }}", {
-                data: $('input[name="contact"]:checked').val(),
-                },
-                function(result){
-                    console.log(result);
-                }
-            )
+            //$.getJSON("{{ url_for('verify_contact') }}", {
+            //    data: $('input[name="contact"]:checked').val(),
+            //    },
+            //    function(result){
+            //        console.log(result);
+            //    }
+            //)
         });
     });    
     
@@ -65,34 +73,34 @@
             <input type="textarea" name="comment">
 
             <br><label for="audience">Are you interested in books for adults, teens, or children?</label></br>
-            <input type="textarea" name="audience" value="adults">Adults</br>
-<!--            <input type="checkbox" name="audience" value="teens">Teens</br>
-            <input type="checkbox" name="audience" value="children">Children</br>-->
+            <input type="checkbox" name="audience" value="adults">Adults</br>
+            <input type="checkbox" name="audience" value="teens">Teens</br>
+            <input type="checkbox" name="audience" value="children">Children</br>
             Check all that apply.
 
             <br><label for="format_pref">Do you have a preferred format?</label></br>
-            <input type="textarea" name="format_pref" value="book">Book</br>
-<!--            <input type="checkbox" name="format_pref" value="lg_print">Large print</br>
+            <input type="checkbox" name="format_pref" value="book">Book</br>
+            <input type="checkbox" name="format_pref" value="lg_print">Large print</br>
             <input type="checkbox" name="format_pref" value="cd">Audiobook on CD</br>
             <input type="checkbox" name="format_pref" value="ebook">E-book</br>
-            <input type="checkbox" name="format_pref" value="digital_audio">Digital audiobook</br>-->
+            <input type="checkbox" name="format_pref" value="digital_audio">Digital audiobook</br>
             Check all that apply.
         </div>
         
         <div class="hidden" id="phone_input">
-            <label for="phone">Please enter your phone number (incl area code)</label></br>
+            <label for="phone">Please enter your phone number (incl area code) <span class="form-required" title="This field is required.">*</span></label></br>
             <input type="text" placeholder="555-555-5555" name="phone">
         </div>
 
         <div class="hidden" id="chat_input">
-            <label for="chat_service">Select the online chat service <span class="form-required" title="This field is required.">*</span></label><br>
-            <select id="chat_service" name="chat_service">
+            <label for="chat">Select the online chat service <span class="form-required" title="This field is required.">*</span></label><br>
+            <select id="chat" name="chat">
                <option value="" selected="selected">- Select -</option>
                <option value="google">Google+</option>
                <option value="skype">Skype</option>
             </select>
-            <label for="chat">What's your chat handle?</label></br>
-            <input type="text" name="chat">
+            <label for="handle">What's your chat handle? <span class="form-required" title="This field is required.">*</span></label></br>
+            <input type="text" name="handle">
         </div>
 
         <div class="hidden" id="times_input">

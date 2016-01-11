@@ -47,9 +47,9 @@ def create_db(dbname):
             # Times is used for all but email
             c.execute("""CREATE TABLE patroncontact (PCID INTEGER PRIMARY KEY AUTOINCREMENT, reqdate TEXT, username TEXT,
                         name TEXT, email TEXT, contact TEXT, phone TEXT, times TEXT, likes TEXT, dislikes TEXT, comment TEXT,
-                        audience TEXT, format_pref TEXT, FOREIGN KEY(username) REFERENCES staff(username))""")
-            c.execute("""INSERT INTO patroncontact (PCID, reqdate, username, name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref)
-                  VALUES (null,'2016-01-07','fred','Joe Johanson', 'jjohanson@bigpimpn.net','phone','5555555555','M-Th 12-2 pm',null,null,null,null,null)""")
+                        audience TEXT, format_pref TEXT, chat TEXT, handle TEXT, FOREIGN KEY(username) REFERENCES staff(username))""")
+            c.execute("""INSERT INTO patroncontact (PCID, reqdate, username, name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref, chat, handle)
+                  VALUES (null,'2016-01-07','fred','Joe Johanson', 'jjohanson@bigpimpn.net','phone','5555555555','M-Th 12-2 pm',null,null,null,null,null,null,null)""")
 
         except sqlite3.OperationalError as e:
             print "Failure: " + str(e)
