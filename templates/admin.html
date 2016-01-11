@@ -1,12 +1,13 @@
 {% extends "template.html" %}
 {%  block nav_right %}
-    <a href="/" style="text-decoration: none">Back to Main</a>
+    {{ session.logged_in_name }}
+    <a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}" style="text-decoration: none">Edit Profile</a>
 {% endblock %}
 
 {% block content %}
     <h2>Welcome to the Staff Page for the Library Site</h2>
     <p>Hello, {{ session.logged_in_name }} <a href={{ url_for('logout') }}>Logout</a></p>
-    
+    <a href="{{ url_for('main') }}">Back to Main</a>
     {% if session.logged_in_name == 'admin' %}
     <div class="row">
         <div class="col-sm-6">

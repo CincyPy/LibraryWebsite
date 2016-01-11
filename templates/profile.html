@@ -1,4 +1,13 @@
 {% extends "template.html" %}
+{%  block nav_right %}
+    {% if session.logged_in_name == 'admin' %}
+        {{ session.logged_in_name }}
+        <a href="{{ url_for('admin') }}" style="text-decoration: none">Back to Admin</a>
+    {% else %}
+        {{ session.logged_in_name }}
+        <a href="{{ url_for('librarian') }}" style="text-decoration: none">Back to Librarian</a>
+    {% endif %}
+{% endblock %}
 
 {% block content %}
     <h2>Staff Profile</h2>
@@ -7,5 +16,5 @@
         <textarea name="bio" id="bio">{{ bio }}</textarea><br/>
         <input value="Update" type="submit" />
     </form>
-    <a href="{{ url_for('admin') }}"/>Back to admin</a>
+    <a href="{{ url_for('main') }}"/>Back to Main</a>
 {% endblock %}
