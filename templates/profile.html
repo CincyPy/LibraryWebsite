@@ -7,5 +7,5 @@
         <textarea name="bio" id="bio">{{ bio }}</textarea><br/>
         <input value="Update" type="submit" />
     </form>
-    <a href="/admin"/>Back to admin</a>
+    <a href="{{ url_for('admin') }}"/>Back to admin</a>
 {% endblock %}

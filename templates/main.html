@@ -2,9 +2,9 @@
 {%  block nav_right %}
     {% if session.logged_in == True %}
         {{ session.logged_in_name }}
-        <a href="/logout" style="text-decoration: none">Logout</a>
+        <a href="{{ url_for('logout') }}" style="text-decoration: none">Logout</a>
     {% else %}
-        <a href="/login" style="text-decoration: none">Login</a>
+        <a href="{{ url_for('login') }}" style="text-decoration: none">Login</a>
     {% endif %}
 {% endblock %}
 
@@ -20,7 +20,7 @@
       <div class="row">
       {% for staff in staff %}
         <div class="col-md-4 col-sm-6">
-          <a href="/profile/{{ staff.username }}">
+          <a href="{{ url_for('profile', uname=staff.username) }}">
           {% include "user_profile.html" %}
           </a>
         </div>
