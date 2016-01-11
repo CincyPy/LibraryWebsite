@@ -82,8 +82,13 @@ def admin():
     g.db = connect_db()
     cur = g.db.execute('SELECT username, f_name, l_name, phone FROM staff')
     staff = [dict(username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
+
+    cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, sticky FROM readinglist')
+    readinglist = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
+                        comment=row[4], url=row[5], category=row[6], sticky=row[7]) for row in cur.fetchall()]
+
     g.db.close()
-    return render_template('admin.html', staff=staff)
+    return render_template('admin.html', staff=staff, readinglist=readinglist)
 
 
 @app.route('/librarian')
@@ -91,6 +96,7 @@ def admin():
 def librarian():
     g.db = connect_db()
     cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, sticky FROM readinglist WHERE username=?', [session['logged_in_name']])
+
     readinglist = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
                         comment=row[4], url=row[5], category=row[6], sticky=row[7]) for row in cur.fetchall()]
     g.db.close()
@@ -161,7 +167,10 @@ def remrecread(rlid):
     g.db.commit()
     g.db.close()
     flash('Delete recommended reading.')
-    return redirect(url_for('librarian'))
+    if session["logged_in_name"] == "admin":
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
 
 
 @app.route('/profile/<uname>', methods=['GET'])
