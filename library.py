@@ -153,14 +153,14 @@ def addrecread():
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
 
-@app.route('/remrecread',methods=['POST'])
+@app.route('/remrecread/<rlid>',methods=['POST'])
 @login_required
-def remrecread():
+def remrecread(rlid):
     g.db = connect_db()
-    g.db.execute("DELETE FROM readinglist WHERE RLID = 5")
+    g.db.execute("DELETE FROM readinglist WHERE RLID = ?", [rlid])
     g.db.commit()
     g.db.close()
-    flash('Delete recommended reading 5.')
+    flash('Delete recommended reading.')
     return redirect(url_for('librarian'))
 
 

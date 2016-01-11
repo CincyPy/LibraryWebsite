@@ -14,7 +14,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for RL in readinglist|sort(attribute='recdate', reverse=True) %}
+        {% for RL in readinglist|sort(attribute='recdate', reverse=True)|sort(attribute='sticky', reverse=True) %}
         <tr>
             <td>{{ RL.recdate }}</td>
             <td>{{ RL.book }}</td>
@@ -24,7 +24,7 @@
             <td>{{ RL.category }}</td>
             <td>{{ RL.sticky }}</td>
             <td>
-                <form action="{{ url_for('remrecread')}}" method="POST" class="recread">
+                <form action="{{ url_for('remrecread', rlid=RL.RLID)}}" method="POST" class="recread">
                     <input class='btn btn-danger' type='submit' value='X'>
                 </form>
             </td>
