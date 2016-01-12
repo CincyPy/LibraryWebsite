@@ -213,14 +213,16 @@ def verify_contact():
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
+    #import pdb; pdb.set_trace();
     g.db = connect_db()
     cur = g.db.execute("SELECT email, phone, chat, irl FROM profile WHERE username=?", [uname])
-    prefs = [dict(email=row[0], phone=row[1], chat=row[2], irl=row[3]) for row in cur.fetchall()]
+    prefs = [dict(email=row[0], phone=row[1], chat=row[2], irl=row[3]) for row in cur.fetchall()][0]
     
     if request.method == "GET":  # regular get, present the form to user to edit.
-        return render_template('contact.html', pref=prefs)
+        return render_template('contact.html', pref=prefs, staff=uname)
 
     elif request.method == "POST":  # form was submitted, update database
+        #import pdb; pdb.set_trace();
         try:
             contact = request.form['contact']
         except:

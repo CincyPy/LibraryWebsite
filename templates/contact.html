@@ -56,12 +56,21 @@
     <h2>Contact {{ staff }}</h2>
     <form method="POST" action="" >
         <label for="contact">How do you want to have this conversation?</label></br>
-        <input type="radio" name="contact" value="email" onclick="contactChange()">Email</br>
+        {% if pref.email %}
+            <input type="radio" name="contact" value="email" onclick="contactChange()">Email</br>
+        {% endif %}
+        {% if pref.phone %}
         <input type="radio" name="contact" value="phone" onclick="contactChange()">Phone</br>
+        {% endif %}
+        {% if pref.chat %}
         <input type="radio" name="contact" value="chat" onclick="contactChange()">Online chat</br>
+        {% endif %}
+        {% if pref.irl %}
         <input type="radio" name="contact" value="irl" onclick="contactChange()">In person</br>
+        {% endif %}
         Pick one.</br>
         
+    {% if pref.email %}    
         <div class="hidden" id="email_input">
             <label for="likes">Tell us about a few books or authors you've enjoyed. What made these books great?</label></br>
             <input type="textarea" name="likes">
@@ -86,12 +95,16 @@
             <input type="checkbox" name="format_pref" value="digital_audio">Digital audiobook</br>
             Check all that apply.
         </div>
+    {% endif %}
         
+    {% if pref.phone %}
         <div class="hidden" id="phone_input">
             <label for="phone">Please enter your phone number (incl area code) <span class="form-required" title="This field is required.">*</span></label></br>
             <input type="text" placeholder="555-555-5555" name="phone">
         </div>
+    {% endif %}
 
+    {% if pref.chat %}
         <div class="hidden" id="chat_input">
             <label for="chat">Select the online chat service <span class="form-required" title="This field is required.">*</span></label><br>
             <select id="chat" name="chat">
@@ -102,11 +115,14 @@
             <label for="handle">What's your chat handle? <span class="form-required" title="This field is required.">*</span></label></br>
             <input type="text" name="handle">
         </div>
+    {% endif %}
 
+    {% if not pref.email %}
         <div class="hidden" id="times_input">
             <label for="times">What time works for you?</label></br>
             <input type="textarea" placeholder="Suggest a couple days and times. We will email or phone to confirm." name="times">
         </div>
+    {% endif %}
 
         <legend>
             Your Contact Information        
