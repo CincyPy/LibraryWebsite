@@ -40,6 +40,7 @@ def create_db(dbname):
                   VALUES (null,'2015-12-21','elmo','The Invisible Man', 'H. G. Wells','my fav','http://aol.com')""")
             c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url)
                   VALUES (null,'2015-12-21','elmo','Moby Dick', 'Herman Melville','a whale of a tale','http://facebook.com')""")
+
         except sqlite3.OperationalError as e:
             print "Failure: " + str(e)
 
