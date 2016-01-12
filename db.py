@@ -31,16 +31,15 @@ def create_db(dbname):
 
             # READINGLIST TABLE
             c.execute("""CREATE TABLE readinglist (RLID INTEGER PRIMARY KEY AUTOINCREMENT, recdate TEXT, username TEXT,
-                        book TEXT, author TEXT, comment TEXT, url TEXT, sticky INTEGER DEFAULT 0, FOREIGN KEY(username) REFERENCES staff(username))""")
-            c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url)
-                  VALUES (null,'2015-10-01','fred','ABCs', 'Dr. Suess','best seller','http://www.seussville.com/books/book_detail.php?isbn=9780394800301')""")
-            c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url)
-                  VALUES (null,'2015-10-02','fred','Night Before Christmas', 'Santa','fine holiday fun','https://www.overdrive.com/media/1577310/the-night-before-christmas')""")
-            c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url)
-                  VALUES (null,'2015-12-21','elmo','The Invisible Man', 'H. G. Wells','my fav','http://aol.com')""")
-            c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url)
-                  VALUES (null,'2015-12-21','elmo','Moby Dick', 'Herman Melville','a whale of a tale','http://facebook.com')""")
-
+                        book TEXT, author TEXT, comment TEXT, url TEXT, category TEXT, sticky INTEGER DEFAULT 0, FOREIGN KEY(username) REFERENCES staff(username))""")
+            c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, category)
+                  VALUES (null,'2015-10-01','fred','ABCs', 'Dr. Suess','best seller','http://www.seussville.com/books/book_detail.php?isbn=9780394800301','Mystery')""")
+            c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, category)
+                  VALUES (null,'2015-10-02','fred','Night Before Christmas', 'Santa','fine holiday fun','https://www.overdrive.com/media/1577310/the-night-before-christmas','Sci-fi')""")
+            c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, category)
+                  VALUES (null,'2015-12-21','elmo','The Invisible Man', 'H. G. Wells','my fav','http://aol.com','History')""")
+            c.execute("""INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, category)
+                  VALUES (null,'2015-12-21','elmo','Moby Dick', 'Herman Melville','a whale of a tale','http://facebook.com','Music')""")
         except sqlite3.OperationalError as e:
             print "Failure: " + str(e)
 
