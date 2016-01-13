@@ -79,14 +79,7 @@ def admin():
 @login_required
 def librarian():
     logged_in_user = Staff.query.get(session['logged_in_name'])
-    return render_template('librarian.html', profile=logged_in_user)
-    #g.db = connect_db()
-    #cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, sticky FROM readinglist WHERE username=?', [session['logged_in_name']])
-
-    #readinglist = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
-    #                    comment=row[4], url=row[5], category=row[6], sticky=row[7]) for row in cur.fetchall()]
-    #g.db.close()
-    #return render_template('librarian.html', readinglist=readinglist)
+    return render_template('librarian.html', readinglist=logged_in_user.readinglist)
 
 
 @app.route('/adduser', methods=['POST'])
@@ -143,13 +136,6 @@ def addrecread():
                                                   sticky=sticky,
                                                   category=category))
     db_session.commit()
-    #g.db = connect_db()
-    #g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, category, sticky) '
-    #             'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    #             [None, time.strftime("%Y-%m-%d"), session['logged_in_name'],
-    #              book, author, comment, url, category, sticky])
-    #g.db.commit()
-    #g.db.close()
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
 
@@ -171,25 +157,11 @@ def remrecread(rlid):
 def profile(uname):
     staff = Staff.query.get(uname)
     if staff:
-        return render_template('viewprofile.html', staff=staff, readinglist=staff.readinglist)
+        return render_template('viewprofile.html', profile=staff,
+                               readinglist=staff.readinglist)
     else:
         flash("Profile not found")
         return redirect(url_for('main'))
-    #g.db = connect_db()
-
-    ## get profile data
-    #cur = g.db.execute("SELECT p.bio, s.f_name, s.l_name, s.phone "
-    #                   "FROM profile p JOIN staff s ON p.username=s.username "
-    #                   "WHERE p.username=?;", [uname])
-    #rows = cur.fetchall()
-    #c = dict(zip(["bio", "f_name", "l_name", "phone"], rows[0]))
-
-    ## get reading list data
-    #cur = g.db.execute("SELECT RLID, recdate, book, author, comment, url, sticky "
-    #                   "FROM readinglist WHERE username=?", [uname])
-    #d = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
-    #          comment=row[4], url=row[5], sticky=row[6]) for row in cur.fetchall()]
-    #return render_template('viewprofile.html', profile=c, readinglist=d)
 
 
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
