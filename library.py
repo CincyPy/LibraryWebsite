@@ -6,7 +6,7 @@ import time
 from random import shuffle
 from functools import wraps
 from flask import Flask, render_template, request, session, \
-    flash, redirect, url_for, g
+    flash, redirect, url_for, g, jsonify
 
 from database import db_session
 from models import Profile, ReadingList, Staff
@@ -80,6 +80,13 @@ def admin():
 def librarian():
     logged_in_user = Staff.query.get(session['logged_in_name'])
     return render_template('librarian.html', profile=logged_in_user)
+    #g.db = connect_db()
+    #cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, sticky FROM readinglist WHERE username=?', [session['logged_in_name']])
+
+    #readinglist = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
+    #                    comment=row[4], url=row[5], category=row[6], sticky=row[7]) for row in cur.fetchall()]
+    #g.db.close()
+    #return render_template('librarian.html', readinglist=readinglist)
 
 
 @app.route('/adduser', methods=['POST'])
@@ -121,6 +128,7 @@ def addrecread():
     author = request.form['author']
     comment = request.form['comment']
     url = request.form['URL']
+    category = request.form['category']
     sticky = request.form['sticky']
     if not book:
         flash('Book name is required. Please try again.')
@@ -132,13 +140,34 @@ def addrecread():
                                                   author=author,
                                                   comment=comment,
                                                   url=url,
-                                                  sticky=sticky))
+                                                  sticky=sticky,
+                                                  category=category))
     db_session.commit()
+    #g.db = connect_db()
+    #g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, category, sticky) '
+    #             'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    #             [None, time.strftime("%Y-%m-%d"), session['logged_in_name'],
+    #              book, author, comment, url, category, sticky])
+    #g.db.commit()
+    #g.db.close()
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
 
+@app.route('/remrecread/<rlid>',methods=['POST'])
+@login_required
+def remrecread(rlid):
+    g.db = connect_db()
+    g.db.execute("DELETE FROM readinglist WHERE RLID = ?", [rlid])
+    g.db.commit()
+    g.db.close()
+    flash('Delete recommended reading.')
+    if session["logged_in_name"] == "admin":
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
 
-@app.route("/profile/<uname>", methods=['GET'])
+
+@app.route('/profile/<uname>', methods=['GET'])
 def profile(uname):
     staff = Staff.query.get(uname)
     if staff:
@@ -146,6 +175,21 @@ def profile(uname):
     else:
         flash("Profile not found")
         return redirect(url_for('main'))
+    #g.db = connect_db()
+
+    ## get profile data
+    #cur = g.db.execute("SELECT p.bio, s.f_name, s.l_name, s.phone "
+    #                   "FROM profile p JOIN staff s ON p.username=s.username "
+    #                   "WHERE p.username=?;", [uname])
+    #rows = cur.fetchall()
+    #c = dict(zip(["bio", "f_name", "l_name", "phone"], rows[0]))
+
+    ## get reading list data
+    #cur = g.db.execute("SELECT RLID, recdate, book, author, comment, url, sticky "
+    #                   "FROM readinglist WHERE username=?", [uname])
+    #d = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
+    #          comment=row[4], url=row[5], sticky=row[6]) for row in cur.fetchall()]
+    #return render_template('viewprofile.html', profile=c, readinglist=d)
 
 
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
@@ -169,6 +213,14 @@ def edit_profile(uname):
         flash("Profile updated!")
         return render_template('profile.html', bio=staff.profile.bio)
 
+
+@app.route("/contact/<uname>", methods=['GET', 'POST'])
+def contact(uname):
+    if request.method == "GET":  # regular get, present the form to user to edit.
+        return render_template('contact.html', staff=uname)
+
+    elif request.method == "POST":  # form was submitted, update database
+        return redirect(url_for('profile', uname=uname))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
