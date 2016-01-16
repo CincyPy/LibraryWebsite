@@ -1,3 +1,5 @@
+import ast
+import re
 import sqlite3
 import time
 from random import shuffle
@@ -228,10 +230,63 @@ def edit_profile(uname):
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
+    inputs = request.args.get('inputs')
+    g.db = connect_db()
+    cur = g.db.execute("SELECT email, phone, chat, irl FROM profile WHERE username=?", [uname])
+    prefs = [dict(email=row[0], phone=row[1], chat=row[2], irl=row[3]) for row in cur.fetchall()][0]
+    
     if request.method == "GET":  # regular get, present the form to user to edit.
-        return render_template('contact.html', staff=uname)
+        if inputs != None: # Prepopulate with entered data
+            inputs = ast.literal_eval(inputs) # Captures any form inputs as a dictionary
+        return render_template('contact.html', pref=prefs, staff=uname, inputs=inputs)
 
     elif request.method == "POST":  # form was submitted, update database
+        #if any([value == '' for key, value in request.form.iteritems() if key == 'name' or key == 'email']):
+        #    flash("Please enter your name and email address in the contact area.")
+        #    return  redirect(url_for('contact', uname=uname))
+        #import pdb; pdb.set_trace();
+        data = dict([(key, value) for key, value in request.form.iteritems()]) # Creates a dictionary out of the form inputs
+        name = request.form['name']
+        email = request.form['email']
+        phone, likes, dislikes, comment, audience, format_pref, chat, handle, times = None, None, None, None, None, None, None, None, None
+        if prefs['phone']:
+            phone = request.form['phone']
+            phone = re.sub(r"\D","",phone)
+        if prefs['email']:
+            likes = request.form['likes']
+            dislikes = request.form['dislikes']
+            comment = request.form['comment']
+            audience = ','.join(request.form.getlist('audience'))
+            format_pref = ','.join(request.form.getlist('format_pref'))
+        if prefs['chat']:
+            chat = request.form['chat']
+            handle = request.form['handle']
+        if prefs['phone'] or prefs['chat'] or prefs['irl']:
+            times = request.form['times']
+        try:
+            contact = request.form['contact']
+        except:
+            flash("Please select a contact method.")
+            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        if name == '' or email == '':
+            flash("Please enter your name and email address in the contact area.")
+            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        elif contact == 'phone' and len(phone) < 10:
+            if len(phone) == 0:
+                flash("Please enter your phone number.")
+            elif len(phone) < 10:
+                flash("Your phone number must include the area code (10 digits total).")
+            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        elif contact == 'chat' and (chat == '' or handle == ''):
+            flash("Please input your preferred chat service and handle.")
+            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        g.db = connect_db()
+        g.db.execute("""INSERT INTO patroncontact (PCID, reqdate, username, name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref, chat, handle)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                    [None, time.strftime("%Y-%m-%d"), uname, name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref, chat, handle])
+        g.db.commit()
+        flash("You're contact request was received!")
+        # Send email to staff member regarding request
         return redirect(url_for('profile', uname=uname))
 
 if __name__ == '__main__':
