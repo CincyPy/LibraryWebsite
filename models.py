@@ -16,6 +16,8 @@ class Staff(Base):
     l_name = Column(String)
     phone = Column(Integer)
 
+    patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
+
 
 class Profile(Base):
     __tablename__ = 'profile'
@@ -43,6 +45,26 @@ class ReadingList(Base):
     category = Column(Text)
 
 
+class PatronContact(Base):
+    __tablename__ = 'patroncontact'
+
+    PCID = Column(Integer, primary_key=True)
+    reqdate = Column(Text)
+    username = Column(String, ForeignKey('staff.username'))
+    name = Column(Text)
+    email = Column(Text)
+    contact = Column(Text)
+    phone = Column(Text)
+    times = Column(Text)
+    likes = Column(Text)
+    dislikes = Column(Text)
+    comment = Column(Text)
+    audience = Column(Text)
+    format_pref = Column(Text)
+    chat = Column(Text)
+    handle = Column(Text)
+
+
 def init_models():
     from database import db_session
 
@@ -51,7 +73,15 @@ def init_models():
     db_session.add(admin)
 
     fred = Staff(username='fred', password='fred', f_name='Fred',
-                 l_name='Fredderson', phone=2222222222)
+                 l_name='Fredderson', phone=2222222222,
+                 patron_contacts=[
+                     PatronContact(reqdate='2016-01-07',
+                            name='Joe Johnson',
+                            email='jjohanson@bigpimpn.net',
+                            contact='phone',
+                            phone='5555555555',
+                            times='M-Th 12-2 pm'),
+                 ])
     rl1 = ReadingList(recdate=datetime.date(2015,10,1),
                       book='ABCs',
                       author='Dr. Suess',
