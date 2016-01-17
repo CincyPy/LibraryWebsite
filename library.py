@@ -144,11 +144,10 @@ def addrecread():
 @app.route('/remrecread/<rlid>',methods=['POST'])
 @login_required
 def remrecread(rlid):
-    g.db = connect_db()
-    g.db.execute("DELETE FROM readinglist WHERE RLID = ?", [rlid])
-    g.db.commit()
-    g.db.close()
-    flash('Delete recommended reading.')
+    rl = ReadingList.query.get(rlid)
+    if rl:
+        db_session.delete(rl)
+        flash('Delete recommended reading.')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
     else:
