@@ -10,7 +10,7 @@
             <th>URL</th>
             <th>Category</th>
             <th>Sticky</th>
-            <th></th>
+            <th>Remove</th>
         </tr>
     </thead>
     <tbody>
@@ -22,10 +22,14 @@
             <td>{{ RL.comment }}</td>
             <td>{{ RL.url }}</td>
             <td>{{ RL.category }}</td>
-            <td>{{ RL.sticky }}</td>
+            <td>
+                <form action="{{ url_for('changeSticky', rlid=RL.RLID)}}" method="POST">
+                    <input class='btn btn-default' type='submit' value='{{ RL.sticky }}'>
+                </form>
+            </td>
             <td>
                 <form action="{{ url_for('remrecread', rlid=RL.RLID)}}" method="POST" class="recread">
-                    <input class='btn btn-danger' type='submit' value='X'>
+                    <input class='btn btn-danger' type='submit' value='X'   >
                 </form>
             </td>
         </tr>

@@ -178,6 +178,30 @@ def remrecread(rlid):
         return redirect(url_for('librarian'))
 
 
+@app.route('/changeSticky/<rlid>', methods=['POST'])
+@login_required
+def changeSticky(rlid):
+    g.db = connect_db()
+
+    # get sticky value
+    cur = g.db.execute('SELECT sticky FROM readinglist WHERE RLID=?', [rlid])
+    sticky = [dict(sticky=row[0]) for row in cur.fetchall()]
+
+    # toggle sticky
+    if not sticky:
+        g.db.execute("UPDATE readinglist SET sticky = 1 WHERE RLID = ?", [rlid])
+    else:
+        g.db.execute("UPDATE readinglist SET sticky = 0 WHERE RLID = ?", [rlid])
+
+    g.db.commit()
+    g.db.close()
+    flash('Sticky changed.')
+    if session["logged_in_name"] == "admin":
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
+
+
 @app.route('/profile/<uname>', methods=['GET'])
 def profile(uname):
     g.db = connect_db()
