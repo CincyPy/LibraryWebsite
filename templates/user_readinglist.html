@@ -9,6 +9,7 @@
             <th>Comment</th>
             <th>URL</th>
             <th>Category</th>
+            <th>Librarian</th>
             <th>Sticky</th>
             <th>Remove</th>
         </tr>
@@ -22,6 +23,7 @@
             <td>{{ RL.comment }}</td>
             <td>{{ RL.url }}</td>
             <td>{{ RL.category }}</td>
+            <td>{{ RL.username }}</td>
             <td>
                 <form action="{{ url_for('changeSticky', rlid=RL.RLID)}}" method="POST">
                     <input class='btn btn-default' type='submit' value='{{ RL.sticky }}'>

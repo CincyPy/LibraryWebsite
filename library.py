@@ -88,9 +88,9 @@ def admin():
     cur = g.db.execute('SELECT username, f_name, l_name, phone FROM staff')
     staff = [dict(username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
 
-    cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, sticky FROM readinglist')
+    cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, username, sticky FROM readinglist')
     readinglist = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
-                        comment=row[4], url=row[5], category=row[6], sticky=row[7]) for row in cur.fetchall()]
+                        comment=row[4], url=row[5], category=row[6], username=row[7], sticky=row[8]) for row in cur.fetchall()]
 
     g.db.close()
     return render_template('admin.html', staff=staff, readinglist=readinglist)
@@ -100,10 +100,10 @@ def admin():
 @login_required
 def librarian():
     g.db = connect_db()
-    cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, sticky FROM readinglist WHERE username=?', [session['logged_in_name']])
+    cur = g.db.execute('SELECT RLID, recdate, book, author, comment, url, category, username, sticky FROM readinglist WHERE username=?', [session['logged_in_name']])
 
     readinglist = [dict(RLID=row[0], recdate=row[1], book=row[2], author=row[3],
-                        comment=row[4], url=row[5], category=row[6], sticky=row[7]) for row in cur.fetchall()]
+                        comment=row[4], url=row[5], category=row[6], username=row[7], sticky=row[8]) for row in cur.fetchall()]
     g.db.close()
     return render_template('librarian.html', readinglist=readinglist)
 
