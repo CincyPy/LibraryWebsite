@@ -9,6 +9,7 @@ A group of CincyPy members is creating a website for [Kenton County Public Libra
 * Activate the virtualenv, on windows, `env\Scripts\activate.bat`, on UNIX, `source env/bin/activate`
 * Install dependencies. `pip install -r requirements.txt`
 * Create the database. `python db.py library.db`.  If it gives you an error, you may already have an existing db.
+* Run the tests. `python tests.py -vf`.
 * Run the server. `python library.py`
 
 # Authors

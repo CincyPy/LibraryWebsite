@@ -114,6 +114,7 @@ def librarian():
 @login_required
 def adduser():
     if session["logged_in_name"] != "admin":
+        flash("You are not authorized to perform this action.")
         return redirect(url_for('main'))
     username = request.form['username']
     password = request.form['password']
@@ -146,6 +147,7 @@ def adduser():
 @login_required
 def addrecread():
     if session["logged_in_name"] == "admin":
+        flash("Your are not authorized to perform this action.")
         return redirect(url_for('admin'))
     book = request.form['book']
     author = request.form['author']
