@@ -27,6 +27,14 @@ class Profile(Base):
     staff = relationship('Staff', backref=backref('profile', uselist=False))
     bio = Column(Text)
 
+    email = Column(Boolean, default=False)
+    phone = Column(Boolean, default=True)
+    chat = Column(Boolean, default=False)
+    irl = Column(Boolean, default=True)
+
+    def __getitem__(self, attr):
+        return getattr(self, attr)
+
 
 class ReadingList(Base):
     __tablename__ = 'readinglist'
@@ -63,6 +71,9 @@ class PatronContact(Base):
     format_pref = Column(Text)
     chat = Column(Text)
     handle = Column(Text)
+
+    def __getitem__(self, attr):
+        return getattr(self, attr)
 
 
 def init_models():
