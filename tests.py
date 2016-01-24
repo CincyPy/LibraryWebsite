@@ -2,7 +2,9 @@ import unittest
 import flask
 
 import library
+import database
 from database import create_engine, scoped_session, sessionmaker
+import models
 import flask
 import db
 
@@ -13,6 +15,9 @@ class LibrarySiteTests(unittest.TestCase):
         db_session = scoped_session(sessionmaker(autocommit=False,
                                                  autoflush=False,
                                                  bind=engine))
+        models.Base.query = db_session.query_property()
+        models.Base.metadata.create_all(bind=engine)
+        models.init_models(db_session)
         library.db_session = db_session
         #get test client
         self.app = library.app.test_client()
@@ -164,8 +169,9 @@ class LibrarySiteTests(unittest.TestCase):
             URL="t",
             category="t",
             sticky="t"),follow_redirects=True)
-        db = library.connect_db()
-        cur = db.execute("SELECT * from readinglist WHERE username='fred' AND book='t' AND author='t' AND comment='t' AND URL='t' AND category='t' AND sticky='t'")
+        #db = library.connect_db()
+        #XXX: not working with SQLAlchemy models
+        cur = library.db_session.execute("SELECT * from readinglist WHERE username='fred' AND book='t' AND author='t' AND comment='t' AND URL='t' AND category='t' AND sticky='t'")
         rows = cur.fetchall()
         self.assertEqual(len(rows),1)
         

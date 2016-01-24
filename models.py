@@ -76,8 +76,9 @@ class PatronContact(Base):
         return getattr(self, attr)
 
 
-def init_models():
-    from database import db_session
+def init_models(db_session=None):
+    if db_session is None:
+        from database import db_session
 
     admin = Staff(username='admin', password='admin', f_name='Admin',
                   l_name='User', phone=1111111111)
