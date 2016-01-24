@@ -11,7 +11,7 @@ from flask import Flask, render_template, request, session, \
     flash, redirect, url_for, g, jsonify
 
 from database import db_session
-from models import Profile, ReadingList, Staff
+from models import Profile, ReadingList, Staff, PatronContact
 
 # configuration
 SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
@@ -192,10 +192,7 @@ def edit_profile(uname):
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
     inputs = request.args.get('inputs')
-    g.db = connect_db()
-    cur = g.db.execute("SELECT email, phone, chat, irl FROM profile WHERE username=?", [uname])
-    prefs = [dict(email=row[0], phone=row[1], chat=row[2], irl=row[3]) for row in cur.fetchall()][0]
-    
+    prefs = Profile.query.get(uname)
     if request.method == "GET":  # regular get, present the form to user to edit.
         if inputs != None: # Prepopulate with entered data
             inputs = ast.literal_eval(inputs) # Captures any form inputs as a dictionary
@@ -241,11 +238,22 @@ def contact(uname):
         elif contact == 'chat' and (chat == '' or handle == ''):
             flash("Please input your preferred chat service and handle.")
             return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        g.db = connect_db()
-        g.db.execute("""INSERT INTO patroncontact (PCID, reqdate, username, name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref, chat, handle)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                    [None, time.strftime("%Y-%m-%d"), uname, name, email, contact, phone, times, likes, dislikes, comment, audience, format_pref, chat, handle])
-        g.db.commit()
+        patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"),
+                                      username=uname,
+                                      name=name,
+                                      email=email,
+                                      contact=contact,
+                                      phone=phone,
+                                      times=times,
+                                      likes=likes,
+                                      dislikes=dislikes,
+                                      comment=comment,
+                                      audience=audience,
+                                      format_pref=format_pref,
+                                      chat=chat,
+                                      handle=handle)
+        db_session.add(patroncontact)
+        db_session.commit()
         flash("You're contact request was received!")
         # Send email to staff member regarding request
         return redirect(url_for('profile', uname=uname))
