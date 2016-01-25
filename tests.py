@@ -97,6 +97,121 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("/profile/admin",response.data)
         self.logout()
 
+    def test_librarian(self):
+        self.login("fred","fred")
+        response = self.app.get("/librarian")
+        self.assertIn("ABCs",response.data)
+        self.assertIn("Night Before Christmas",response.data)
+        self.assertNotIn("The Invisible Man",response.data)
+        self.assertNotIn("Moby Dick",response.data)
+
+    def test_adduser(self):
+        #try with non admin
+        self.login("fred","fred")
+        response = self.app.post("/adduser", data={}, follow_redirects=True)
+        self.assertIn("You are not authorized to perform this action.",response.data)
+        #try with missing values
+        self.logout()
+        self.login("admin","admin")
+        response = self.app.post("/adduser",data=dict(
+            username="t",
+            password="t",
+            f_name="",
+            l_name="",
+            phone=""),follow_redirects=True)
+        self.assertIn("All fields are required. Please try again.",response.data)
+        response = self.app.post("/adduser",data=dict(
+            username="",
+            password="",
+            f_name="t",
+            l_name="t",
+            phone=""),follow_redirects=True)
+        self.assertIn("All fields are required. Please try again.",response.data)
+        #try with bogus phone number
+        response = self.app.post("/adduser",data=dict(
+            username="t",
+            password="t",
+            f_name="t",
+            l_name="t",
+            phone="1112222"),follow_redirects=True)
+        self.assertIn("Phone number must include area code.",response.data)
+        response = self.app.post("/adduser",data=dict(
+            username="t",
+            password="t",
+            f_name="t",
+            l_name="t",
+            phone="111-222-3333"),follow_redirects=True)
+        self.assertIn("Phone number must include area code.",response.data)
+        #all is well, make sure stored in db
+        response = self.app.post("/adduser",data=dict(
+            username="t",
+            password="t",
+            f_name="t",
+            l_name="t",
+            phone="1112223333"),follow_redirects=True)
+        db = library.connect_db()
+        cur = db.execute("SELECT * from staff WHERE username='t' AND  password ='t' AND f_name='t' AND l_name='t' AND phone='1112223333'")
+        rows = cur.fetchall()
+        self.assertEqual(len(rows),1)
+        
+    def test_addrecread(self):
+        #try with admin
+        self.login("admin","admin")
+        response = self.app.post("/addrecread", data={}, follow_redirects=True)
+        self.assertIn("Your are not authorized to perform this action.",response.data)
+        #try without book
+        self.logout()
+        self.login("fred","fred")
+        response = self.app.post("/addrecread",data=dict(
+            book="",
+            author="t",
+            comment="t",
+            URL="t",
+            category="t",
+            sticky="t"),follow_redirects=True)
+        self.assertIn("Book name is required.",response.data)
+        #all is well
+        response = self.app.post("/addrecread",data=dict(
+            book="t",
+            author="t",
+            comment="t",
+            URL="t",
+            category="t",
+            sticky="t"),follow_redirects=True)
+        db = library.connect_db()
+        cur = db.execute("SELECT * from readinglist WHERE username='fred' AND book='t' AND author='t' AND comment='t' AND URL='t' AND category='t' AND sticky='t'")
+        rows = cur.fetchall()
+        self.assertEqual(len(rows),1)
+        
+    def test_remrecread(self):
+        #unknown recread, should not matter
+        self.login("fred","fred")
+        response = self.app.post("/remrecread/100",data={},follow_redirects=True)
+        self.assertIn("Delete recommended reading.",response.data)
+        #insert a recread, make sure its removed
+        response = self.app.post("/addrecread",data=dict(
+            book="t",
+            author="t",
+            comment="t",
+            URL="t",
+            category="t",
+            sticky="t"),follow_redirects=True)
+        db = library.connect_db()
+        cur = db.execute("SELECT RLID from readinglist WHERE username='fred' AND book='t'")
+        rows = cur.fetchall()
+        rlid = rows[0][0]
+        response = self.app.post("/remrecread/"+str(rlid),data={},follow_redirects=True)
+        cur = db.execute("SELECT RLID from readinglist WHERE username='fred' AND book='t'")
+        rows = cur.fetchall()
+        self.assertEqual(len(rows),0)
+
+    def test_profile(self):
+        response = self.app.get("/profile/fred")
+        self.assertIn("Fredderson",response.data)
+    
+        
+        
+
 if __name__ == '__main__':
     unittest.main()
        
