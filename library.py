@@ -7,6 +7,8 @@ from functools import wraps
 
 from flask import Flask, render_template, request, session, \
     flash, redirect, url_for, g, jsonify
+from flask_mail import Mail, Message
+
 
 # configuration
 DATABASE = 'library.db'
@@ -14,7 +16,14 @@ SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+mail = Mail(app)
 
+MAIL_SERVER = "smtp.gmail.com"
+MAIL_USERNAME = "KentonCountyLibrary@gmail.com"
+MAIL_PASSWORD = "CincyPyCoders"
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_DEFAULT_SENDER = "KentonCountyLibrary@gmail.com"
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -254,17 +263,31 @@ def contact(uname):
         if prefs['phone']:
             phone = request.form['phone']
             phone = re.sub(r"\D","",phone)
+            message = "\nPhone: " + phone
         if prefs['email']:
             likes = request.form['likes']
             dislikes = request.form['dislikes']
             comment = request.form['comment']
             audience = ','.join(request.form.getlist('audience'))
             format_pref = ','.join(request.form.getlist('format_pref'))
+            message = "\nTell us about a few books or authors you've enjoyed. What made these books great?\n"
+            message += likes
+            message = "\nDescribe some authors or titles that you DID NOT like and why\n"
+            message += dislikes
+            message = "\nIs there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?\n"
+            message += comment            
+            message = "\nAre you interested in books for adults, teens, or children?\n"
+            message += audience            
+            message = "\nDo you have a preferred format?\n"
+            message += format_pref
         if prefs['chat']:
             chat = request.form['chat']
             handle = request.form['handle']
+            message = "\nChat service: " + chat
+            message = "\nChat handle: " + handle
         if prefs['phone'] or prefs['chat'] or prefs['irl']:
             times = request.form['times']
+            message += "\nTimes: " + times
         try:
             contact = request.form['contact']
         except:
@@ -289,6 +312,14 @@ def contact(uname):
         g.db.commit()
         flash("You're contact request was received!")
         # Send email to staff member regarding request
+        lib = {}
+        g.db = connect_db()
+        cur = g.db.execute("SELECT email FROM staff WHERE username=?", [uname])
+        lib['email'] = [ row[0] for row in cur.fetchall()][0]
+        msg = Message("Request for librarian contact", sender=MAIL_DEFAULT_SENDER,recipients=[email, lib['email']])
+        msg.body = name + " has requested to contact " + uname + "\n\nMethod: " + contact
+        msg.body += message
+        mail.send(msg)
         return redirect(url_for('profile', uname=uname))
 
 if __name__ == '__main__':
