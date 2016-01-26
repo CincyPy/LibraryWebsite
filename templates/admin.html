@@ -46,11 +46,7 @@
     {% for s in staff %}
         Name: {{ s.f_name }} {{ s.l_name }}</br>
         Phone #: {{ s.phone }}</br>
-        {% if s.username == session.logged_in_name %}
-            <a href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>
-        {% else %}
-            <a href="{{ url_for('profile', uname=s.username) }}">View Profile</a>
-        {% endif %}
+        <a href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>
         </br>
     {% endfor %}
     </br>

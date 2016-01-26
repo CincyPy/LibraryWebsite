@@ -168,6 +168,7 @@ def addrecread():
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
 
+
 @app.route('/remrecread/<rlid>',methods=['POST'])
 @login_required
 def remrecread(rlid):
@@ -218,7 +219,7 @@ def profile(uname):
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
 @login_required
 def edit_profile(uname):
-    if session["logged_in_name"] != uname:
+    if session["logged_in_name"] != uname and session["logged_in_name"] != 'admin':
         flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
     else:
@@ -232,7 +233,7 @@ def edit_profile(uname):
                 flash("No profile found for user.")
                 return redirect(url_for('main'))
 
-            return render_template('profile.html', bio=bio)
+            return render_template('profile.html', uname=uname, bio=bio)
 
         elif request.method == "POST":  # form was submitted, update database
             new_bio = request.form['bio']
