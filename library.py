@@ -16,14 +16,18 @@ SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+
+app.config.update(dict(
+    MAIL_SERVER = "smtp.gmail.com",
+    MAIL_USERNAME = "KentonCountyLibrary@gmail.com",
+    MAIL_PASSWORD = "CincyPyCoders",
+    MAIL_PORT = 587,
+    MAIL_USE_TLS = True,
+    MAIL_DEFAULT_SENDER = "KentonCountyLibrary@gmail.com",
+))
+
 mail = Mail(app)
 
-MAIL_SERVER = "smtp.gmail.com"
-MAIL_USERNAME = "KentonCountyLibrary@gmail.com"
-MAIL_PASSWORD = "CincyPyCoders"
-MAIL_PORT = 587
-MAIL_USE_TLS = True
-MAIL_DEFAULT_SENDER = "KentonCountyLibrary@gmail.com"
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -316,7 +320,7 @@ def contact(uname):
         g.db = connect_db()
         cur = g.db.execute("SELECT email FROM staff WHERE username=?", [uname])
         lib['email'] = [ row[0] for row in cur.fetchall()][0]
-        msg = Message("Request for librarian contact", sender=MAIL_DEFAULT_SENDER,recipients=[email, lib['email']])
+        msg = Message("Request for librarian contact", recipients=[email, lib['email']])
         msg.body = name + " has requested to contact " + uname + "\n\nMethod: " + contact
         msg.body += message
         mail.send(msg)
