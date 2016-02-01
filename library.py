@@ -134,7 +134,9 @@ def adduser():
     f_name = request.form['f_name']
     l_name = request.form['l_name']
     phone = request.form['phone']
-    if not f_name or not l_name or not phone or not username or not password:
+    phone = re.sub(r"\D","",phone) # Remove non-digit characters 
+    email = request.form['email']    
+    if not f_name or not l_name or not phone or not username or not password or not email:
         flash('All fields are required. Please try again.')
         return redirect(url_for('admin'))
     else:
@@ -147,8 +149,13 @@ def adduser():
             flash('Phone number must include area code. Please try again.')
             return redirect(url_for('admin'))
     g.db = connect_db()
-    g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone) VALUES (?, ?, ?, ?, ?)',
-                 [username, password, f_name, l_name, phone])
+    cur = g.db.execute("SELECT username FROM staff WHERE username=? OR email=?", [username, email])
+    rows = cur.fetchall()
+    if len(rows) > 0:
+        flash('Username or email address is already used.')
+        return redirect(url_for('admin'))
+    g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone, email) VALUES (?, ?, ?, ?, ?, ?)',
+                 [username, password, f_name, l_name, phone, email])
     g.db.execute('INSERT INTO profile(username,bio) VALUES (?, ?)', [username, ''])
     g.db.commit()
     g.db.close()
