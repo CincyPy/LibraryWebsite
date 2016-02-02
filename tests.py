@@ -118,14 +118,16 @@ class LibrarySiteTests(unittest.TestCase):
             password="t",
             f_name="",
             l_name="",
-            phone=""),follow_redirects=True)
+            phone="",
+            email=""),follow_redirects=True)
         self.assertIn("All fields are required. Please try again.",response.data)
         response = self.app.post("/adduser",data=dict(
             username="",
             password="",
             f_name="t",
             l_name="t",
-            phone=""),follow_redirects=True)
+            phone="",
+            email=""),follow_redirects=True)
         self.assertIn("All fields are required. Please try again.",response.data)
         #try with bogus phone number
         response = self.app.post("/adduser",data=dict(
@@ -133,14 +135,8 @@ class LibrarySiteTests(unittest.TestCase):
             password="t",
             f_name="t",
             l_name="t",
-            phone="1112222"),follow_redirects=True)
-        self.assertIn("Phone number must include area code.",response.data)
-        response = self.app.post("/adduser",data=dict(
-            username="t",
-            password="t",
-            f_name="t",
-            l_name="t",
-            phone="111-222-3333"),follow_redirects=True)
+            phone="1112222",
+            email="test@testing.com"),follow_redirects=True)
         self.assertIn("Phone number must include area code.",response.data)
         #all is well, make sure stored in db
         response = self.app.post("/adduser",data=dict(
@@ -148,11 +144,43 @@ class LibrarySiteTests(unittest.TestCase):
             password="t",
             f_name="t",
             l_name="t",
-            phone="1112223333"),follow_redirects=True)
+            phone="1112223333",
+            email="test@testing.com"),follow_redirects=True)
         db = library.connect_db()
-        cur = db.execute("SELECT * from staff WHERE username='t' AND  password ='t' AND f_name='t' AND l_name='t' AND phone='1112223333'")
+        cur = db.execute("SELECT * from staff WHERE username='t' AND  password ='t' AND f_name='t' AND l_name='t' AND phone='1112223333' AND email='test@testing.com'")
         rows = cur.fetchall()
         self.assertEqual(len(rows),1)
+        #try adding an existing username
+        response = self.app.post("/adduser",data=dict(
+            username="t",
+            password="t",
+            f_name="t",
+            l_name="t",
+            phone="1112223333",
+            email="test2@testing.com"),follow_redirects=True)
+        self.assertIn("Username or email address is already used.",response.data)
+        #try adding an existing email address
+        response = self.app.post("/adduser",data=dict(
+            username="u",
+            password="u",
+            f_name="u",
+            l_name="u",
+            phone="1112223333",
+            email="test@testing.com"),follow_redirects=True)
+        self.assertIn("Username or email address is already used.",response.data)
+        #second all is well check with non-digit chars in phone
+        response = self.app.post("/adduser",data=dict(
+            username="u",
+            password="u",
+            f_name="u",
+            l_name="u",
+            phone="111-222-3333",
+            email="test2@testing.com"),follow_redirects=True)
+        db = library.connect_db()
+        cur = db.execute("SELECT * from staff WHERE username='u' AND  password ='u' AND f_name='u' AND l_name='u' AND phone='1112223333' AND email='test2@testing.com'")
+        rows = cur.fetchall()
+        self.assertEqual(len(rows),1)
+
         
     def test_addrecread(self):
         #try with admin

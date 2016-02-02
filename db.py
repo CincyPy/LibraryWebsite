@@ -8,14 +8,14 @@ def create_db(dbname):
         c = connection.cursor()
         try:
             # STAFF TABLE
-            c.execute("""CREATE TABLE staff (username TEXT PRIMARY KEY, password TEXT, f_name TEXT, l_name TEXT, phone INT) """)
-            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone) VALUES ('admin', 'admin', 'Admin', 'User', 1111111111);")
-            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone) VALUES ('fred', 'fred', 'Fred', 'Fredderson', 2222222222);")
-            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone) VALUES ('ernie', 'ernie', 'Ernie', 'Ernieston', 3333333333);")
-            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone) VALUES ('bert', 'bert', 'Bert', 'Burterson', 4444444444);")
-            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone) VALUES ('bigbird', 'bigbird', 'Big', 'Bird', 5555555555);")
-            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone) VALUES ('oscar', 'oscar', 'Oscar', 'Thegrouch', 6666666666);")
-            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone) VALUES ('elmo', 'elmo', 'Elmo', 'Elmostein', 7777777777);")
+            c.execute("""CREATE TABLE staff (username TEXT PRIMARY KEY, password TEXT, f_name TEXT, l_name TEXT, phone INT, email TEXT) """)
+            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone,email) VALUES ('admin', 'admin', 'Admin', 'User', 1111111111, 'KentonCountyLibrary@gmail.com');")
+            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone,email) VALUES ('fred', 'fred', 'Fred', 'Fredderson', 2222222222, 'KentonCountyLibrary@gmail.com');")
+            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone,email) VALUES ('ernie', 'ernie', 'Ernie', 'Ernieston', 3333333333, 'KentonCountyLibrary@gmail.com');")
+            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone,email) VALUES ('bert', 'bert', 'Bert', 'Burterson', 4444444444, 'KentonCountyLibrary@gmail.com');")
+            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone,email) VALUES ('bigbird', 'bigbird', 'Big', 'Bird', 5555555555, 'KentonCountyLibrary@gmail.com');")
+            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone,email) VALUES ('oscar', 'oscar', 'Oscar', 'Thegrouch', 6666666666, 'KentonCountyLibrary@gmail.com');")
+            c.execute("INSERT INTO staff (username,password,f_name,l_name,phone,email) VALUES ('elmo', 'elmo', 'Elmo', 'Elmostein', 7777777777, 'KentonCountyLibrary@gmail.com');")
 
 
             # PROFILE TABLE
