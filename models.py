@@ -15,6 +15,7 @@ class Staff(Base):
     f_name = Column(String)
     l_name = Column(String)
     phone = Column(Integer)
+    email = Column(String)
 
     patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
 
@@ -120,30 +121,35 @@ def init_models(db_session=None):
                          f_name='Ernie',
                          l_name='Ernieston',
                          phone=3333333333,
+                         email='KentonCountyLibrary@gmail.com',
                          profile=Profile(bio=loremipsum)))
     db_session.add(Staff(username='bert',
                          password='bert',
                          f_name='Bert',
                          l_name='Burterson',
                          phone=4444444444,
+                         email='KentonCountyLibrary@gmail.com',
                          profile=Profile(bio=loremipsum)))
     db_session.add(Staff(username='bigbird',
                          password='bigbird',
                          f_name='Big',
                          l_name='Bird',
                          phone=5555555555,
+                         email='KentonCountyLibrary@gmail.com',
                          profile=Profile(bio=loremipsum)))
     db_session.add(Staff(username='oscar',
                          password='oscar',
                          f_name='Oscar',
                          l_name='Thegrouch',
                          phone=6666666666,
+                         email='KentonCountyLibrary@gmail.com',
                          profile=Profile(bio=loremipsum)))
     db_session.add(Staff(username='elmo',
                          password='elmo',
                          f_name='Elmo',
                          l_name='Elmostein',
                          phone=7777777777,
+                         email='KentonCountyLibrary@gmail.com',
                          profile=Profile(bio=loremipsum)))
 
     db_session.commit()
