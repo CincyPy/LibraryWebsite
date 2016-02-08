@@ -1,18 +1,15 @@
 import datetime
 import ast
 import re
-import sqlite3
-import tempfile
 import time
 
 from random import shuffle
 from functools import wraps
 from flask import Flask, render_template, request, session, \
-    flash, redirect, url_for, g, jsonify
+     flash, redirect, url_for, g, jsonify
 from flask_mail import Mail, Message
 
 from sqlalchemy import or_
-
 
 from database import db_session
 from models import Profile, ReadingList, Staff, PatronContact
@@ -106,8 +103,8 @@ def adduser():
     f_name = request.form['f_name']
     l_name = request.form['l_name']
     phone = request.form['phone']
-    phone = re.sub(r"\D","",phone) # Remove non-digit characters 
-    email = request.form['email']    
+    phone = re.sub(r"\D","",phone) # Remove non-digit characters
+    email = request.form['email']
     if not f_name or not l_name or not phone or not username or not password or not email:
         flash('All fields are required. Please try again.')
         return redirect(url_for('admin'))
@@ -240,9 +237,9 @@ def contact(uname):
             message = "\nDescribe some authors or titles that you DID NOT like and why\n"
             message += dislikes
             message = "\nIs there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?\n"
-            message += comment            
+            message += comment
             message = "\nAre you interested in books for adults, teens, or children?\n"
-            message += audience            
+            message += audience
             message = "\nDo you have a preferred format?\n"
             message += format_pref
         if prefs['chat']:
