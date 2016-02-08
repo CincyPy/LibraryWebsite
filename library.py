@@ -9,15 +9,26 @@ from random import shuffle
 from functools import wraps
 from flask import Flask, render_template, request, session, \
     flash, redirect, url_for, g, jsonify
+from flask_mail import Mail, Message
+
+from sqlalchemy import or_
+
 
 from database import db_session
 from models import Profile, ReadingList, Staff, PatronContact
 
 # configuration
 SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
+MAIL_SERVER = "smtp.gmail.com"
+MAIL_USERNAME = "KentonCountyLibrary@gmail.com"
+MAIL_PASSWORD = "CincyPyCoders"
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_DEFAULT_SENDER = "KentonCountyLibrary@gmail.com"
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+mail = Mail(app)
 
 def login_required(test):
     @wraps(test)
@@ -95,7 +106,9 @@ def adduser():
     f_name = request.form['f_name']
     l_name = request.form['l_name']
     phone = request.form['phone']
-    if not f_name or not l_name or not phone or not username or not password:
+    phone = re.sub(r"\D","",phone) # Remove non-digit characters 
+    email = request.form['email']    
+    if not f_name or not l_name or not phone or not username or not password or not email:
         flash('All fields are required. Please try again.')
         return redirect(url_for('admin'))
     else:
@@ -107,8 +120,13 @@ def adduser():
         except:
             flash('Phone number must include area code. Please try again.')
             return redirect(url_for('admin'))
+
+    if Staff.query.filter_by(or_(username=username, email=email)).one_or_none():
+        flash('Username or email address is already used.')
+        return redirect(url_for('admin'))
+
     staff = Staff(username=username, password=password, f_name=f_name,
-                         l_name=l_name, phone=phone, profile=Profile(bio=""))
+                  l_name=l_name, phone=phone, email=email, profile=Profile(bio=""))
     db_session.add(staff)
     db_session.commit()
     flash('New entry was successfully posted!')
@@ -210,17 +228,31 @@ def contact(uname):
         if prefs['phone']:
             phone = request.form['phone']
             phone = re.sub(r"\D","",phone)
+            message = "\nPhone: " + phone
         if prefs['email']:
             likes = request.form['likes']
             dislikes = request.form['dislikes']
             comment = request.form['comment']
             audience = ','.join(request.form.getlist('audience'))
             format_pref = ','.join(request.form.getlist('format_pref'))
+            message = "\nTell us about a few books or authors you've enjoyed. What made these books great?\n"
+            message += likes
+            message = "\nDescribe some authors or titles that you DID NOT like and why\n"
+            message += dislikes
+            message = "\nIs there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?\n"
+            message += comment            
+            message = "\nAre you interested in books for adults, teens, or children?\n"
+            message += audience            
+            message = "\nDo you have a preferred format?\n"
+            message += format_pref
         if prefs['chat']:
             chat = request.form['chat']
             handle = request.form['handle']
+            message = "\nChat service: " + chat
+            message = "\nChat handle: " + handle
         if prefs['phone'] or prefs['chat'] or prefs['irl']:
             times = request.form['times']
+            message += "\nTimes: " + times
         try:
             contact = request.form['contact']
         except:
@@ -256,6 +288,14 @@ def contact(uname):
         db_session.commit()
         flash("You're contact request was received!")
         # Send email to staff member regarding request
+        lib = {}
+        g.db = connect_db()
+        cur = g.db.execute("SELECT email FROM staff WHERE username=?", [uname])
+        lib['email'] = [ row[0] for row in cur.fetchall()][0]
+        msg = Message("Request for librarian contact", recipients=[email, lib['email']])
+        msg.body = name + " has requested to contact " + uname + "\n\nMethod: " + contact
+        msg.body += message
+        mail.send(msg)
         return redirect(url_for('profile', uname=uname))
 
 if __name__ == '__main__':
