@@ -121,7 +121,7 @@ def adduser():
             flash('Phone number must include area code. Please try again.')
             return redirect(url_for('admin'))
 
-    if Staff.query.filter_by(or_(username=username, email=email)).one_or_none():
+    if Staff.query.filter(or_(Staff.username==username, Staff.email==email)).all():
         flash('Username or email address is already used.')
         return redirect(url_for('admin'))
 
