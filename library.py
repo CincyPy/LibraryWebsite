@@ -297,8 +297,14 @@ def contact(uname):
 
 @app.route('/publish', methods=['POST'])
 def publish():
+<<<<<<< HEAD
     print request.json['target_url']
     return str(request.json)
+=======
+    # Force a push
+    # FOO
+    return "wat"
+>>>>>>> 67efe84277272ff419dbf89bf1ed255987c8581b
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=3000)
