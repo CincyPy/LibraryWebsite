@@ -159,13 +159,17 @@ def addrecread():
     return redirect(url_for('librarian'))
 
 
-@app.route('/remrecread/<rlid>',methods=['POST'])
+@app.route('/remrecread/<rlid>', methods=['POST'])
 @login_required
 def remrecread(rlid):
     rl = ReadingList.query.get(rlid)
     if rl:
-        db_session.delete(rl)
-        flash('Delete recommended reading.')
+        try:
+            db_session.delete(rl)
+            db_session.commit()
+            flash('Delete recommended reading.')
+        except:
+            flash('Nope..')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
     else:
