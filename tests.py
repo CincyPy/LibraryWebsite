@@ -1,35 +1,26 @@
 import unittest
-import os
-import sys
+import flask
 
 import library
+import database
+from database import create_engine, scoped_session, sessionmaker
+import models
 import flask
 import db
 
 class LibrarySiteTests(unittest.TestCase):
-    
+
     def setUp(self):
-        
-        #create db file
-        try:
-            db.create_db("test_library.db")
-        except:
-            print "ERROR CREATING DATABASE"
-            sys.exit(1)
-            
-        #change the app config to use test database
-        library.app.config["DATABASE"] = "test_library.db"
-        
+        engine = create_engine('sqlite:///:memory:', convert_unicode=True)
+        db_session = scoped_session(sessionmaker(autocommit=False,
+                                                 autoflush=False,
+                                                 bind=engine))
+        models.Base.query = db_session.query_property()
+        models.Base.metadata.create_all(bind=engine)
+        models.init_models(db_session)
+        library.db_session = db_session
         #get test client
         self.app = library.app.test_client()
-        
-    def tearDown(self):
-        
-        #delete the test database
-        try:
-            os.remove("test_library.db")
-        except:
-            pass
 
     def login(self,u,p):
          response = self.app.post('/login', data=dict(
@@ -63,7 +54,7 @@ class LibrarySiteTests(unittest.TestCase):
                 password="fred",
         ), follow_redirects=True)
             self.assertEquals(flask.session["logged_in_name"],"fred")
-        
+
         response = self.app.post('/login', data=dict(
                 username="fred",
                 password="fred",
@@ -71,12 +62,12 @@ class LibrarySiteTests(unittest.TestCase):
 
         self.assertIn('Welcome to the Librarian Staff Page', response.data)
 
-        
+
 
     def test_logout(self):
         with self.app:
             response = self.app.get('/logout',follow_redirects=True)
-            self.assertIn('You were logged out',response.data)  
+            self.assertIn('You were logged out',response.data)
             self.assertNotIn("logged_in",flask.session)
 
     def test_admin(self):
@@ -206,8 +197,9 @@ class LibrarySiteTests(unittest.TestCase):
             URL="t",
             category="t",
             sticky="t"),follow_redirects=True)
-        db = library.connect_db()
-        cur = db.execute("SELECT * from readinglist WHERE username='fred' AND book='t' AND author='t' AND comment='t' AND URL='t' AND category='t' AND sticky='t'")
+        #db = library.connect_db()
+        #XXX: not working with SQLAlchemy models
+        cur = library.db_session.execute("SELECT * from readinglist WHERE username='fred' AND book='t' AND author='t' AND comment='t' AND URL='t' AND category='t' AND sticky='t'")
         rows = cur.fetchall()
         self.assertEqual(len(rows),1)
         
@@ -242,4 +234,4 @@ class LibrarySiteTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-       
+
