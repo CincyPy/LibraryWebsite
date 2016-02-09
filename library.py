@@ -297,6 +297,7 @@ def contact(uname):
 
 @app.route('/publish', methods=['POST'])
 def publish():
+    # Force a push
     return "wat"
 
 if __name__ == '__main__':
