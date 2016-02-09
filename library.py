@@ -164,12 +164,9 @@ def addrecread():
 def remrecread(rlid):
     rl = ReadingList.query.get(rlid)
     if rl:
-        try:
-            db_session.delete(rl)
-            db_session.commit()
-            flash('Delete recommended reading.')
-        except:
-            flash('Nope..')
+        db_session.delete(rl)
+        db_session.commit()
+        flash('Delete recommended reading.')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
     else:
