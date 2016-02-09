@@ -285,11 +285,11 @@ def contact(uname):
         db_session.commit()
         flash("You're contact request was received!")
         # Send email to staff member regarding request
-        lib = {}
-        g.db = connect_db()
-        cur = g.db.execute("SELECT email FROM staff WHERE username=?", [uname])
-        lib['email'] = [ row[0] for row in cur.fetchall()][0]
-        msg = Message("Request for librarian contact", recipients=[email, lib['email']])
+        lib = Staff.query.get(uname)
+        if not lib:
+            flash("Librarian not found")
+            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        msg = Message("Request for librarian contact", recipients=[email, lib.email])
         msg.body = name + " has requested to contact " + uname + "\n\nMethod: " + contact
         msg.body += message
         mail.send(msg)
