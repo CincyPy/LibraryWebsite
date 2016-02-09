@@ -295,7 +295,7 @@ def contact(uname):
         mail.send(msg)
         return redirect(url_for('profile', uname=uname))
 
-@app.route('/publish')
+@app.route('/publish', methods=['POST'])
 def publish():
     return "wat"
 
