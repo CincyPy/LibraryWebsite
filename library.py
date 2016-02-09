@@ -176,11 +176,11 @@ def remrecread(rlid):
 @app.route('/changeSticky/<rlid>', methods=['POST'])
 @login_required
 def changeSticky(rlid):
-    g.db = connect_db()
-    g.db.execute("UPDATE readinglist SET sticky = not sticky WHERE RLID = ?", [rlid])
-    g.db.commit()
-    g.db.close()
-    flash('Sticky changed.')
+    rl = ReadingList.query.get(rlid)
+    if rl:
+        rl.sticky = not(rl.sticky)
+        db_session.commit()
+        flash('Sticky changed.')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
     else:
