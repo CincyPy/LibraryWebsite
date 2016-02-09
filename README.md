@@ -12,6 +12,11 @@ A group of CincyPy members is creating a website for [Kenton County Public Libra
 * Run the tests. `python tests.py -vf`.
 * Run the server. `python library.py`
 
+### Initialize Database
+```
+$ python models.py
+```
+
 # Authors
 * Ann
 * Cindy
