@@ -297,7 +297,8 @@ def contact(uname):
 
 @app.route('/publish', methods=['POST'])
 def publish():
-    return "wat"
+    print request.json['target_url']
+    return str(request.json)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=3000)
