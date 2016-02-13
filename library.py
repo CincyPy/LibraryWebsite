@@ -74,7 +74,7 @@ def logout():
 
 @app.route('/')
 def main():
-    staff = Staff.query.filter(Staff.username!='admin').all()
+    staff = Staff.query.filter(Staff.username != 'admin').all()
     shuffle(staff)
     return render_template('main.html', staff=staff)
 
@@ -136,10 +136,10 @@ def addrecread():
     if session["logged_in_name"] == "admin":
         flash("Your are not authorized to perform this action.")
         return redirect(url_for('admin'))
+    ISBN = request.form['ISBN']
     book = request.form['book']
     author = request.form['author']
     comment = request.form['comment']
-    url = request.form['URL']
     category = request.form['category']
     sticky = request.form['sticky']
     if not book:
@@ -148,10 +148,10 @@ def addrecread():
 
     logged_in_user = Staff.query.get(session['logged_in_name'])
     logged_in_user.readinglist.append(ReadingList(recdate=datetime.date.today(),
+                                                  ISBN=ISBN,
                                                   book=book,
                                                   author=author,
                                                   comment=comment,
-                                                  url=url,
                                                   sticky=sticky,
                                                   category=category))
     db_session.commit()

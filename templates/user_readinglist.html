@@ -4,6 +4,8 @@
     <thead>
         <tr>
             <th>Date</th>
+            <th>ISBN</th>
+            <th>Image</th>
             <th>Book</th>
             <th>Author</th>
             <th>Comment</th>
@@ -17,7 +19,9 @@
         {% for RL in readinglist|sort(attribute='recdate', reverse=True)|sort(attribute='sticky', reverse=True) %}
         <tr>
             <td>{{ RL.recdate }}</td>
-            <td><a href="{{ RL.url }}" target="_blank">{{ RL.book }}</a></td>
+            <td>{{ RL.ISBN }}</td>
+            <td><img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/small/{{ RL.ISBN }}" ></td>
+            <td>{{ RL.book }}</td>
             <td>{{ RL.author }}</td>
             <td>{{ RL.comment }}</td>
             <td>{{ RL.category }}</td>

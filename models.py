@@ -41,6 +41,7 @@ class ReadingList(Base):
     __tablename__ = 'readinglist'
 
     RLID = Column(Integer, primary_key=True)
+    ISBN = Column(Text)
     recdate = Column(Date)
 
     username = Column(String, ForeignKey('staff.username'))
@@ -49,7 +50,6 @@ class ReadingList(Base):
     book = Column(Text)
     author = Column(Text)
     comment = Column(Text)
-    url = Column(Text)
     sticky = Column(Boolean, default=False)
     category = Column(Text)
 
@@ -96,16 +96,16 @@ def init_models(db_session=None):
                             times='M-Th 12-2 pm'),
                  ])
     rl1 = ReadingList(recdate=datetime.date(2015,10,1),
+                      ISBN='9780394800301',
                       book='ABCs',
                       author='Dr. Suess',
                       comment='best seller',
-                      url='http://www.seussville.com/books/book_detail.php?isbn=9780394800301',
                       category='Mystery')
     rl2 = ReadingList(recdate=datetime.date(2015,10,2),
+                      ISBN=' 9781402750656',
                       book='Night Before Christmas',
                       author='Santa',
                       comment='find holday fun',
-                      url='https://www.overdrive.com/media/1577310/the-night-before-christmas',
                       category='Sci-fi')
     fred.readinglist.append(rl1)
     fred.readinglist.append(rl2)
@@ -156,17 +156,17 @@ def init_models(db_session=None):
     db_session.query(Staff).get('elmo').readinglist = [
         ReadingList(
             recdate=datetime.date(2015,12,21),
+            ISBN='9789380028293',
             book='The Invinsible Man',
             author='H. G. Wells',
             comment='my fav',
-            url='http://aol.com',
             category='History'),
         ReadingList(
             recdate=datetime.date(2015,12,21),
+            ISBN='9780393972832',
             book='Moby Dick',
             author='Herman Melville',
             comment='a whale of a tale',
-            url='http://facebook.com',
             category='Music')
     ]
 
