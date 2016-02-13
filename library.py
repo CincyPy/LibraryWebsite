@@ -74,18 +74,23 @@ def main():
 @app.route('/admin')
 @login_required
 def admin():
-    return render_template('admin.html', staff=Staff.query.all())
+    return render_template('admin.html', staff=Staff.query.all(), readinglist=ReadingList.query.all())
 
 
 @app.route('/librarian')
-@app.route('/librarian/<bookID>')
+@app.route('/librarian/<rlid>', methods=['GET', 'POST'])
 @login_required
-def librarian(bookID=None):
+def librarian(rlid=None):
     logged_in_user = Staff.query.get(session['logged_in_name'])
-    if bookID == None:
-        return render_template('librarian.html', readinglist=logged_in_user.readinglist)
+    if rlid is None:
+        return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=None)
     else:
-        return render_template('librarian.html', readinglist=logged_in_user.readinglist)
+        book = ReadingList.query.filter_by(RLID=rlid).first()
+        if book.username == session["logged_in_name"] or session["logged_in_name"] == 'admin':
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book)
+        else:
+            flash("Your are not authorized to perform this action.")
+            return redirect(url_for('librarian'))
 
 
 @app.route('/adduser', methods=['POST'])
@@ -129,30 +134,41 @@ def adduser():
 @app.route('/addrecread', methods=['POST'])
 @login_required
 def addrecread():
-    if session["logged_in_name"] == "admin":
-        flash("Your are not authorized to perform this action.")
-        return redirect(url_for('admin'))
+    if not request.form['book']:
+        flash('Book name is required. Please try again.')
+        return redirect(url_for('librarian'))
+
+    if not request.form['RLID']:
+        if session['logged_in_name'] == 'admin':
+            flash('Your are not authorized to perform this action.')
+            return redirect(url_for('admin'))
+        book_user = Staff.query.get(session['logged_in_name'])
+    else:
+        rl = ReadingList.query.get(request.form['RLID'])
+        book_user = Staff.query.get(rl.username)
+        db_session.delete(rl)
+        db_session.commit()
+
     ISBN = request.form['ISBN']
     book = request.form['book']
     author = request.form['author']
     comment = request.form['comment']
     category = request.form['category']
     sticky = request.form['sticky']
-    if not book:
-        flash('Book name is required. Please try again.')
-        return redirect(url_for('librarian'))
 
-    logged_in_user = Staff.query.get(session['logged_in_name'])
-    logged_in_user.readinglist.append(ReadingList(recdate=datetime.date.today(),
-                                                  ISBN=ISBN,
-                                                  book=book,
-                                                  author=author,
-                                                  comment=comment,
-                                                  sticky=sticky,
-                                                  category=category))
+    book_user.readinglist.append(ReadingList(recdate=datetime.date.today(),
+                                             ISBN=ISBN,
+                                             book=book,
+                                             author=author,
+                                             comment=comment,
+                                             sticky=sticky,
+                                             category=category))
     db_session.commit()
     flash('New recommending reading added.')
-    return redirect(url_for('librarian'))
+    if session['logged_in_name'] == 'admin':
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
 
 
 @app.route('/remrecread/<rlid>', methods=['POST'])

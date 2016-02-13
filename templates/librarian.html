@@ -7,30 +7,39 @@
     <h2>Welcome to the Librarian Staff Page for the Library Site</h2>
     <p>Hello, {{ session.logged_in_name }} <a href="{{ url_for('logout') }}">Logout</a></p>
     <a href="{{ url_for('main') }}">Back to Main</a>
-    {% if session.logged_in_name != 'admin' %}
     <div class="row">
         <div class="col-sm-6">
-            <h3>Add a recommended reading:</h3>
+            {% if not existingValues %}
+                <h3>Add a recommended reading</h3>
+            {% else %}
+            <h3>Edit a recommended reading
+                {% if session.logged_in_name == 'admin' %}
+                    for {{ existingValues.username }}
+                {% endif %}
+            </h3>
+            {% endif %}
             <form action="{{ url_for('addrecread')}}" method="POST" class="recread">
+                <input type="hidden" name="RLID" value={{ existingValues.RLID }}>
+
                 <div class="form-group">
                     <label for="book">Book:</label>
-                    <input class="form-control" name='book' type='text'>
+                    <input class="form-control" name='book' type='text' value="{{ existingValues.book }}">
                 </div>
                 <div class="form-group">
                     <label for="ISBN">ISBN:</label>
-                    <input class="form-control" name='ISBN' type='text'>
+                    <input class="form-control" name='ISBN' type='text' value="{{ existingValues.ISBN }}">
                 </div>
                 <div class="form-group">
                     <label for="author">Author:</label>
-                    <input class="form-control" name='author' type='text'>
+                    <input class="form-control" name='author' type='text' value="{{ existingValues.author }}">
                 </div>
                 <div class="form-group">
                     <label for="comment">Comment:</label>
-                    <input class="form-control" name='comment' type='text'>
+                    <input class="form-control" name='comment' type='text' value="{{ existingValues.comment }}">
                 </div>
                 <div class="form-group">
                     <label for="url">Category:</label>
-                    <input class="form-control" name='category' type='text'>
+                    <input class="form-control" name='category' type='text' value="{{ existingValues.category }}">
                 </div>
                 <div class="form-group">
                     <label for="sticky">Sticky:</label>
@@ -41,10 +50,9 @@
             </form>
         </div>
     </div>
-    {% endif %}
-
+    {% if session.logged_in_name != 'admin' %}
     </br>
     </br>
-    <h3>Reading List: </h3>
     {% include "user_readinglist.html" %}
+    {% endif %}
 {% endblock %}
