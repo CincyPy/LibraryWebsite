@@ -16,6 +16,5 @@
         <textarea name="bio" id="bio">{{ bio }}</textarea><br/>
         <input value="Update" type="submit" />
     </form>
-    <p> <a href="mailto:{{ profile.email }}"><button type="button" class="btn btn-primary btn-md">Email me</button></a></p>
     <a href="{{ url_for('main') }}"/>Back to Main</a>
 {% endblock %}
