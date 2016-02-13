@@ -14,24 +14,16 @@ class Staff(Base):
     password = Column(String)
     f_name = Column(String)
     l_name = Column(String)
-    phone = Column(Integer)
-    email = Column(String)
+    phonenumber = Column(Integer)
+    emailaddress = Column(String)
 
-    patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
-
-
-class Profile(Base):
-    __tablename__ = 'profile'
-
-    username = Column(String, ForeignKey('staff.username'),
-                      primary_key=True)
-    staff = relationship('Staff', backref=backref('profile', uselist=False))
     bio = Column(Text)
-
     email = Column(Boolean, default=False)
     phone = Column(Boolean, default=True)
     chat = Column(Boolean, default=False)
     irl = Column(Boolean, default=True)
+
+    patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
 
     def __getitem__(self, attr):
         return getattr(self, attr)
@@ -82,11 +74,11 @@ def init_models(db_session=None):
         from database import db_session
 
     admin = Staff(username='admin', password='admin', f_name='Admin',
-                  l_name='User', phone=1111111111)
+                  l_name='User', phonenumber=1111111111, bio='Admin bio')
     db_session.add(admin)
 
     fred = Staff(username='fred', password='fred', f_name='Fred',
-                 l_name='Fredderson', phone=2222222222,
+                 l_name='Fredderson', phonenumber=2222222222, bio='I am Fred\'s incomplete bio',
                  patron_contacts=[
                      PatronContact(reqdate='2016-01-07',
                             name='Joe Johnson',
@@ -111,46 +103,43 @@ def init_models(db_session=None):
     fred.readinglist.append(rl2)
     db_session.add(fred)
 
-    db_session.add(Profile(staff=admin, bio='Admin bio'))
-    db_session.add(Profile(staff=fred, bio='Fred\'s bio'))
-
     loremipsum = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'''
 
     db_session.add(Staff(username='ernie',
                          password='ernie',
                          f_name='Ernie',
                          l_name='Ernieston',
-                         phone=3333333333,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=3333333333,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
     db_session.add(Staff(username='bert',
                          password='bert',
                          f_name='Bert',
                          l_name='Burterson',
-                         phone=4444444444,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=4444444444,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
     db_session.add(Staff(username='bigbird',
                          password='bigbird',
                          f_name='Big',
                          l_name='Bird',
-                         phone=5555555555,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=5555555555,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
     db_session.add(Staff(username='oscar',
                          password='oscar',
                          f_name='Oscar',
                          l_name='Thegrouch',
-                         phone=6666666666,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=6666666666,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
     db_session.add(Staff(username='elmo',
                          password='elmo',
                          f_name='Elmo',
                          l_name='Elmostein',
-                         phone=7777777777,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=7777777777,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
 
     db_session.commit()
     db_session.query(Staff).get('elmo').readinglist = [

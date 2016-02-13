@@ -12,7 +12,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import or_
 
 from database import db_session
-from models import Profile, ReadingList, Staff, PatronContact
+from models import ReadingList, Staff, PatronContact
 
 # configuration
 SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
@@ -209,21 +209,21 @@ def edit_profile(uname):
 
     if request.method == "GET": #regular get, present the form to user to edit.
         if staff:
-            return render_template('profile.html', bio=staff.profile.bio)
+            return render_template('profile.html', bio=staff.bio)
         else:
             flash("No profile found for user.")
             return redirect(url_for('main'))
     elif request.method == "POST": #form was submitted, update database
-        staff.profile.bio = request.form['bio']
+        staff.bio = request.form['bio']
         db_session.commit()
         flash("Profile updated!")
-        return render_template('profile.html', bio=staff.profile.bio)
+        return render_template('profile.html', bio=staff.bio)
 
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
     inputs = request.args.get('inputs')
-    prefs = Profile.query.get(uname)
+    prefs = Staff.query.get(uname)
     if request.method == "GET":  # regular get, present the form to user to edit.
         if inputs != None: # Prepopulate with entered data
             inputs = ast.literal_eval(inputs) # Captures any form inputs as a dictionary
