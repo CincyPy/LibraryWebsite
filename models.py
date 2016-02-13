@@ -27,7 +27,10 @@ class Staff(Base):
 
     def __getitem__(self, attr):
         return getattr(self, attr)
-
+    
+    @property 
+    def category_list(self):
+        return set([item.category for item in self.readinglist])
 
 class ReadingList(Base):
     __tablename__ = 'readinglist'

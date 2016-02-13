@@ -28,8 +28,8 @@
             <p>{{ staff.bio|truncate(100) }} <a href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
             <a href="/contact/{{ staff.username }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
             <br><br>
-            {% for interest in staff.readinglist %}
-            <button type="button" class="btn btn-primary btn-md"> {{ interest.category }} </button>
+            {% for interest in staff.category_list %}
+            <button type="button" class="btn btn-primary btn-xs"> {{ interest }} </button>
                 {% endfor %}
         </div>
       {% endfor %}
