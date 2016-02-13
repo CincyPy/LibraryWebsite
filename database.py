@@ -5,6 +5,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from config import config
 
 SQLITE_DATABASE_PATH = config.DBPATH
+SQLITE_DATABASE_FILE = config.DBFILE
 
 # Enable Foreign Key Support in sqlite
 @event.listens_for(Engine, "connect")
