@@ -14,7 +14,7 @@ class Staff(Base):
     password = Column(String)
     f_name = Column(String)
     l_name = Column(String)
-    phonenumber = Column(Integer)
+    phonenumber = Column(String)
     emailaddress = Column(String)
 
     bio = Column(Text)
