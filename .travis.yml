@@ -8,3 +8,5 @@ install:
   - pip install -r requirements.txt
 script:
   - python tests.py -fv
+env:
+  - LIBRARY_ENV=test
