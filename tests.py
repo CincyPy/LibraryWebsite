@@ -5,14 +5,11 @@ from itertools import chain
 from ipaddress import ip_network
 
 import library
-<<<<<<< HEAD
 import database
 from database import create_engine, scoped_session, sessionmaker
 from publisher import Publisher
-=======
 #import database
 #from database import create_engine, scoped_session, sessionmaker
->>>>>>> 6cb6b35acc05330b36ceebc41083dbd0dcf62d6b
 import models
 import flask
 import os
