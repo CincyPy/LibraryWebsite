@@ -12,6 +12,7 @@ class Config(object):
     MAIL_DEFAULT_SENDER = "KentonCountyLibrary@gmail.com"
 
     DBPATH = "sqlite:///library.db"
+    DBFILE = "library.db"
 
     def __init__(self):
         print "Config environment is: " + self.NAME
@@ -19,6 +20,7 @@ class Config(object):
 class TestConfig(Config):
     NAME = "TEST"
     DBPATH = "sqlite://"
+    DBFILE = ""
 
 config = None
 if os.environ.get("LIBRARY_ENV",None) == "test":
