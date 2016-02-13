@@ -2,12 +2,13 @@ import unittest
 import flask
 
 import library
-#import database
-#from database import create_engine, scoped_session, sessionmaker
+from database import db_session
+from sqlalchemy import or_, and_
 import models
 import flask
 import os
 import sys
+import datetime
 
 if os.environ.get("LIBRARY_ENV",None) != "test":
     print "You need to set LIBRARY_ENV to test!"
@@ -21,7 +22,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.app = library.app.test_client()
 
     def tearDown(self):
-        pass
+        models.Base.metadata.drop_all(bind=models.engine)
 
     def login(self,u,p):
          response = self.app.post('/login', data=dict(
@@ -35,7 +36,7 @@ class LibrarySiteTests(unittest.TestCase):
     def test_main(self):
         response = self.app.get('/')
         self.assertIn("Librarian Recommended",response.data)
-    """ 
+    
     def test_login(self):
         #test initial get request
         response = self.app.get('/login')
@@ -63,32 +64,28 @@ class LibrarySiteTests(unittest.TestCase):
 
         self.assertIn('Welcome to the Librarian Staff Page', response.data)
 
-
-
     def test_logout(self):
         with self.app:
             response = self.app.get('/logout',follow_redirects=True)
             self.assertIn('You were logged out',response.data)
             self.assertNotIn("logged_in",flask.session)
-
+    
     def test_admin(self):
         self.login("admin","admin")
         #test admin
         response = self.app.get("/admin")
         self.assertIn("Add a new staff member:",response.data)
         self.assertIn("/edit-profile/admin",response.data)
-        self.assertNotIn("/edit-profile/fred",response.data)
+        self.assertIn("/edit-profile/fred",response.data)
 
         self.logout()
         
         #test normal user
         self.login("fred","fred")
-        response = self.app.get("/admin")
-        self.assertNotIn("Add a new staff member:",response.data)
-        self.assertIn("/edit-profile/fred",response.data)
-        self.assertIn("/profile/admin",response.data)
+        response = self.app.get("/admin", follow_redirects=True)
         self.logout()
-
+    
+    
     def test_librarian(self):
         self.login("fred","fred")
         response = self.app.get("/librarian")
@@ -96,7 +93,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("Night Before Christmas",response.data)
         self.assertNotIn("The Invisible Man",response.data)
         self.assertNotIn("Moby Dick",response.data)
-
+    
     def test_adduser(self):
         #try with non admin
         self.login("fred","fred")
@@ -138,10 +135,8 @@ class LibrarySiteTests(unittest.TestCase):
             l_name="t",
             phone="1112223333",
             email="test@testing.com"),follow_redirects=True)
-        db = library.connect_db()
-        cur = db.execute("SELECT * from staff WHERE username='t' AND  password ='t' AND f_name='t' AND l_name='t' AND phone='1112223333' AND email='test@testing.com'")
-        rows = cur.fetchall()
-        self.assertEqual(len(rows),1)
+        staff=models.Staff.query.filter(and_(models.Staff.username=='t', models.Staff.password=='t', models.Staff.f_name=='t', models.Staff.l_name=='t', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test@testing.com')).first()
+        self.assertIsNotNone(staff)
         #try adding an existing username
         response = self.app.post("/adduser",data=dict(
             username="t",
@@ -168,11 +163,8 @@ class LibrarySiteTests(unittest.TestCase):
             l_name="u",
             phone="111-222-3333",
             email="test2@testing.com"),follow_redirects=True)
-        db = library.connect_db()
-        cur = db.execute("SELECT * from staff WHERE username='u' AND  password ='u' AND f_name='u' AND l_name='u' AND phone='1112223333' AND email='test2@testing.com'")
-        rows = cur.fetchall()
-        self.assertEqual(len(rows),1)
-
+        staff=models.Staff.query.filter(and_(models.Staff.username=='u', models.Staff.password=='u', models.Staff.f_name=='u', models.Staff.l_name=='u', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test2@testing.com')).first()
+        self.assertIsNotNone(staff)
         
     def test_addrecread(self):
         #try with admin
@@ -186,50 +178,65 @@ class LibrarySiteTests(unittest.TestCase):
             book="",
             author="t",
             comment="t",
-            URL="t",
+            ISBN="t",
             category="t",
-            sticky="t"),follow_redirects=True)
+            sticky=1),follow_redirects=True)
         self.assertIn("Book name is required.",response.data)
         #all is well
         response = self.app.post("/addrecread",data=dict(
             book="t",
             author="t",
             comment="t",
-            URL="t",
+            ISBN="t",
             category="t",
-            sticky="t"),follow_redirects=True)
-        #db = library.connect_db()
-        #XXX: not working with SQLAlchemy models
-        cur = library.db_session.execute("SELECT * from readinglist WHERE username='fred' AND book='t' AND author='t' AND comment='t' AND URL='t' AND category='t' AND sticky='t'")
-        rows = cur.fetchall()
-        self.assertEqual(len(rows),1)
+            sticky=1),follow_redirects=True)
+        recread = models.ReadingList.query.filter(and_(
+            models.ReadingList.username=='fred',
+            models.ReadingList.book=='t',
+            models.ReadingList.author=='t',
+            models.ReadingList.comment=='t',
+            models.ReadingList.ISBN=='t',
+            models.ReadingList.sticky==True)).first()
+        self.assertIsNotNone(recread)
         
     def test_remrecread(self):
         #unknown recread, should not matter
         self.login("fred","fred")
         response = self.app.post("/remrecread/100",data={},follow_redirects=True)
-        self.assertIn("Delete recommended reading.",response.data)
+        self.assertNotIn("Deleted recommended reading.",response.data)
         #insert a recread, make sure its removed
-        response = self.app.post("/addrecread",data=dict(
-            book="t",
-            author="t",
-            comment="t",
-            URL="t",
-            category="t",
-            sticky="t"),follow_redirects=True)
-        db = library.connect_db()
-        cur = db.execute("SELECT RLID from readinglist WHERE username='fred' AND book='t'")
-        rows = cur.fetchall()
-        rlid = rows[0][0]
+        fred = models.Staff.query.filter(models.Staff.username=='fred').first()
+        
+        readinglist = models.ReadingList(
+            recdate=datetime.date.today(),
+            ISBN="eee",
+            book="book",
+            author="author",
+            comment="comment",
+            sticky=0,
+            category="category")
+        fred.readinglist.append(readinglist)
+        db_session.commit()
+        rlid = readinglist.RLID
+        #try another user
+        self.logout()
+        self.login("elmo","elmo")
+        
         response = self.app.post("/remrecread/"+str(rlid),data={},follow_redirects=True)
-        cur = db.execute("SELECT RLID from readinglist WHERE username='fred' AND book='t'")
-        rows = cur.fetchall()
-        self.assertEqual(len(rows),0)
+        self.assertNotIn("Deleted recommended reading.",response.data)
+        self.logout()
 
+        #try with fred
+        self.login("fred","fred")
+        response = self.app.post("/remrecread/"+str(rlid),data={},follow_redirects=True)
+        self.assertIn("Deleted recommended reading.",response.data)
+        rl = models.ReadingList.query.filter(models.ReadingList.ISBN=="eee").first()
+        self.assertIsNone(rl)                 
+        
     def test_profile(self):
         response = self.app.get("/profile/fred")
         self.assertIn("Fredderson",response.data)
-    """
+    
         
         
 

@@ -5,7 +5,7 @@ import os
 from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
 
-from database import Base, SQLITE_DATABASE_PATH, engine, init_db
+from database import Base, SQLITE_DATABASE_PATH, SQLITE_DATABASE_FILE, engine, init_db
 
 class Staff(Base):
     __tablename__ = 'staff'
@@ -173,11 +173,11 @@ if __name__ == '__main__':
     parser = ArgParser()
     args = parser.parse_args()
 
-    if os.path.exists(SQLITE_DATABASE_PATH):
-        if raw_input('Remove "%s" ?' % SQLITE_DATABASE_PATH).lower().startswith('y'):
-            os.remove(SQLITE_DATABASE_PATH)
+    if os.path.exists(SQLITE_DATABASE_FILE):
+        if raw_input('Remove "%s" ?' % SQLITE_DATABASE_FILE).lower().startswith('y'):
+            os.remove(SQLITE_DATABASE_FILE)
         else:
-            raise RuntimeError('"%s" exists.' % SQLITE_DATABASE_PATH)
+            raise RuntimeError('"%s" exists.' % SQLITE_DATABASE_FILE)
 
     engine.echo = args.echo
 

@@ -74,6 +74,10 @@ def main():
 @app.route('/admin')
 @login_required
 def admin():
+    if session["logged_in_name"] != "admin":
+        flash("You are not authorized to perform this action.")
+        return redirect(url_for('main'))
+    
     return render_template('admin.html', staff=Staff.query.all(), readinglist=ReadingList.query.all())
 
 
@@ -119,12 +123,12 @@ def adduser():
             flash('Phone number must include area code. Please try again.')
             return redirect(url_for('admin'))
 
-    if Staff.query.filter(or_(Staff.username==username, Staff.email==email)).all():
+    if Staff.query.filter(or_(Staff.username==username, Staff.emailaddress==email)).all():
         flash('Username or email address is already used.')
         return redirect(url_for('admin'))
 
     staff = Staff(username=username, password=password, f_name=f_name,
-                  l_name=l_name, phone=phone, email=email, profile=Profile(bio=""))
+                  l_name=l_name, phonenumber=phone, emailaddress=email, bio="")
     db_session.add(staff)
     db_session.commit()
     flash('New entry was successfully posted!')
@@ -174,11 +178,15 @@ def addrecread():
 @app.route('/remrecread/<rlid>', methods=['POST'])
 @login_required
 def remrecread(rlid):
-    rl = ReadingList.query.get(rlid)
+	if session["logged_in_name"] == 'admin':
+		rl = ReadingList.query.get(rlid)
+	else:
+    	username = session["logged_in_name"]
+    	rl = ReadingList.query.filter(ReadingList.RLID==rlid,ReadingList.username==username).first()
     if rl:
         db_session.delete(rl)
         db_session.commit()
-        flash('Delete recommended reading.')
+        flash('Deleted recommended reading.')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
     else:
