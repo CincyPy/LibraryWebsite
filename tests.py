@@ -6,7 +6,6 @@ import library
 #from database import create_engine, scoped_session, sessionmaker
 import models
 import flask
-import db
 import os
 import sys
 
