@@ -21,7 +21,7 @@ class TestConfig(Config):
     DBPATH = "sqlite://"
 
 config = None
-if os.environ["LIBRARY_ENV"] == "test":
+if os.environ.get("LIBRARY_ENV",None) == "test":
     config = TestConfig()
 else:
     config = Config()

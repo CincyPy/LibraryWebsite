@@ -8,6 +8,11 @@ import models
 import flask
 import db
 import os
+import sys
+
+if os.environ.get("LIBRARY_ENV",None) != "test":
+    print "You need to set LIBRARY_ENV to test!"
+    sys.exit(1)
 
 class LibrarySiteTests(unittest.TestCase):
 
