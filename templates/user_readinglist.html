@@ -4,28 +4,36 @@
     <thead>
         <tr>
             <th>Date</th>
+            <th>ISBN</th>
+            <th>Image</th>
             <th>Book</th>
             <th>Author</th>
             <th>Comment</th>
-            <th>URL</th>
             <th>Category</th>
+            <th>Librarian</th>
             <th>Sticky</th>
-            <th></th>
+            <th>Remove</th>
         </tr>
     </thead>
     <tbody>
         {% for RL in readinglist|sort(attribute='recdate', reverse=True)|sort(attribute='sticky', reverse=True) %}
         <tr>
             <td>{{ RL.recdate }}</td>
+            <td>{{ RL.ISBN }}</td>
+            <td><img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/small/{{ RL.ISBN }}" ></td>
             <td>{{ RL.book }}</td>
             <td>{{ RL.author }}</td>
             <td>{{ RL.comment }}</td>
-            <td>{{ RL.url }}</td>
             <td>{{ RL.category }}</td>
-            <td>{{ RL.sticky }}</td>
+            <td>{{ RL.username }}</td>
             <td>
-                <form action="{{ url_for('remrecread', rlid=RL.RLID)}}" method="POST" class="recread">
-                    <input class='btn btn-danger' type='submit' value='X'>
+                <form action="{{ url_for('changeSticky', rlid=RL.RLID)}}" method="POST">
+                    <input class='btn btn-default' type='submit' value='{{ RL.sticky }}'>
+                </form>
+            </td>
+            <td>
+                <form action="{{ url_for('remrecread', rlid=RL.RLID)}}" method="POST">
+                    <input class='btn btn-danger' type='submit' value='X'   >
                 </form>
             </td>
         </tr>
