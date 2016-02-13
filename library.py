@@ -1,3 +1,4 @@
+from config import config
 import datetime
 import ast
 import re
@@ -14,17 +15,8 @@ from sqlalchemy import or_
 from database import db_session
 from models import Profile, ReadingList, Staff, PatronContact
 
-# configuration
-SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
-MAIL_SERVER = "smtp.gmail.com"
-MAIL_USERNAME = "KentonCountyLibrary@gmail.com"
-MAIL_PASSWORD = "CincyPyCoders"
-MAIL_PORT = 587
-MAIL_USE_TLS = True
-MAIL_DEFAULT_SENDER = "KentonCountyLibrary@gmail.com"
-
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_object(config)
 mail = Mail(app)
 
 def login_required(test):
@@ -294,6 +286,6 @@ def contact(uname):
         msg.body += message
         mail.send(msg)
         return redirect(url_for('profile', uname=uname))
-
+    
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
