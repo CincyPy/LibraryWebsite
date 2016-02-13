@@ -13,7 +13,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import or_
 
 from database import db_session
-from models import Profile, ReadingList, Staff, PatronContact
+from models import ReadingList, Staff, PatronContact
 
 app = Flask(__name__)
 app.config.from_object(config)
@@ -66,7 +66,7 @@ def logout():
 
 @app.route('/')
 def main():
-    staff = Staff.query.all()
+    staff = Staff.query.filter(Staff.username != 'admin').all()
     shuffle(staff)
     return render_template('main.html', staff=staff)
 
@@ -78,10 +78,14 @@ def admin():
 
 
 @app.route('/librarian')
+@app.route('/librarian/<bookID>')
 @login_required
-def librarian():
+def librarian(bookID=None):
     logged_in_user = Staff.query.get(session['logged_in_name'])
-    return render_template('librarian.html', readinglist=logged_in_user.readinglist)
+    if bookID == None:
+        return render_template('librarian.html', readinglist=logged_in_user.readinglist)
+    else:
+        return render_template('librarian.html', readinglist=logged_in_user.readinglist)
 
 
 @app.route('/adduser', methods=['POST'])
@@ -128,10 +132,10 @@ def addrecread():
     if session["logged_in_name"] == "admin":
         flash("Your are not authorized to perform this action.")
         return redirect(url_for('admin'))
+    ISBN = request.form['ISBN']
     book = request.form['book']
     author = request.form['author']
     comment = request.form['comment']
-    url = request.form['URL']
     category = request.form['category']
     sticky = request.form['sticky']
     if not book:
@@ -140,23 +144,39 @@ def addrecread():
 
     logged_in_user = Staff.query.get(session['logged_in_name'])
     logged_in_user.readinglist.append(ReadingList(recdate=datetime.date.today(),
+                                                  ISBN=ISBN,
                                                   book=book,
                                                   author=author,
                                                   comment=comment,
-                                                  url=url,
                                                   sticky=sticky,
                                                   category=category))
     db_session.commit()
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
 
-@app.route('/remrecread/<rlid>',methods=['POST'])
+
+@app.route('/remrecread/<rlid>', methods=['POST'])
 @login_required
 def remrecread(rlid):
     rl = ReadingList.query.get(rlid)
     if rl:
         db_session.delete(rl)
+        db_session.commit()
         flash('Delete recommended reading.')
+    if session["logged_in_name"] == "admin":
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
+
+
+@app.route('/changeSticky/<rlid>', methods=['POST'])
+@login_required
+def changeSticky(rlid):
+    rl = ReadingList.query.get(rlid)
+    if rl:
+        rl.sticky = not(rl.sticky)
+        db_session.commit()
+        flash('Sticky changed.')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
     else:
@@ -177,7 +197,7 @@ def profile(uname):
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
 @login_required
 def edit_profile(uname):
-    if session["logged_in_name"] != uname:
+    if session["logged_in_name"] != uname and session["logged_in_name"] != 'admin':
         flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
 
@@ -185,21 +205,21 @@ def edit_profile(uname):
 
     if request.method == "GET": #regular get, present the form to user to edit.
         if staff:
-            return render_template('profile.html', bio=staff.profile.bio)
+            return render_template('profile.html', bio=staff.bio)
         else:
             flash("No profile found for user.")
             return redirect(url_for('main'))
     elif request.method == "POST": #form was submitted, update database
-        staff.profile.bio = request.form['bio']
+        staff.bio = request.form['bio']
         db_session.commit()
         flash("Profile updated!")
-        return render_template('profile.html', bio=staff.profile.bio)
+        return render_template('profile.html', bio=staff.bio)
 
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
     inputs = request.args.get('inputs')
-    prefs = Profile.query.get(uname)
+    prefs = Staff.query.get(uname)
     if request.method == "GET":  # regular get, present the form to user to edit.
         if inputs != None: # Prepopulate with entered data
             inputs = ast.literal_eval(inputs) # Captures any form inputs as a dictionary

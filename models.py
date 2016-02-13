@@ -14,24 +14,16 @@ class Staff(Base):
     password = Column(String)
     f_name = Column(String)
     l_name = Column(String)
-    phone = Column(Integer)
-    email = Column(String)
+    phonenumber = Column(Integer)
+    emailaddress = Column(String)
 
-    patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
-
-
-class Profile(Base):
-    __tablename__ = 'profile'
-
-    username = Column(String, ForeignKey('staff.username'),
-                      primary_key=True)
-    staff = relationship('Staff', backref=backref('profile', uselist=False))
     bio = Column(Text)
-
     email = Column(Boolean, default=False)
     phone = Column(Boolean, default=True)
     chat = Column(Boolean, default=False)
     irl = Column(Boolean, default=True)
+
+    patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
 
     def __getitem__(self, attr):
         return getattr(self, attr)
@@ -41,6 +33,7 @@ class ReadingList(Base):
     __tablename__ = 'readinglist'
 
     RLID = Column(Integer, primary_key=True)
+    ISBN = Column(Text)
     recdate = Column(Date)
 
     username = Column(String, ForeignKey('staff.username'))
@@ -49,7 +42,6 @@ class ReadingList(Base):
     book = Column(Text)
     author = Column(Text)
     comment = Column(Text)
-    url = Column(Text)
     sticky = Column(Boolean, default=False)
     category = Column(Text)
 
@@ -82,11 +74,11 @@ def init_models(db_session=None):
         from database import db_session
 
     admin = Staff(username='admin', password='admin', f_name='Admin',
-                  l_name='User', phone=1111111111)
+                  l_name='User', phonenumber=1111111111, bio='Admin bio')
     db_session.add(admin)
 
     fred = Staff(username='fred', password='fred', f_name='Fred',
-                 l_name='Fredderson', phone=2222222222,
+                 l_name='Fredderson', phonenumber=2222222222, bio='I am Fred\'s incomplete bio',
                  patron_contacts=[
                      PatronContact(reqdate='2016-01-07',
                             name='Joe Johnson',
@@ -96,23 +88,20 @@ def init_models(db_session=None):
                             times='M-Th 12-2 pm'),
                  ])
     rl1 = ReadingList(recdate=datetime.date(2015,10,1),
+                      ISBN='9780394800301',
                       book='ABCs',
                       author='Dr. Suess',
                       comment='best seller',
-                      url='http://www.seussville.com/books/book_detail.php?isbn=9780394800301',
                       category='Mystery')
     rl2 = ReadingList(recdate=datetime.date(2015,10,2),
+                      ISBN=' 9781402750656',
                       book='Night Before Christmas',
                       author='Santa',
                       comment='find holday fun',
-                      url='https://www.overdrive.com/media/1577310/the-night-before-christmas',
                       category='Sci-fi')
     fred.readinglist.append(rl1)
     fred.readinglist.append(rl2)
     db_session.add(fred)
-
-    db_session.add(Profile(staff=admin, bio='Admin bio'))
-    db_session.add(Profile(staff=fred, bio='Fred\'s bio'))
 
     loremipsum = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'''
 
@@ -120,53 +109,53 @@ def init_models(db_session=None):
                          password='ernie',
                          f_name='Ernie',
                          l_name='Ernieston',
-                         phone=3333333333,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=3333333333,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
     db_session.add(Staff(username='bert',
                          password='bert',
                          f_name='Bert',
                          l_name='Burterson',
-                         phone=4444444444,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=4444444444,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
     db_session.add(Staff(username='bigbird',
                          password='bigbird',
                          f_name='Big',
                          l_name='Bird',
-                         phone=5555555555,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=5555555555,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
     db_session.add(Staff(username='oscar',
                          password='oscar',
                          f_name='Oscar',
                          l_name='Thegrouch',
-                         phone=6666666666,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=6666666666,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
     db_session.add(Staff(username='elmo',
                          password='elmo',
                          f_name='Elmo',
                          l_name='Elmostein',
-                         phone=7777777777,
-                         email='KentonCountyLibrary@gmail.com',
-                         profile=Profile(bio=loremipsum)))
+                         phonenumber=7777777777,
+                         emailaddress='KentonCountyLibrary@gmail.com',
+                         bio=loremipsum))
 
     db_session.commit()
     db_session.query(Staff).get('elmo').readinglist = [
         ReadingList(
             recdate=datetime.date(2015,12,21),
+            ISBN='9789380028293',
             book='The Invinsible Man',
             author='H. G. Wells',
             comment='my fav',
-            url='http://aol.com',
             category='History'),
         ReadingList(
             recdate=datetime.date(2015,12,21),
+            ISBN='9780393972832',
             book='Moby Dick',
             author='Herman Melville',
             comment='a whale of a tale',
-            url='http://facebook.com',
             category='Music')
     ]
 
