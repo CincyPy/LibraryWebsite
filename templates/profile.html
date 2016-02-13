@@ -5,12 +5,13 @@
         <a href="{{ url_for('admin') }}" style="text-decoration: none">Back to Admin</a>
     {% else %}
         {{ session.logged_in_name }}
-        <a href="{{ url_for('librarian') }}" style="text-decoration: none">Back to Librarian</a>
+        <a href="{{ url_for('librarian') }}" style="text-decoration: none">Edit Recommended Readings</a>
     {% endif %}
 {% endblock %}
 
 {% block content %}
-    <h2>Staff Profile</h2>
+    <h2>Staff Profile{% if session.logged_in_name == 'admin' %} for {{ uname }}{% endif %}</h2>
+
     <form method="POST" action="" >
         <label for="bio">Bio:</label><br/>
         <textarea name="bio" id="bio">{{ bio }}</textarea><br/>
