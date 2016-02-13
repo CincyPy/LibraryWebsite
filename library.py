@@ -66,17 +66,14 @@ def logout():
 
 @app.route('/')
 def main():
-    logged_in_user = Staff.query.get(session['logged_in_name'])
     staff = Staff.query.filter(Staff.username != 'admin').all()
     shuffle(staff)
-    return render_template('main.html', staff=staff, readinglist=logged_in_user.readinglist)
-
+    return render_template('main.html', staff=staff)
 
 @app.route('/admin')
 @login_required
 def admin():
     return render_template('admin.html', staff=Staff.query.all())
-
 
 @app.route('/librarian')
 @app.route('/librarian/<bookID>')
