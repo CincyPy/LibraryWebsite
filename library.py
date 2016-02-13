@@ -178,11 +178,12 @@ def addrecread():
 @app.route('/remrecread/<rlid>', methods=['POST'])
 @login_required
 def remrecread(rlid):
-	if session["logged_in_name"] == 'admin':
-		rl = ReadingList.query.get(rlid)
-	else:
-    	username = session["logged_in_name"]
-    	rl = ReadingList.query.filter(ReadingList.RLID==rlid,ReadingList.username==username).first()
+    if session['logged_in_name'] == 'admin':
+        rl = ReadingList.query.filter(ReadingList.RLID == rlid).first()
+    else:
+        username = session['logged_in_name']
+        rl = ReadingList.query.filter(ReadingList.RLID == rlid, ReadingList.username == username).first()
+
     if rl:
         db_session.delete(rl)
         db_session.commit()
