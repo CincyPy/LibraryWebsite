@@ -74,7 +74,7 @@ def logout():
 
 @app.route('/')
 def main():
-    staff = Staff.query.all()
+    staff = Staff.query.filter(Staff.username!='admin').all()
     shuffle(staff)
     return render_template('main.html', staff=staff)
 
