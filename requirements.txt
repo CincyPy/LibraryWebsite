@@ -7,3 +7,4 @@ blinker==1.4
 itsdangerous==0.24
 wsgiref==0.1.2
 SQLAlchemy==1.0.10
+py2-ipaddress==3.4.1

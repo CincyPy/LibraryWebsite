@@ -1,9 +1,13 @@
 import unittest
 import flask
+import requests
+from itertools import chain
+from ipaddress import ip_network
 
 import library
 import database
 from database import create_engine, scoped_session, sessionmaker
+from publisher import Publisher
 import models
 import flask
 import db
@@ -230,7 +234,18 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("Fredderson",response.data)
     
         
-        
+    def test_github_ip_check(self):
+        publish = Publisher('192.168.0.1', "dontmatter", "")
+        self.assertFalse(publish.in_ip_address_range())
+        jsonResponse = requests.get("https://api.github.com/meta", auth=("KentonCountyLibrary-Cincypy", "CincyPyCoders2000"))
+        ipranges = jsonResponse.json()["hooks"]
+
+        ipranges = [list(ip_network(ip).hosts()) for ip in ipranges]
+
+        flat_range = list(chain.from_iterable(ipranges))
+
+        publish = Publisher(str(flat_range[0]), "dontmatter", "")
+        self.assertTrue(publish.in_ip_address_range())
 
 if __name__ == '__main__':
     unittest.main()

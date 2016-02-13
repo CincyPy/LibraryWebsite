@@ -8,6 +8,7 @@ from functools import wraps
 from flask import Flask, render_template, request, session, \
      flash, redirect, url_for, g, jsonify
 from flask_mail import Mail, Message
+from publisher import Publisher
 
 from sqlalchemy import or_
 
@@ -297,7 +298,8 @@ def contact(uname):
 
 @app.route('/publish', methods=['POST'])
 def publish():
-    return "wat"
+    publish = Publisher('192.168.0.1', "publisher", request.json)
+    return str(publish.in_ip_address_range())
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=3000)
