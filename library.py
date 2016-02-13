@@ -86,10 +86,14 @@ def admin():
 
 
 @app.route('/librarian')
+@app.route('/librarian/<bookID>')
 @login_required
-def librarian():
+def librarian(bookID=None):
     logged_in_user = Staff.query.get(session['logged_in_name'])
-    return render_template('librarian.html', readinglist=logged_in_user.readinglist)
+    if bookID == None:
+        return render_template('librarian.html', readinglist=logged_in_user.readinglist)
+    else:
+        return render_template('librarian.html', readinglist=logged_in_user.readinglist)
 
 
 @app.route('/adduser', methods=['POST'])
