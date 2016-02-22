@@ -11,10 +11,10 @@
         <link href='https://fonts.googleapis.com/css?family=Lato:400|Merriweather:700' rel='stylesheet' type='text/css'>
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel='stylesheet' href="/static/css/theme.default.min.css">
-        <script src="/static/js/jquery-1.2.6.min.js"></script>
-        <script src="/static/js/jquery.tablesorter.min.js"></script>
-        <script src="/static/js/jquery.tablesorter.widgets.min.js"></script>
+        <link rel='stylesheet' href="{{ url_for('static', filename='css/theme.default.min.css') }}">
+        <script src="{{ url_for('static', filename='js/jquery-1.2.6.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>
 
         <script>
             $(function(){
@@ -26,19 +26,19 @@
                     sortRestart: true
                 })
             });
-            
+
             $(document).ready(function(){
                 {% block jquery %}{% endblock %}
             });
-            
-	    </script>
-        
+
+        </script>
+
 
     </head>
     <body>
       <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="/">Librarian Recommended</a>
+            <a class="navbar-brand" href="{{ url_for('main') }}">Librarian Recommended</a>
             <div class="navbar-brand nav navbar-nav navbar-right ">
                 {%  block nav_right %}
                 {% endblock %}

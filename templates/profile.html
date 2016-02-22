@@ -2,10 +2,10 @@
 {%  block nav_right %}
     {% if session.logged_in_name == 'admin' %}
         {{ session.logged_in_name }}
-        <a href="{{ url_for('admin') }}" style="text-decoration: none">Back to Admin</a>
+        <a href="{{ url_for('admin') }}">Back to Admin</a>
     {% else %}
         {{ session.logged_in_name }}
-        <a href="{{ url_for('librarian') }}" style="text-decoration: none">Back to Librarian</a>
+        <a href="{{ url_for('librarian') }}">Back to Librarian</a>
     {% endif %}
 {% endblock %}
 

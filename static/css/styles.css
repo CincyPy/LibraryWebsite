@@ -1,3 +1,7 @@
+a {
+    text-decoration: none;
+}
+
 html{
   height: 100%;
 }
@@ -20,6 +24,10 @@ body{
 .staff-name:hover, a:hover{
   text-decoration: none;
   color: #bebebe;
+}
+
+.staff-profile {
+    margin-bottom: 2em;
 }
 
 a:hover{
@@ -45,11 +53,13 @@ section#staff:target {
   border: none;
 }
 
+/*
 .container{
   text-align: center;
   padding-left: 40px;
   padding-right: 40px;
 }
+*/
 
 #wrap {
   min-height: 100%;
@@ -73,7 +83,7 @@ section#staff:target {
 }
 
 section#header{
-  	background-image: url("/static/img/hero.jpeg");
+    background-image: url("/static/img/hero.jpeg");
     background-size: cover;
     text-align: center;
     padding: 40px;
