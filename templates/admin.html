@@ -1,14 +1,20 @@
 {% extends "template.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for("static",filename="css/admin.css") }}">
+{% endblock %}
+
 {% block nav_right %}
     {{ session.logged_in_name }}
     <a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}">Edit Profile</a>
+    <a href="{{ url_for('main') }}">Back to Main</a>
 {% endblock %}
 
 {% block content %}
     <h2>Welcome to the Staff Page for the Library Site</h2>
     <p>Hello, {{ session.logged_in_name }} <a href={{ url_for('logout') }}>Logout</a></p>
-    <a href="{{ url_for('main') }}">Back to Main</a>
-    {% if session.logged_in_name == 'admin' %}
+    {%- if session.logged_in_name == 'admin' -%}
     <div class="row">
         <div class="col-sm-6">
             <h3>Add a new staff member:</h3>
@@ -42,17 +48,14 @@
             </form>
         </div>
     </div>
-    {% endif %}
-    
-    </br>
-    </br>
-    <h3>Current Staff: </h3>
-    {% for s in staff %}
-        Name: {{ s.f_name }} {{ s.l_name }}</br>
-        Phone #: {{ s.phone }}</br>
+    {% endif -%}
+
+    <h3>Current Staff:</h3>
+    {%- for s in staff -%}
+        <div>Name: {{ s.f_name }} {{ s.l_name }}</div>
+        <div>Phone #: {{ s.phonenumber }}</div>
         <a href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>
-        </br>
-    {% endfor %}
+    {%- endfor -%}
     </br>
     </br>
     <h3>Reading List: </h3>

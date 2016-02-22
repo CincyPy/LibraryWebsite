@@ -1,4 +1,10 @@
 {% extends "template.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for("static",filename="css/profile.css") }}">
+{% endblock %}
+
 {%  block nav_right %}
     {% if session.logged_in_name == 'admin' %}
         {{ session.logged_in_name }}
@@ -7,15 +13,15 @@
         {{ session.logged_in_name }}
         <a href="{{ url_for('librarian') }}">Back to Librarian</a>
     {% endif %}
+    <a href="{{ url_for('main') }}">Back to Main</a>
 {% endblock %}
 
 {% block content %}
-    <h2>Staff Profile{% if session.logged_in_name == 'admin' %} for {{ uname }}{% endif %}</h2>
+    <h2>Staff Profile for {{ staff.username }}</h2>
 
-    <form method="POST" action="" >
+    <form method="POST" action="{{ url_for('edit_profile', uname=staff.username) }}" >
         <label for="bio">Bio:</label><br/>
-        <textarea name="bio" id="bio">{{ bio }}</textarea><br/>
-        <input value="Update" type="submit" />
+        <textarea name="bio" id="bio" cols="80" rows="10">{{ staff.bio }}</textarea><br/>
+        <button role="button" class="btn btn-primary" type="submit">Update</button>
     </form>
-    <a href="{{ url_for('main') }}"/>Back to Main</a>
 {% endblock %}

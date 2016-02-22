@@ -1,69 +1,64 @@
+{% extends "skeleton.html" %}
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Welcome, friends!</title>
+{% macro ask_what_read() %}
+<a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
+{% endmacro %}
 
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
-        <link rel='stylesheet' href="{{ url_for('static', filename='css/styles.css')}}">
-        <link href='https://fonts.googleapis.com/css?family=Lato:400|Merriweather:700' rel='stylesheet' type='text/css'>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+<link rel='stylesheet' href="{{ url_for('static', filename='css/styles.css')}}">
+<link href='https://fonts.googleapis.com/css?family=Lato:400|Merriweather:700' rel='stylesheet' type='text/css'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel='stylesheet' href="{{ url_for('static', filename='css/theme.default.min.css') }}">
-        <script src="{{ url_for('static', filename='js/jquery-1.2.6.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>
+<link rel='stylesheet' href="{{ url_for('static', filename='css/theme.default.min.css') }}">
+<script src="{{ url_for('static', filename='js/jquery-1.12.0.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>
 
-        <script>
-            $(function(){
-                $('table').tablesorter({
-                    theme: 'default',
-                    widgets: ['zebra'],
-                    usNumberFormat: false,
-                    sortReset: true,
-                    sortRestart: true
-                })
-            });
+<script>
+$(function(){
+    $('table').tablesorter({
+        theme: 'default',
+        widgets: ['zebra'],
+        usNumberFormat: false,
+        sortReset: true,
+        sortRestart: true
+    })
+});
 
-            $(document).ready(function(){
-                {% block jquery %}{% endblock %}
-            });
+$(document).ready(function(){
+    {% block jquery %}{% endblock %}
+});
+</script>
+{% endblock head %}
 
-        </script>
+{% block body %}
 
-
-    </head>
-    <body>
-      <nav class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('main') }}">Librarian Recommended</a>
             <div class="navbar-brand nav navbar-nav navbar-right ">
-                {%  block nav_right %}
-                {% endblock %}
-
+                {%- block nav_right %}{% endblock -%}
             </div>
         </div>
-      </nav>
+    </nav>
 
-      <div id="wrap">
-          {% for message in get_flashed_messages() %}
-              <div class='alert alert-info'>{{ message }}</div>
-          {% endfor %}
-          {% if error %}
-              <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
-          {% endif %}
-          {% block content %}
-          {% endblock %}
+    <div id="wrap">
+      {% for message in get_flashed_messages() %}
+          <div class='alert alert-info'>{{ message }}</div>
+      {% endfor %}
+      {% if error %}
+          <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
+      {% endif %}
+      {% block content %}
+      {% endblock %}
+    </div>
+    <div class="footer" id="footer">
+      <div class="container">
+        <p>Developed by CincyPy</p>
       </div>
-        <div class="footer" id="footer">
-          <div class="container">
-            <p>Developed by CincyPy</p>
-          </div>
-        </div>
+    </div>
 
-
-        <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
-    </body>
-</html>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+{% endblock body %}

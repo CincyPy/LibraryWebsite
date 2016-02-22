@@ -1,21 +1,27 @@
 {% extends "template.html" %}
-{%  block nav_right %}
-    <a href="{{ url_for('main') }}">Back to Main</a>
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for("static",filename="css/login.css") }}">
 {% endblock %}
+
+{%  block nav_right -%}
+<a href="{{ url_for("main") }}">Back to Main</a>
+{%- endblock %}
 
 {% block content %}
 <h2>Welcome to the Staff Login for the Library Site</h2>
 <div class="col-sm-6">
-    <form action='' method='POST'>
-        <div class='form-group'>
-          <label for='username'>Username:</label>
-          <input class='form-control' type='text' name='username' value='{{request.form.username}}'>
+    <form id="login-form" action="{{ url_for('login') }}" method="POST">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input class="form-control" type="text" name="username">
         </div>
-        <div class='form-group'>
-          <label for='password'>Password:</label>
-          <input class='form-control' type='password' name='password' value='{{request.form.password}}'>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input class="form-control" type="password" name="password">
         </div>
-        <input class='btn btn-success' type='submit' value='Login'>
+        <button role="button" class="btn btn-primary" type="submit">Login</button>
     </form>
 </div>
 {% endblock %}
