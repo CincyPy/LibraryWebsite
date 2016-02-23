@@ -171,36 +171,90 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIsNotNone(staff)
         
     def test_addrecread(self):
-        #try with admin
-        self.login("admin","admin")
-        response = self.app.post("/addrecread", data={}, follow_redirects=True)
-        self.assertIn("Your are not authorized to perform this action.",response.data)
-        #try without book
-        self.logout()
-        self.login("fred","fred")
-        response = self.app.post("/addrecread",data=dict(
+        # admin can edit, but book name must exist.
+        self.login("admin", "admin")
+        # admin EDIT - no book name
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
             book="",
             author="t",
             comment="t",
             ISBN="t",
             category="t",
-            sticky=1),follow_redirects=True)
-        self.assertIn("Book name is required.",response.data)
-        #all is well
-        response = self.app.post("/addrecread",data=dict(
+            sticky=1), follow_redirects=True)
+        self.assertIn("Book name is required.", response.data)
+        # admin EDIT - with book name
+        self.login("admin", "admin")
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
             book="t",
             author="t",
             comment="t",
             ISBN="t",
             category="t",
-            sticky=1),follow_redirects=True)
+            sticky=1), follow_redirects=True)
         recread = models.ReadingList.query.filter(and_(
-            models.ReadingList.username=='fred',
-            models.ReadingList.book=='t',
-            models.ReadingList.author=='t',
-            models.ReadingList.comment=='t',
-            models.ReadingList.ISBN=='t',
-            models.ReadingList.sticky==True)).first()
+            models.ReadingList.book == 't',
+            models.ReadingList.author == 't',
+            models.ReadingList.comment == 't',
+            models.ReadingList.ISBN == 't',
+            models.ReadingList.sticky == True)).first()
+        self.assertIsNotNone(recread)
+        self.logout()
+
+        # fred can edit and can add
+        self.login("fred", "fred")
+        # fred ADD - no book name
+        response = self.app.post("/addrecread", data=dict(
+            book="",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Book name is required.", response.data)
+        # fred ADD - with book name
+        response = self.app.post("/addrecread", data=dict(
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        recread = models.ReadingList.query.filter(and_(
+            models.ReadingList.username == 'fred',
+            models.ReadingList.book == 't',
+            models.ReadingList.author == 't',
+            models.ReadingList.comment == 't',
+            models.ReadingList.ISBN == 't',
+            models.ReadingList.sticky == True)).first()
+        self.assertIsNotNone(recread)
+        # fred EDIT - no book name
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Book name is required.", response.data)
+        # fred EDIT - with book name
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        recread = models.ReadingList.query.filter(and_(
+            models.ReadingList.username == 'fred',
+            models.ReadingList.book == 't',
+            models.ReadingList.author == 't',
+            models.ReadingList.comment == 't',
+            models.ReadingList.ISBN == 't',
+            models.ReadingList.sticky == True)).first()
         self.assertIsNotNone(recread)
         
     def test_remrecread(self):

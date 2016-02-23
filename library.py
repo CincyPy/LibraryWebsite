@@ -143,24 +143,22 @@ def addrecread():
         flash('Book name is required. Please try again.')
         return redirect(url_for('librarian'))
 
-    if not request.form['RLID']:
+    if not request.form['RLID']:    # add a new book
         if session['logged_in_name'] == 'admin':
             flash('Your are not authorized to perform this action.')
             return redirect(url_for('admin'))
         book_user = Staff.query.get(session['logged_in_name'])
-    else:
+    else:   # edit a book
         rl = ReadingList.query.get(request.form['RLID'])
         book_user = Staff.query.get(rl.username)
         db_session.delete(rl)
         db_session.commit()
-
     ISBN = request.form['ISBN']
     book = request.form['book']
     author = request.form['author']
     comment = request.form['comment']
     category = request.form['category']
     sticky = request.form['sticky']
-
     book_user.readinglist.append(ReadingList(recdate=datetime.date.today(),
                                              ISBN=ISBN,
                                              book=book,
