@@ -1,23 +1,15 @@
-{% extends "template.html" %}
+{% extends "base.html" %}
 
-{% block nav_right %}
-    {% if session.logged_in %}
-        {{ session.logged_in_name }}
-        <a href="{{ url_for('logout') }}">Logout</a>
-        <a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}">Edit Profile</a>
-    {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-    {% endif %}
+{% block navbar_list %}
+{{ super() }}
 {% endblock %}
 
 {% block content %}
-    {% block navbar %}
     <section id="header">
         <h2>Welcome to the Library Site!</h2>
         <h3>Here you can learn more about your librarians and get personalized book recommendations</h3>
         <a href="#staff" class="btn btn-info" role="button">Browse our current staff</a>
     </section>
-    {% endblock navbar %}
 
     <section id="staff">
         <div class="container">

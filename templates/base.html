@@ -36,11 +36,22 @@ $(document).ready(function(){
 {% block body %}
 
     <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main') }}">Librarian Recommended</a>
-            <div class="navbar-brand nav navbar-nav navbar-right ">
-                {%- block nav_right %}{% endblock -%}
+        <div class="container-fluid">
+        {% block navbar %}
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('main') }}">Librarian Recommended</a>
             </div>
+            <ul class="nav navbar-nav navbar-right">
+            {%- block navbar_list %}
+                {% if session.logged_in %}
+                <li><a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}">Edit Profile</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout {{ session.logged_in_name }}</a></li>
+                {% else %}
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+                {% endif %}
+            {% endblock -%}
+            </ul>
+        {% endblock %}
         </div>
     </nav>
 

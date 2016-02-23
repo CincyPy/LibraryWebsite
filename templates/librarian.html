@@ -1,59 +1,52 @@
-{% extends "template.html" %}
+{% extends "base.html" %}
 {% block head %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for("static",filename="css/admin.css") }}">
 {% endblock %}
 
-{%  block nav_right %}
-{{ session.logged_in_name }}
-<a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}">Edit Profile</a>
-<a href="{{ url_for('main') }}">Back to Main</a>
+{% block navbar_list %}
+<li><a href="{{ url_for('main') }}">Back to Main</a></li>
+{{ super() }}
 {% endblock %}
 
 {% block content %}
     <h2>Welcome to the Librarian Staff Page for the Library Site</h2>
-    <p>Hello, {{ session.logged_in_name }} <a href="{{ url_for('logout') }}">Logout</a></p>
+    <p>Hello, {{ session.logged_in_name }}</p>
     {% if session.logged_in_name != 'admin' %}
-    <div class="row">
-        <div class="col-sm-6">
-            <h3>Add a recommended reading:</h3>
-            <form role="form" action="{{ url_for('addrecread')}}" method="POST" class="recread">
-                <fieldset class="form-group">
-                    <label for="book">Book:</label>
-                    <input class="form-control" name="book" type="text">
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="ISBN">ISBN:</label>
-                    <input class="form-control" name="ISBN" type="text">
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="author">Author:</label>
-                    <input class="form-control" name="author" type="text">
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="comment">Comment:</label>
-                    <input class="form-control" name="comment" type="text">
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="url">Category:</label>
-                    <input class="form-control" name="category" type="text">
-                </fieldset>
-                <fieldset class="form-group">
-                    {#<p>Sticky:</p>#}
-                    <div class="radio">
-                        <input id="sticky-yes" name="sticky" type="radio" value='1'>
-                        <label for="sticky-yes">Yes</label>
-                    </div>
-                    <div class="radio">
-                        <input id="sticky-no" name="sticky" type="radio" value='0' checked>
-                        <label for="sticky-no">No</label>
-                    </div>
-                </fieldset>
-                <button role="button" class="btn btn-primary form-control" type="submit">Save</button>
-            </form>
-        </div>
-    </div>
+    <h3>Add a recommended reading</h3>
+    <form role="form" action="{{ url_for('addrecread')}}" method="POST" class="recread">
+        <fieldset class="form-group">
+            <label for="book">Book</label>
+            <input class="form-control" name="book" type="text">
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="ISBN">ISBN</label>
+            <input class="form-control" name="ISBN" type="text">
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="author">Author</label>
+            <input class="form-control" name="author" type="text">
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="comment">Comment</label>
+            <input class="form-control" name="comment" type="text">
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="url">Category</label>
+            <input class="form-control" name="category" type="text">
+        </fieldset>
+        <fieldset class="form-group">
+            <label>Sticky</label>
+            <div class="radio">
+                <label for="sticky-yes"><input id="sticky-yes" name="sticky" type="radio" value='1'>Yes</label>
+            </div>
+            <div class="radio">
+                <label for="sticky-no"><input id="sticky-no" name="sticky" type="radio" value='0' checked>No</label>
+            </div>
+        </fieldset>
+        <button role="button" class="btn btn-primary form-control" type="submit">Save</button>
+    </form>
     {% endif %}
-    <h3>Reading List: </h3>
+    <h3>Reading List</h3>
     {% include "user_readinglist.html" %}
 {% endblock %}

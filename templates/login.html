@@ -1,12 +1,12 @@
-{% extends "template.html" %}
+{% extends "base.html" %}
 
 {% block head %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for("static",filename="css/login.css") }}">
 {% endblock %}
 
-{%  block nav_right -%}
-<a href="{{ url_for("main") }}">Back to Main</a>
+{%  block navbar_list -%}
+<li><a href="{{ url_for("main") }}">Back to Main</a></li>
 {%- endblock %}
 
 {% block content %}
