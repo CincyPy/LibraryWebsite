@@ -9,6 +9,7 @@ from functools import wraps
 from flask import Flask, render_template, request, session, \
      flash, redirect, url_for, g, jsonify
 from flask_mail import Mail, Message
+from publisher import Publisher
 
 from sqlalchemy import or_
 
@@ -73,6 +74,10 @@ def main():
 @app.route('/admin')
 @login_required
 def admin():
+    if session["logged_in_name"] != "admin":
+        flash("You are not authorized to perform this action.")
+        return redirect(url_for('main'))
+    
     return render_template('admin.html', staff=Staff.query.all())
 
 @app.route('/librarian')
@@ -112,7 +117,7 @@ def adduser():
             flash('Phone number must include area code. Please try again.')
             return redirect(url_for('admin'))
 
-    if Staff.query.filter(or_(Staff.username==username, Staff.email==email)).all():
+    if Staff.query.filter(or_(Staff.username==username, Staff.emailaddress==email)).all():
         flash('Username or email address is already used.')
         return redirect(url_for('admin'))
 
@@ -160,6 +165,7 @@ def addrecread():
                                                   comment=comment,
                                                   sticky=sticky,
                                                   category=category))
+    
     db_session.commit()
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
@@ -168,11 +174,12 @@ def addrecread():
 @app.route('/remrecread/<rlid>', methods=['POST'])
 @login_required
 def remrecread(rlid):
-    rl = ReadingList.query.get(rlid)
+    username = session["logged_in_name"]
+    rl = ReadingList.query.filter(ReadingList.RLID==rlid,ReadingList.username==username).first()
     if rl:
         db_session.delete(rl)
         db_session.commit()
-        flash('Delete recommended reading.')
+        flash('Deleted recommended reading.')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
     else:
@@ -316,6 +323,11 @@ def contact(uname):
         msg.body += message
         mail.send(msg)
         return redirect(url_for('profile', uname=uname))
-    
+
+@app.route('/publish', methods=['POST'])
+def publish():
+    publish = Publisher('192.168.0.1', "publisher", request.json)
+    return str(publish.in_ip_address_range())
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=3000)
