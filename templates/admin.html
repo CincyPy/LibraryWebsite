@@ -50,7 +50,12 @@
     {% for s in staff %}
         Name: {{ s.f_name }} {{ s.l_name }}</br>
         Phone #: {{ s.phone }}</br>
-        <a href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>
+        <a href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a><br>
+        {% if s.username != 'admin' %}
+            <form method="POST" action="{{ url_for('deleteuser', username=s.username) }}">
+            <input class='btn btn-danger' type='submit' value='Delete'>
+            </form>
+        {% endif %}
         </br>
     {% endfor %}
     </br>

@@ -28,6 +28,10 @@
             <p>{{ staff.bio|truncate(100) }} <a href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
             <a href="/contact/{{ staff.username }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
             <br><br>
+            <!-- To add if we want to show categories on main page -->
+           <!--  {% for category in staff.category_list %}
+            <button type="button" class="btn btn-primary btn-xs"> {{ category }} </button>
+                {% endfor %} -->
         </div>
       {% endfor %}
       </div>
