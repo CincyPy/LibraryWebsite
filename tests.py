@@ -169,7 +169,27 @@ class LibrarySiteTests(unittest.TestCase):
             email="test2@testing.com"),follow_redirects=True)
         staff=models.Staff.query.filter(and_(models.Staff.username=='u', models.Staff.password=='u', models.Staff.f_name=='u', models.Staff.l_name=='u', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test2@testing.com')).first()
         self.assertIsNotNone(staff)
-        
+
+    def test_deleteuser(self):
+        # non-admin can't delete users
+        self.login("fred", "fred")
+        response = self.app.post("/deleteuser/elmo", data={}, follow_redirects=True)
+        self.assertIn("You are not authorized to perform this action.", response.data)
+        self.logout()
+
+        self.login("admin", "admin")
+        # can't delete admin
+        response = self.app.post("/deleteuser/admin", data={}, follow_redirects=True)
+        self.assertIn("You are not authorized to perform this action.", response.data)
+        # deleting user removed recommended readings and user
+        response = self.app.post("/deleteuser/elmo", data={}, follow_redirects=True)
+        self.assertIn("User was successfully removed!", response.data)
+        rl = models.ReadingList.query.filter(models.ReadingList.username=="elmo").first()
+        self.assertIsNone(rl)
+        s = models.Staff.query.filter(models.Staff.username=="elmo").first()
+        self.assertIsNone(s)
+
+
     def test_addrecread(self):
         # admin can edit, but book name must exist.
         self.login("admin", "admin")

@@ -139,8 +139,10 @@ def deleteuser(username):
     if session["logged_in_name"] != "admin" or username == "admin":
         flash("You are not authorized to perform this action.")
         return redirect(url_for('main'))
-    # import pdb; pdb.set_trace()
-    staff=Staff.query.get(username)
+    recread = ReadingList.query.filter(ReadingList.username == username).all()
+    for rr in recread:
+        db_session.delete(rr)
+    staff = Staff.query.get(username)
     db_session.delete(staff)
     db_session.commit()
     flash('User was successfully removed!')
