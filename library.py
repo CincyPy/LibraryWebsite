@@ -71,7 +71,6 @@ def main():
     shuffle(staff)
     return render_template('main.html', staff=staff)
 
-
 @app.route('/admin')
 @login_required
 def admin():
@@ -80,7 +79,6 @@ def admin():
         return redirect(url_for('main'))
 
     return render_template('admin.html', staff=Staff.query.all())
-
 
 @app.route('/librarian')
 @app.route('/librarian/<bookID>')
@@ -124,12 +122,24 @@ def adduser():
         return redirect(url_for('admin'))
 
     staff = Staff(username=username, password=password, f_name=f_name,
-                  l_name=l_name, phonenumber=phone, emailaddress=email, bio="")
+                  l_name=l_name, phonenumber=phone, emailaddress=email)
     db_session.add(staff)
     db_session.commit()
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
 
+@app.route('/deleteuser/<username>', methods=['POST'])
+@login_required
+def deleteuser(username):
+    if session["logged_in_name"] != "admin" or username == "admin":
+        flash("You are not authorized to perform this action.")
+        return redirect(url_for('main'))
+    # import pdb; pdb.set_trace()
+    staff=Staff.query.get(username)
+    db_session.delete(staff)
+    db_session.commit()
+    flash('User was successfully removed!')
+    return redirect(url_for('admin'))
 
 @app.route('/addrecread', methods=['POST'])
 @login_required
