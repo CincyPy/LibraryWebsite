@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {%  block nav_right %}
-    <a href="{{ url_for('main') }}">Back to Main</a>
+<a href="{{ url_for('main') }}">Main</a>
 {% endblock %}
 
-{% block content %}
+{% block head %}
+{{ super() }}
 <script>
 
 function contactChange() {
@@ -31,110 +32,136 @@ function contactChange() {
 }
 
 </script>
+{% endblock %}
+
+{% block content %}
 
 <div class="container">
     <h2>Contact {{ staff }}</h2>
-    <form method="POST" action="" role="form">
-        <p>How do you want to have this conversation?</p>
+    <form method="POST" action="{{ url_for('contact', uname=staff) }}" role="form">
+        <fieldset>
+            <legend>How do you want to have this conversation?</legend>
+            {% if pref.email %}
+            <div class="radio">
+                <label for="contact-by-email"><input id="contact-by-email" type="radio" name="contact" value="email" onclick="contactChange()">Email</label>
+            </div>
+            {% endif %}
+            {% if pref.phone %}
+            <div class="radio">
+                <label for="contact-by-phone"><input id="contact-by-phone" type="radio" name="contact" value="phone" onclick="contactChange()">Phone</label>
+            </div>
+            {% endif %}
+            {% if pref.chat %}
+            <div class="radio">
+                <label for="contact-online-chat"><input id="contact-online-chat" type="radio" name="contact" value="chat" onclick="contactChange()">Online chat</label>
+            </div>
+            {% endif %}
+            {% if pref.irl %}
+            <div class="radio">
+                <label for="contact-in-person" class="form-label"><input id="contact-in-person" type="radio" name="contact" value="irl" onclick="contactChange()">In person</label>
+            </div>
+            {% endif %}
+            <p class="form-control-static">Pick one.</p>
+        </fieldset>
+
         {% if pref.email %}
-        <div class="form-group">
-        <input id="contact-by-email" type="radio" name="contact" value="email" onclick="contactChange()">
-        <label for="contact-by-email">Email</label>
-        </div>
-        {% endif %}
-        {% if pref.phone %}
-        <div class="form-group">
-        <input id="contact-by-phone" type="radio" name="contact" value="phone" onclick="contactChange()">
-        <label for="contact-by-phone">Phone</label>
-        </div>
-        {% endif %}
-        {% if pref.chat %}
-        <div class="form-group">
-        <input id="contact-by-online-chat" type="radio" name="contact" value="chat" onclick="contactChange()">
-        <label for="contact-by-online-chat">Online chat</label>
-        </div>
-        {% endif %}
-        {% if pref.irl %}
-        <div class="form-group">
-        <input id="contact-in-person" type="radio" name="contact" value="irl" onclick="contactChange()">
-        <label for="contact-in-person">In person</label>
-        </div>
-        {% endif %}
-        <p>Pick one.</p>
-
-        {% if pref.email %}    
         <div class="hidden" id="email_input">
-            <label for="likes">Tell us about a few books or authors you've enjoyed. What made these books great?</label></br>
-            <input id="likes" type="textarea" name="likes" value="{{ inputs.likes }}">
 
-            <br><label for="dislikes">Describe some authors or titles that you DID NOT like and why</label></br>
-            <input id="dislikes" type="textarea" name="dislikes" value="{{ inputs.dislikes }}">
+            <div class="form-group">
+                <label for="likes">Tell us about a few books or authors you've enjoyed. What made these books great?</label>
+                <textarea id="likes" class="form-control" name="likes">{{ inputs.likes }}</textarea>
+            </div>
 
-            <br><label for="comment">Is there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?</label></br>
-            <input id="comment" type="textarea" name="comment" value="{{ inputs.comment }}">
+            <div class="form-group">
+                <label for="dislikes">Describe some authors or titles that you DID NOT like and why</label>
+                <textarea id="dislikes" class="form-control" name="dislikes">{{ inputs.dislikes }}</textarea>
+            </div>
 
-            <p>Are you interested in books for adults, teens, or children?</p>
+            <div class="form-group">
+                <label for="comment">Is there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?</label>
+                <textarea id="comment" class="form-control" name="comment">{{ inputs.comment }}</textarea>
+            </div>
 
-            <input id="checkbox-audience-adults" type="checkbox" name="audience" value="adults">
-            <label for="checkbox-audience-adults">Adults</label>
-            <input id="checkbox-audience-teens" type="checkbox" name="audience" value="teens">Teens</br>
-            <label for="checkbox-audience-teens">Adults</label>
-            <input id="checkbox-audience-children" type="checkbox" name="audience" value="children">Children</br>
-            <label for="checkbox-audience-children">Adults</label>
-            <p>Check all that apply.</p>
+            <fieldset>
+                <legend>Are you interested in books for adults, teens, or children?</legend>
 
-            <br><label for="format_pref">Do you have a preferred format?</label></br>
-            <input type="checkbox" name="format_pref" value="book">Book</br>
-            <input type="checkbox" name="format_pref" value="lg_print">Large print</br>
-            <input type="checkbox" name="format_pref" value="cd">Audiobook on CD</br>
-            <input type="checkbox" name="format_pref" value="ebook">E-book</br>
-            <input type="checkbox" name="format_pref" value="digital_audio">Digital audiobook</br>
-            Check all that apply.
+                <div class="checkbox">
+                    <label for="audience-adults"><input id="audience-adults" type="checkbox" name="audience" value="adults">Adults</label>
+                </div>
+
+                <div class="checkbox">
+                    <label for="audience-teens"><input id="audience-teens" type="checkbox" name="audience" value="teens">Teens</label>
+                </div>
+
+                <div class="checkbox">
+                    <label for="audience-children"><input id="audience-children" type="checkbox" name="audience" value="children">Children</label>
+                </div>
+                <p class="form-control-static">Check all that apply.</p>
+            </fieldset>
+
+            <fieldset>
+                <legend>Do you have a preferred format?</legend>
+                <div class="checkbox">
+                    <label><input type="checkbox" name="format_pref" value="book">Book</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" name="format_pref" value="lg_print">Large print</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" name="format_pref" value="cd">Audiobook on CD</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" name="format_pref" value="ebook">E-book</label>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" name="format_pref" value="digital_audio">Digital audiobook</label>
+                </div>
+                <p class="form-control-static">Check all that apply.</p>
+            </fieldset>
         </div>
         {% endif %}
-            
+
         {% if pref.phone %}
         <div class="hidden form-group" id="phone_input">
-            <label for="phone">Please enter your phone number (incl area code) <span class="form-required" title="This field is required.">*</span></label></br>
-            <input id="phone" type="text" placeholder="555-555-5555" name="phone" value="{{ inputs.phone }}">
+            <label for="phone" class="form-label">Please enter your phone number (incl area code) <span class="form-required" title="This field is required.">*</span><input id="phone" type="text" placeholder="555-555-5555" class="form-control" name="phone" value="{{ inputs.phone }}"></label>
         </div>
         {% endif %}
 
         {% if pref.chat %}
-        <div class="hidden form-group" id="chat_input">
-            <label for="chat">Select the online chat service <span class="form-required" title="This field is required.">*</span></label><br>
-            <select id="chat" name="chat">
-               <option value="" selected="selected">- Select -</option>
-               <option value="google">Google+</option>
-               <option value="skype">Skype</option>
-            </select><br>
-            <label for="handle">What's your chat handle? <span class="form-required" title="This field is required.">*</span></label></br>
-            <input type="text" name="handle" value="{{ inputs.handle }}">
+        <div class="hidden" id="chat_input">
+            <div class="hidden form-group" >
+                <label for="chat">Select the online chat service <span class="form-required" title="This field is required.">*</span></label>
+                <select id="chat" class="form-control" name="chat">
+                   <option value="" selected="selected">- Select -</option>
+                   <option value="google">Google+</option>
+                   <option value="skype">Skype</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="handle" class="form-label">What's your chat handle? <span class="form-required" title="This field is required.">*</span></label>
+                <input id="handle" type="text" class="form-control" name="handle" value="{{ inputs.handle }}">
+            </div>
         </div>
         {% endif %}
 
         <div class="hidden form-group" id="times_input">
-            <label for="times">What time works for you?</label></br>
-            <input id="times" type="textarea" placeholder="Suggest a couple days and times. We will email or phone to confirm." name="times" value="{{ inputs.times }}">
+            <label for="times">What time works for you?</label>
+            <input id="times" type="textarea" class="form-control" placeholder="Suggest a couple days and times. We will email or phone to confirm." name="times" value="{{ inputs.times }}">
         </div>
 
-        <legend>
-            Your Contact Information        
-        </legend>
-        <div class="fieldset-wrapper">
+        <fieldset>
+            <legend>Your Contact Information</legend>
             <div class="form-group">
-                <label for="name">Your name <span class="form-required" title="This field is required.">*</span></label><br>
-                <input type="text" id="name" name="name" value="{{ inputs.name }}" size="35" maxlength="128">
+                <label for="name">Your name <span class="form-required" title="This field is required.">*</span></label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ inputs.name }}" size="35" maxlength="128">
             </div>
             <div class="form-group">
-                <label for="email">Email Address <span class="form-required" title="This field is required.">*</span></label><br>
-                <input type="email" id="email" name="email" value="{{ inputs.email }}" size="35">
+                <label for="email">Email Address <span class="form-required" title="This field is required.">*</span></label>
+                <input type="email" id="email" name="email" class="form-control" value="{{ inputs.email }}" size="35">
             </div>
+        </fieldset>
 
-            <div><br></div>
-        </div>
-        
-        <input type="submit" value="Submit" id="submit" class="btn btn-default"><br>
+        <input type="submit" value="Submit" id="submit" class="btn btn-primary">
     </form>
 </div>
 

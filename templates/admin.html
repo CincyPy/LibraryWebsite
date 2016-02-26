@@ -2,62 +2,74 @@
 
 {% block head %}
 {{ super() }}
-<link rel="stylesheet" href="{{ url_for("static",filename="css/admin.css") }}">
+{{ js_init_tablesorter() }}
+
+<style>
+    .staff-profile {
+        margin-top: 25px;
+        margin-bottom: 25px;
+    }
+</style>
 {% endblock %}
 
 {% block nav_right %}
     {{ session.logged_in_name }}
     <a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}">Edit Profile</a>
-    <a href="{{ url_for('main') }}">Back to Main</a>
+    <a href="{{ url_for('main') }}">Main</a>
 {% endblock %}
 
 {% block content %}
-    <h2>Welcome to the Staff Page for the Library Site</h2>
-    <p>Hello, {{ session.logged_in_name }} <a href={{ url_for('logout') }}>Logout</a></p>
-    {%- if session.logged_in_name == 'admin' -%}
+<div class="container">
     <div class="row">
-        <div class="col-sm-6">
-            <h3>Add a new staff member:</h3>
-            <form action="{{ url_for('adduser')}}" method="POST" class="add">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input class="form-control" name='username' type='text'>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input class="form-control" name='password' type='text'>
-                </div>
-                <div class="form-group">
-                    <label for="f_name">First Name:</label>
-                    <input class="form-control" name='f_name' type='text'>
-                </div>
-                <div class="form-group">
-                    <label for="l_name">Last Name:</label>
-                    <input class="form-control" name='l_name' type='text'>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone:</label>
-                    <input class="form-control" name='phone' type='text'>
-                    <p>Include area code</p>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input class="form-control" name='email' type='email'>
-                </div>
-                <input class='btn btn-success' type='submit' value='Save'>
-            </form>
-        </div>
+        <h2>Welcome to the Staff Page for the Library Site</h2>
+        <p>Hello, {{ session.logged_in_name }}</p>
+        {%- if session.logged_in_name == 'admin' -%}
+        <h3>Add a new staff member</h3>
+        <form action="{{ url_for('adduser')}}" method="POST" class="add">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input id="username" class="form-control" name="username" type="text">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" class="form-control" name="password" type="text">
+            </div>
+            <div class="form-group">
+                <label for="f_name">First Name</label>
+                <input id="f_name" class="form-control" name="f_name" type="text">
+            </div>
+            <div class="form-group">
+                <label for="l_name">Last Name</label>
+                <input id="l_name" class="form-control" name="l_name" type="text">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input id="phone" class="form-control" name="phone" type="text">
+                <p>Include area code</p>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" class="form-control" name="email" type="email">
+            </div>
+            <input class="btn btn-primary" type="submit" value="Save">
+        </form>
+        {% endif -%}
     </div>
-    {% endif -%}
 
-    <h3>Current Staff:</h3>
-    {%- for s in staff -%}
-        <div>Name: {{ s.f_name }} {{ s.l_name }}</div>
-        <div>Phone #: {{ s.phonenumber }}</div>
-        <a href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>
-    {%- endfor -%}
-    </br>
-    </br>
-    <h3>Reading List: </h3>
-    {% include "user_readinglist.html" %}
+    <div class="row">
+        <h3>Current Staff</h3>
+        {%- for s in staff -%}
+        <div class="col-md-4 staff-profile">
+            <div>Name: {{ s.f_name }} {{ s.l_name }}</div>
+            <div>Phone #: {{ s.phonenumber }}</div>
+            <a class="btn btn-default" href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>
+        </div>
+        {%- endfor -%}
+    </div>
+
+    <div class="row">
+        <h3>Reading List:</h3>
+        {% include "user_readinglist.html" %}
+    </div>
+</div>
 {% endblock %}

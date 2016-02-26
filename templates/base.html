@@ -1,21 +1,12 @@
 {% extends "skeleton.html" %}
 
-{% macro ask_what_read() %}
+{% macro ask_what_read(staff) %}
 <a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
 {% endmacro %}
 
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
-<link rel='stylesheet' href="{{ url_for('static', filename='css/styles.css')}}">
-<link href='https://fonts.googleapis.com/css?family=Lato:400|Merriweather:700' rel='stylesheet' type='text/css'>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel='stylesheet' href="{{ url_for('static', filename='css/theme.default.min.css') }}">
-<script src="{{ url_for('static', filename='js/jquery-1.12.0.min.js') }}"></script>
+{% macro js_init_tablesorter() %}
 <script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>
-
 <script>
 $(function(){
     $('table').tablesorter({
@@ -26,50 +17,39 @@ $(function(){
         sortRestart: true
     })
 });
-
-$(document).ready(function(){
-    {% block jquery %}{% endblock %}
-});
 </script>
+{% endmacro %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css')}}">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato:400|Merriweather:700">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.default.min.css') }}">
+<script src="{{ url_for('static', filename='js/jquery-1.12.0.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
 {% endblock head %}
 
 {% block body %}
 
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
-        {% block navbar %}
-            <div class="navbar-header">
-                <a class="navbar-brand" href="{{ url_for('main') }}">Librarian Recommended</a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-            {%- block navbar_list %}
-                {% if session.logged_in %}
-                <li><a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}">Edit Profile</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout {{ session.logged_in_name }}</a></li>
-                {% else %}
-                <li><a href="{{ url_for('login') }}">Login</a></li>
-                {% endif %}
-            {% endblock -%}
-            </ul>
-        {% endblock %}
-        </div>
-    </nav>
+{% include "navbar.html" %}
 
-    <div id="wrap">
-      {% for message in get_flashed_messages() %}
-          <div class='alert alert-info'>{{ message }}</div>
-      {% endfor %}
-      {% if error %}
-          <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
-      {% endif %}
-      {% block content %}
-      {% endblock %}
-    </div>
-    <div class="footer" id="footer">
-      <div class="container">
-        <p>Developed by CincyPy</p>
-      </div>
-    </div>
+<div id="wrap">
+    {% for message in get_flashed_messages() %}
+    <div class='alert alert-info'>{{ message }}</div>
+    {% endfor %}
+    {% if error %}
+    <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+</div>
 
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+<div class="footer" id="footer">
+{% block footer %}
+    <div class="container"><p>Developed by CincyPy</p></div>
+{% endblock footer %}
+</div>
 {% endblock body %}

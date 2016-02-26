@@ -1,26 +1,14 @@
 {% extends "base.html" %}
 
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" href="{{ url_for("static",filename="css/profile.css") }}">
-{% endblock %}
-
-{% block navbar_list %}
-    {% if session.logged_in_name == 'admin' %}
-        <li><a href="{{ url_for('admin') }}">Back to Admin</a></li>
-    {% else %}
-        <li><a href="{{ url_for('librarian') }}">Back to Librarian</a></li>
-    {% endif %}
-    <li><a href="{{ url_for('main') }}">Back to Main</a></li>
-{{ super() }}
-{% endblock %}
-
 {% block content %}
+<div class="container">
     <h2>Staff Profile for {{ staff.username }}</h2>
-
     <form method="POST" action="{{ url_for('edit_profile', uname=staff.username) }}" >
-        <label for="bio">Bio:</label><br/>
-        <textarea class="form-control" name="bio" id="bio" cols="80" rows="10">{{ staff.bio }}</textarea><br/>
+        <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" class="form-control" name="bio" rows="10">{{ staff.bio }}</textarea>
+        </div>
         <button role="button" class="btn btn-primary" type="submit">Update</button>
     </form>
+</div>
 {% endblock %}

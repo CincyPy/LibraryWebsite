@@ -78,7 +78,7 @@ def admin():
     if session["logged_in_name"] != "admin":
         flash("You are not authorized to perform this action.")
         return redirect(url_for('main'))
-    
+
     return render_template('admin.html', staff=Staff.query.all())
 
 
@@ -155,7 +155,7 @@ def addrecread():
                                                   comment=comment,
                                                   sticky=sticky,
                                                   category=category))
-    
+
     db_session.commit()
     flash('New recommending reading added.')
     return redirect(url_for('librarian'))
