@@ -1,7 +1,35 @@
 {% extends "base.html" %}
-{%  block nav_right %}
-<a href="{{ url_for('main') }}">Main</a>
-{% endblock %}
+
+{% macro required() -%}
+<strong><abbr title="This field is required.">*</abbr></strong>
+{%- endmacro %}
+
+{% macro contact_radio(value, text) -%}
+<div class="radio">
+    <label for="contact-by-{{ value }}">
+        <input id="contact-by-{{ value }}"
+               type="radio"
+               name="contact"
+               value="{{ value }}"
+               onclick="contactChange()">{{ text }}</label>
+</div>
+{%- endmacro %}
+
+{% macro audience_checkbox(value, text) -%}
+<div class="checkbox">
+    <label for="audience-{{ value }}"><input id="audience-{{ value }}" type="checkbox" name="audience" value="{{ value }}">{{ text }}</label>
+</div>
+{%- endmacro %}
+
+{% macro preferred_format_checkbox(value, text) -%}
+<div class="checkbox">
+    <label for="preferred-format-{{ value }}">
+        <input id="preferred-format-{{ value }}"
+               type="checkbox"
+               name="format_pref"
+               value="{{ value }}">{{ text }}</label>
+</div>
+{% endmacro %}
 
 {% block head %}
 {{ super() }}
@@ -31,35 +59,31 @@ function contactChange() {
     }
 }
 
+$(function() {
+    $("#conversation-type").first("input[type=radio]").prop("checked", true);
+    contactChange();
+});
 </script>
 {% endblock %}
 
 {% block content %}
-
 <div class="container">
     <h2>Contact {{ staff }}</h2>
     <form method="POST" action="{{ url_for('contact', uname=staff) }}" role="form">
-        <fieldset>
+        <fieldset id="conversation-type">
             <legend>How do you want to have this conversation?</legend>
+            <p>Required fields are followed by {{ required() }}.</p>
             {% if pref.email %}
-            <div class="radio">
-                <label for="contact-by-email"><input id="contact-by-email" type="radio" name="contact" value="email" onclick="contactChange()">Email</label>
-            </div>
+            {{ contact_radio('email', 'Email') }}
             {% endif %}
             {% if pref.phone %}
-            <div class="radio">
-                <label for="contact-by-phone"><input id="contact-by-phone" type="radio" name="contact" value="phone" onclick="contactChange()">Phone</label>
-            </div>
+            {{ contact_radio('phone', 'Phone') }}
             {% endif %}
             {% if pref.chat %}
-            <div class="radio">
-                <label for="contact-online-chat"><input id="contact-online-chat" type="radio" name="contact" value="chat" onclick="contactChange()">Online chat</label>
-            </div>
+            {{ contact_radio('chat', 'Online Chat') }}
             {% endif %}
             {% if pref.irl %}
-            <div class="radio">
-                <label for="contact-in-person" class="form-label"><input id="contact-in-person" type="radio" name="contact" value="irl" onclick="contactChange()">In person</label>
-            </div>
+            {{ contact_radio('irl', 'In Person') }}
             {% endif %}
             <p class="form-control-static">Pick one.</p>
         </fieldset>
@@ -84,38 +108,19 @@ function contactChange() {
 
             <fieldset>
                 <legend>Are you interested in books for adults, teens, or children?</legend>
-
-                <div class="checkbox">
-                    <label for="audience-adults"><input id="audience-adults" type="checkbox" name="audience" value="adults">Adults</label>
-                </div>
-
-                <div class="checkbox">
-                    <label for="audience-teens"><input id="audience-teens" type="checkbox" name="audience" value="teens">Teens</label>
-                </div>
-
-                <div class="checkbox">
-                    <label for="audience-children"><input id="audience-children" type="checkbox" name="audience" value="children">Children</label>
-                </div>
+                {{ audience_checkbox('adults', 'Adults') }}
+                {{ audience_checkbox('teens', 'Teens') }}
+                {{ audience_checkbox('children', 'Children') }}
                 <p class="form-control-static">Check all that apply.</p>
             </fieldset>
 
             <fieldset>
                 <legend>Do you have a preferred format?</legend>
-                <div class="checkbox">
-                    <label><input type="checkbox" name="format_pref" value="book">Book</label>
-                </div>
-                <div class="checkbox">
-                    <label><input type="checkbox" name="format_pref" value="lg_print">Large print</label>
-                </div>
-                <div class="checkbox">
-                    <label><input type="checkbox" name="format_pref" value="cd">Audiobook on CD</label>
-                </div>
-                <div class="checkbox">
-                    <label><input type="checkbox" name="format_pref" value="ebook">E-book</label>
-                </div>
-                <div class="checkbox">
-                    <label><input type="checkbox" name="format_pref" value="digital_audio">Digital audiobook</label>
-                </div>
+                {{ preferred_format_checkbox('book', 'Book') }}
+                {{ preferred_format_checkbox('lg_print', 'Large Print') }}
+                {{ preferred_format_checkbox('cd', 'Audiobook on CD') }}
+                {{ preferred_format_checkbox('ebook', 'E-book') }}
+                {{ preferred_format_checkbox('digital_audio', 'Digital audiobook') }}
                 <p class="form-control-static">Check all that apply.</p>
             </fieldset>
         </div>
@@ -123,14 +128,14 @@ function contactChange() {
 
         {% if pref.phone %}
         <div class="hidden form-group" id="phone_input">
-            <label for="phone" class="form-label">Please enter your phone number (incl area code) <span class="form-required" title="This field is required.">*</span><input id="phone" type="text" placeholder="555-555-5555" class="form-control" name="phone" value="{{ inputs.phone }}"></label>
+            <label for="phone" class="form-label">Please enter your phone number (incl area code) {{ required() }}<input id="phone" type="text" placeholder="555-555-5555" class="form-control" name="phone" value="{{ inputs.phone }}"></label>
         </div>
         {% endif %}
 
         {% if pref.chat %}
         <div class="hidden" id="chat_input">
             <div class="hidden form-group" >
-                <label for="chat">Select the online chat service <span class="form-required" title="This field is required.">*</span></label>
+                <label for="chat">Select the online chat service {{ required() }}</label>
                 <select id="chat" class="form-control" name="chat">
                    <option value="" selected="selected">- Select -</option>
                    <option value="google">Google+</option>
@@ -138,7 +143,7 @@ function contactChange() {
                 </select>
             </div>
             <div class="form-group">
-                <label for="handle" class="form-label">What's your chat handle? <span class="form-required" title="This field is required.">*</span></label>
+                <label for="handle" class="form-label">What's your chat handle? {{ required() }}</label>
                 <input id="handle" type="text" class="form-control" name="handle" value="{{ inputs.handle }}">
             </div>
         </div>
@@ -152,11 +157,11 @@ function contactChange() {
         <fieldset>
             <legend>Your Contact Information</legend>
             <div class="form-group">
-                <label for="name">Your name <span class="form-required" title="This field is required.">*</span></label>
+                <label for="name">Your name {{ required() }}</label>
                 <input type="text" id="name" name="name" class="form-control" value="{{ inputs.name }}" size="35" maxlength="128">
             </div>
             <div class="form-group">
-                <label for="email">Email Address <span class="form-required" title="This field is required.">*</span></label>
+                <label for="email">Email Address {{ required() }}</label>
                 <input type="email" id="email" name="email" class="form-control" value="{{ inputs.email }}" size="35">
             </div>
         </fieldset>
@@ -164,5 +169,4 @@ function contactChange() {
         <input type="submit" value="Submit" id="submit" class="btn btn-primary">
     </form>
 </div>
-
 {% endblock %}

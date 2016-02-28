@@ -13,27 +13,27 @@
         {% if session.logged_in_name != 'admin' %}
         <h3>Add a recommended reading</h3>
         <form role="form" action="{{ url_for('addrecread')}}" method="POST">
-            <fieldset class="form-group">
+            <div class="form-group">
                 <label for="book">Book</label>
                 <input class="form-control" name="book" type="text">
-            </fieldset>
-            <fieldset class="form-group">
+            </div>
+            <div class="form-group">
                 <label for="ISBN">ISBN</label>
                 <input class="form-control" name="ISBN" type="text">
-            </fieldset>
-            <fieldset class="form-group">
+            </div>
+            <div class="form-group">
                 <label for="author">Author</label>
                 <input class="form-control" name="author" type="text">
-            </fieldset>
-            <fieldset class="form-group">
+            </div>
+            <div class="form-group">
                 <label for="comment">Comment</label>
                 <input class="form-control" name="comment" type="text">
-            </fieldset>
-            <fieldset class="form-group">
+            </div>
+            <div class="form-group">
                 <label for="url">Category</label>
                 <input class="form-control" name="category" type="text">
-            </fieldset>
-            <fieldset class="form-group">
+            </div>
+            <div class="form-group">
                 <label>Sticky</label>
                 <div class="radio">
                     <label for="sticky-yes"><input id="sticky-yes" name="sticky" type="radio" value='1'>Yes</label>
@@ -41,7 +41,7 @@
                 <div class="radio">
                     <label for="sticky-no"><input id="sticky-no" name="sticky" type="radio" value='0' checked>No</label>
                 </div>
-            </fieldset>
+            </div>
             <button role="button" class="btn btn-primary" type="submit">Save</button>
         </form>
     </div>
