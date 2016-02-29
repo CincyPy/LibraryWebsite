@@ -78,7 +78,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.login("admin","admin")
         #test admin
         response = self.app.get("/admin")
-        self.assertIn("Add a new staff member:",response.data)
+        self.assertIn("Add a new staff member",response.data)
         self.assertIn("/edit-profile/admin",response.data)
         self.assertIn("/edit-profile/fred",response.data)
 
