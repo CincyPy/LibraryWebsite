@@ -169,38 +169,112 @@ class LibrarySiteTests(unittest.TestCase):
             email="test2@testing.com"),follow_redirects=True)
         staff=models.Staff.query.filter(and_(models.Staff.username=='u', models.Staff.password=='u', models.Staff.f_name=='u', models.Staff.l_name=='u', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test2@testing.com')).first()
         self.assertIsNotNone(staff)
-        
-    def test_addrecread(self):
-        #try with admin
-        self.login("admin","admin")
-        response = self.app.post("/addrecread", data={}, follow_redirects=True)
-        self.assertIn("Your are not authorized to perform this action.",response.data)
-        #try without book
+
+    def test_deleteuser(self):
+        # non-admin can't delete users
+        self.login("fred", "fred")
+        response = self.app.post("/deleteuser/elmo", data={}, follow_redirects=True)
+        self.assertIn("You are not authorized to perform this action.", response.data)
         self.logout()
-        self.login("fred","fred")
-        response = self.app.post("/addrecread",data=dict(
+
+        self.login("admin", "admin")
+        # can't delete admin
+        response = self.app.post("/deleteuser/admin", data={}, follow_redirects=True)
+        self.assertIn("You are not authorized to perform this action.", response.data)
+        # deleting user removed recommended readings and user
+        response = self.app.post("/deleteuser/elmo", data={}, follow_redirects=True)
+        self.assertIn("User was successfully removed!", response.data)
+        rl = models.ReadingList.query.filter(models.ReadingList.username=="elmo").first()
+        self.assertIsNone(rl)
+        s = models.Staff.query.filter(models.Staff.username=="elmo").first()
+        self.assertIsNone(s)
+
+
+    def test_addrecread(self):
+        # admin can edit, but book name must exist.
+        self.login("admin", "admin")
+        # admin EDIT - no book name
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
             book="",
             author="t",
             comment="t",
             ISBN="t",
             category="t",
-            sticky=1),follow_redirects=True)
-        self.assertIn("Book name is required.",response.data)
-        #all is well
-        response = self.app.post("/addrecread",data=dict(
+            sticky=1), follow_redirects=True)
+        self.assertIn("Book name is required.", response.data)
+        # admin EDIT - with book name
+        self.login("admin", "admin")
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
             book="t",
             author="t",
             comment="t",
             ISBN="t",
             category="t",
-            sticky=1),follow_redirects=True)
+            sticky=1), follow_redirects=True)
         recread = models.ReadingList.query.filter(and_(
-            models.ReadingList.username=='fred',
-            models.ReadingList.book=='t',
-            models.ReadingList.author=='t',
-            models.ReadingList.comment=='t',
-            models.ReadingList.ISBN=='t',
-            models.ReadingList.sticky==True)).first()
+            models.ReadingList.book == 't',
+            models.ReadingList.author == 't',
+            models.ReadingList.comment == 't',
+            models.ReadingList.ISBN == 't',
+            models.ReadingList.sticky == True)).first()
+        self.assertIsNotNone(recread)
+        self.logout()
+
+        # fred can edit and can add
+        self.login("fred", "fred")
+        # fred ADD - no book name
+        response = self.app.post("/addrecread", data=dict(
+            book="",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Book name is required.", response.data)
+        # fred ADD - with book name
+        response = self.app.post("/addrecread", data=dict(
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        recread = models.ReadingList.query.filter(and_(
+            models.ReadingList.username == 'fred',
+            models.ReadingList.book == 't',
+            models.ReadingList.author == 't',
+            models.ReadingList.comment == 't',
+            models.ReadingList.ISBN == 't',
+            models.ReadingList.sticky == True)).first()
+        self.assertIsNotNone(recread)
+        # fred EDIT - no book name
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Book name is required.", response.data)
+        # fred EDIT - with book name
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        recread = models.ReadingList.query.filter(and_(
+            models.ReadingList.username == 'fred',
+            models.ReadingList.book == 't',
+            models.ReadingList.author == 't',
+            models.ReadingList.comment == 't',
+            models.ReadingList.ISBN == 't',
+            models.ReadingList.sticky == True)).first()
         self.assertIsNotNone(recread)
         
     def test_remrecread(self):
