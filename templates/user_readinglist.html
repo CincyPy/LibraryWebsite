@@ -1,5 +1,4 @@
-<h4>Recommended Readings</h4>
-
+<h3>Reading List: </h3>
 <table class="tablesorter" cellspacing="1">
     <thead>
         <tr>
@@ -12,6 +11,7 @@
             <th>Category</th>
             <th>Librarian</th>
             <th>Sticky</th>
+            <th>Edit</th>
             <th>Remove</th>
         </tr>
     </thead>
@@ -29,6 +29,11 @@
             <td>
                 <form action="{{ url_for('changeSticky', rlid=RL.RLID)}}" method="POST">
                     <input class='btn btn-default' type='submit' value='{{ RL.sticky }}'>
+                </form>
+            </td>
+            <td>
+                <form action="{{ url_for('librarian', rlid=RL.RLID)}}" method="POST">
+                    <input class='btn btn-success' type='submit' value='Edit'   >
                 </form>
             </td>
             <td>
