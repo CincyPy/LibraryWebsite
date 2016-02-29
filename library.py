@@ -77,8 +77,7 @@ def admin():
     if session["logged_in_name"] != "admin":
         flash("You are not authorized to perform this action.")
         return redirect(url_for('main'))
-    
-    return render_template('admin.html', staff=Staff.query.all(), readinglist=ReadingList.query.all())
+    return render_template('admin.html', staff=Staff.query.all())
 
 @app.route('/librarian')
 @app.route('/librarian/<rlid>', methods=['GET', 'POST'])
@@ -171,6 +170,9 @@ def addrecread():
     comment = request.form['comment']
     category = request.form['category']
     sticky = request.form['sticky']
+    if not book:
+        flash('Book name is required. Please try again.')
+        return redirect(url_for('librarian'))
     book_user.readinglist.append(ReadingList(recdate=datetime.date.today(),
                                              ISBN=ISBN,
                                              book=book,
@@ -223,7 +225,7 @@ def changeSticky(rlid):
 def profile(uname):
     staff = Staff.query.get(uname)
     if staff:
-        return render_template('viewprofile.html', profile=staff,
+        return render_template('viewprofile.html', staff=staff,
                                readinglist=staff.readinglist)
     else:
         flash("Profile not found")
@@ -241,7 +243,7 @@ def edit_profile(uname):
 
     if request.method == "GET": #regular get, present the form to user to edit.
         if staff:
-            return render_template('profile.html', bio=staff.bio)
+            return render_template('profile.html', staff=staff)
         else:
             flash("No profile found for user.")
             return redirect(url_for('main'))
@@ -249,7 +251,7 @@ def edit_profile(uname):
         staff.bio = request.form['bio']
         db_session.commit()
         flash("Profile updated!")
-        return render_template('profile.html', bio=staff.bio)
+        return render_template('profile.html', staff=staff)
 
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
@@ -349,4 +351,4 @@ def publish():
     return str(publish.in_ip_address_range())
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=3000)
+    app.run(debug=True)

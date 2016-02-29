@@ -1,58 +1,63 @@
-{% extends "template.html" %}
-{%  block nav_right %}
-    {{ session.logged_in_name }}
-    <a href="{{ url_for('edit_profile', uname=session.logged_in_name) }}" style="text-decoration: none">Edit Profile</a>
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+{{ js_init_tablesorter() }}
 {% endblock %}
+
 {% block content %}
-    <h2>Welcome to the Librarian Staff Page for the Library Site</h2>
-    <p>Hello, {{ session.logged_in_name }} <a href="{{ url_for('logout') }}">Logout</a></p>
-    <a href="{{ url_for('main') }}">Back to Main</a>
+<div class="container">
     <div class="row">
-        <div class="col-sm-6">
-            {% if not existingValues %}
-                <h3>Add a recommended reading</h3>
+        <h2>Welcome to the Librarian Staff Page for the Library Site</h2>
+        <p>Hello, {{ session.logged_in_name }}</p>
+        {% if session.logged_in_name != 'admin' %}
+        {% if not existingValues %}
+            <h3>Add a recommended reading</h3>
             {% else %}
             <h3>Edit a recommended reading
                 {% if session.logged_in_name == 'admin' %}
                     for {{ existingValues.username }}
                 {% endif %}
             </h3>
-            {% endif %}
-            <form action="{{ url_for('addrecread')}}" method="POST" class="recread">
-                <input type="hidden" name="RLID" value={{ existingValues.RLID }}>
-
-                <div class="form-group">
-                    <label for="book">Book:</label>
-                    <input class="form-control" name='book' type='text' value="{{ existingValues.book }}">
+        {% endif %}
+        <form role="form" action="{{ url_for('addrecread')}}" method="POST">
+            <div class="form-group">
+                <label for="book">Book</label>
+                <input class="form-control" name="book" type="text">
+            </div>
+            <div class="form-group">
+                <label for="ISBN">ISBN</label>
+                <input class="form-control" name="ISBN" type="text">
+            </div>
+            <div class="form-group">
+                <label for="author">Author</label>
+                <input class="form-control" name="author" type="text">
+            </div>
+            <div class="form-group">
+                <label for="comment">Comment</label>
+                <input class="form-control" name="comment" type="text">
+            </div>
+            <div class="form-group">
+                <label for="url">Category</label>
+                <input class="form-control" name="category" type="text">
+            </div>
+            <div class="form-group">
+                <label>Sticky</label>
+                <div class="radio">
+                    <label for="sticky-yes"><input id="sticky-yes" name="sticky" type="radio" value='1'>Yes</label>
                 </div>
-                <div class="form-group">
-                    <label for="ISBN">ISBN:</label>
-                    <input class="form-control" name='ISBN' type='text' value="{{ existingValues.ISBN }}">
+                <div class="radio">
+                    <label for="sticky-no"><input id="sticky-no" name="sticky" type="radio" value='0' checked>No</label>
                 </div>
-                <div class="form-group">
-                    <label for="author">Author:</label>
-                    <input class="form-control" name='author' type='text' value="{{ existingValues.author }}">
-                </div>
-                <div class="form-group">
-                    <label for="comment">Comment:</label>
-                    <input class="form-control" name='comment' type='text' value="{{ existingValues.comment }}">
-                </div>
-                <div class="form-group">
-                    <label for="url">Category:</label>
-                    <input class="form-control" name='category' type='text' value="{{ existingValues.category }}">
-                </div>
-                <div class="form-group">
-                    <label for="sticky">Sticky:</label>
-                    <input name="sticky" type="radio" value='1'>Yes
-                    <input name="sticky" type="radio" value='0' checked>No
-                </div>
-                <input class='btn btn-success' type='submit' value='Save'>
-            </form>
-        </div>
+            </div>
+            <button role="button" class="btn btn-primary" type="submit">Save</button>
+        </form>
     </div>
-    {% if session.logged_in_name != 'admin' %}
-    </br>
-    </br>
-    {% include "user_readinglist.html" %}
     {% endif %}
+
+    <div class="row">
+        <h3>Reading List</h3>
+        {% include "user_readinglist.html" %}
+    </div>
+</div>
 {% endblock %}

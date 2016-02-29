@@ -1,21 +1,14 @@
-{% extends "template.html" %}
-{%  block nav_right %}
-    {% if session.logged_in_name == 'admin' %}
-        {{ session.logged_in_name }}
-        <a href="{{ url_for('admin') }}" style="text-decoration: none">Back to Admin</a>
-    {% else %}
-        {{ session.logged_in_name }}
-        <a href="{{ url_for('librarian') }}" style="text-decoration: none">Edit Recommended Readings</a>
-    {% endif %}
-{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-    <h2>Staff Profile{% if session.logged_in_name == 'admin' %} for {{ uname }}{% endif %}</h2>
-
-    <form method="POST" action="" >
-        <label for="bio">Bio:</label><br/>
-        <textarea name="bio" id="bio">{{ bio }}</textarea><br/>
-        <input value="Update" type="submit" />
+<div class="container">
+    <h2>Staff Profile for {{ staff.username }}</h2>
+    <form method="POST" action="{{ url_for('edit_profile', uname=staff.username) }}" >
+        <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" class="form-control" name="bio" rows="10">{{ staff.bio }}</textarea>
+        </div>
+        <button role="button" class="btn btn-primary" type="submit">Update</button>
     </form>
-    <a href="{{ url_for('main') }}"/>Back to Main</a>
+</div>
 {% endblock %}

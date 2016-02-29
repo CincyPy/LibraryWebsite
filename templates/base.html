@@ -1,0 +1,55 @@
+{% extends "skeleton.html" %}
+
+{% macro ask_what_read(staff) %}
+<a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
+{% endmacro %}
+
+{% macro js_init_tablesorter() %}
+<script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>
+<script>
+$(function(){
+    $('table').tablesorter({
+        theme: 'default',
+        widgets: ['zebra'],
+        usNumberFormat: false,
+        sortReset: true,
+        sortRestart: true
+    })
+});
+</script>
+{% endmacro %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css')}}">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato:400|Merriweather:700">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.default.min.css') }}">
+<script src="{{ url_for('static', filename='js/jquery-1.12.0.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+{% endblock head %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+
+<div id="wrap">
+    {% for message in get_flashed_messages() %}
+    <div class='alert alert-info'>{{ message }}</div>
+    {% endfor %}
+    {% if error %}
+    <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+</div>
+
+<footer class="footer" id="footer">
+{% block footer %}
+<p>Developed by CincyPy</p>
+{% endblock footer %}
+</footer>
+{% endblock body %}

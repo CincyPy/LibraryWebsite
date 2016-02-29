@@ -1,0 +1,37 @@
+{% macro nav_link(endpoint, text, href=none) %}
+<li class="{{ 'active' if request.endpoint == endpoint }}">
+    {% if href %}
+    <a href="{{ href }}">{{ text }}</a></li>
+    {% else %}
+    <a href="{{ url_for(endpoint ) }}">{{ text }}</a></li>
+    {% endif %}
+{% endmacro %}
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#library-navbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('main') }}">Librarian Recommended</a>
+        </div>
+        <div class="collapse navbar-collapse" id="library-navbar">
+            <ul class="nav navbar-nav navbar-right">
+                {{ nav_link('main', 'Main') }}
+            {% if session.logged_in %}
+                {% if session.logged_in_name == 'admin' %}
+                {{ nav_link('admin', 'Admin') }}
+                {% else %}
+                {{ nav_link('librarian', 'Librarian') }}
+                {% endif %}
+            {{ nav_link('edit_profile', 'Edit Profile', url_for('edit_profile', uname=session.logged_in_name)) }}
+            <li><a href="{{ url_for('logout') }}">Logout {{ session.logged_in_name }}</a></li>
+            {% else %}
+            {{ nav_link('login', 'Login') }}
+            {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
