@@ -4,13 +4,18 @@
 <div class="container">
     <h2>Welcome to the Staff Login for the Library Site</h2>
     <form id="login-form" action="{{ url_for('login') }}" method="POST">
+        {{ label_text('username', 'Username') }}
+        {{ label_text('password', 'Password', type='password') }}
+        {#
         <div class="form-group">
             <label id="username" for="username">Username<input id="username" class="form-control" type="text" name="username"></label>
         </div>
         <div class="form-group">
             <label id="password" for="password">Password<input id="password" class="form-control" type="password" name="password"></label>
         </div>
-        <button role="button" class="btn btn-primary" type="submit">Login</button>
+        #}
+        {{ submit('Login') }}
+        {#<button role="button" class="btn btn-primary" type="submit">Login</button>#}
     </form>
 </div>
 {% endblock %}

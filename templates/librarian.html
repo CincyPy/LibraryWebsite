@@ -50,7 +50,8 @@
                     <label for="sticky-no"><input id="sticky-no" name="sticky" type="radio" value='0' checked>No</label>
                 </div>
             </div>
-            <button role="button" class="btn btn-primary" type="submit">Save</button>
+            {{ submit('Save') }}
+            {#<button role="button" class="btn btn-primary" type="submit">Save</button>#}
         </form>
     </div>
     {% endif %}

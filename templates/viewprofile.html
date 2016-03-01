@@ -9,18 +9,19 @@
         <div class="col-sm-6">
             <p class="bio">{{ staff.bio }}</p>
             {{ ask_what_read(staff) }}
-            <p><a href="mailto:{{ staff.email }}"><button type="button" class="btn btn-primary btn-md">Email me</button></a></p>
+            <p><a href="mailto:{{ staff.email }}">{{ button('Email me', 'button') }}{#<button type="button" class="btn btn-primary btn-md">Email me</button>#}</a></p>
         </div>
     </div>
     <section>
-         <div class="container">
-           <div class="row">
-           <h4>Categories</h4>
-           {% for item in staff.category_list %}
-                <button type="button" class="btn btn-primary btn-md"> {{ item }} </button>
-           {% endfor %}
-           </div>
-         </div>
-     </section>
+        <div class="container">
+            <div class="row">
+                <h4>Categories</h4>
+                {% for item in staff.category_list %}
+                {{ button(item, extra_classes='btn-md') }}
+                {#<button type="button" class="btn btn-primary btn-md">{{ item }}</button>#}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock %}

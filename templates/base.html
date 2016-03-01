@@ -1,24 +1,8 @@
-{% extends "skeleton.html" %}
+{% extends 'skeleton.html' %}
 
-{% macro ask_what_read(staff) %}
-<a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
-{% endmacro %}
-
-{% macro js_init_tablesorter() %}
-<script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>
-<script>
-$(function(){
-    $('table').tablesorter({
-        theme: 'default',
-        widgets: ['zebra'],
-        usNumberFormat: false,
-        sortReset: true,
-        sortRestart: true
-    })
-});
-</script>
-{% endmacro %}
+{% from 'macros.html' import ask_what_read, button, submit, link, label_text,
+                             js_init_tablesorter, profilepic, twitter,
+                             facebook, linkedin %}
 
 {% block head %}
 {{ super() }}
@@ -34,22 +18,42 @@ $(function(){
 
 {% block body %}
 
-{% include "navbar.html" %}
+{% include 'navbar.html' %}
 
 <div id="wrap">
     {% for message in get_flashed_messages() %}
-    <div class='alert alert-info'>{{ message }}</div>
+    <div class="alert alert-info">{{ message }}</div>
     {% endfor %}
     {% if error %}
-    <div class='alert alert-danger'><strong>Error: </strong>{{ error }}</div>
+    <div class="alert alert-danger"><strong>Error: </strong>{{ error }}</div>
     {% endif %}
     {% block content %}
     {% endblock %}
 </div>
 
+{# XXX: I don't know what to do here #}
+<nav class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
+        <ul class="nav navbar-nav navbar-left">
+            <li>{{ link('Developed by CincyPy', url_for('main')) }}</li>
+        </ul>
+        <ul class="nav navbar-nav">
+            <li>{{ link('About Us', url_for('main')) }}</li>
+            <li>{{ link('Contact Support', url_for('main')) }}</li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li>{{ twitter() }}</li>
+            <li>{{ facebook() }}</li>
+            <li>{{ linkedin() }}</li>
+        </ul>
+    </div>
+</nav>
+
+{#
 <footer class="footer" id="footer">
 {% block footer %}
-<p>Developed by CincyPy</p>
 {% endblock footer %}
 </footer>
+#}
+
 {% endblock body %}

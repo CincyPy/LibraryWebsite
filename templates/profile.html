@@ -8,7 +8,8 @@
             <label for="bio">Bio</label>
             <textarea id="bio" class="form-control" name="bio" rows="10">{{ staff.bio }}</textarea>
         </div>
-        <button role="button" class="btn btn-primary" type="submit">Update</button>
+        {{ submit('Update') }}
+        {#<button role="button" class="btn btn-primary" type="submit">Update</button>#}
     </form>
 </div>
 {% endblock %}
