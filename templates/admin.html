@@ -1,12 +1,5 @@
 {% extends "base.html" %}
 
-{% macro new_staff_form_group(name, text, type='text') -%}
-<div class="form-group">
-    <label for="{{ name }}">{{ text }}</label>
-    <input class="form-control" id="{{ name }}" name="{{ name }}" type="{{ type }}">
-</div>
-{%- endmacro %}
-
 {% block head %}
 {{ super() }}
 {{ js_init_tablesorter() }}
@@ -20,15 +13,14 @@
         {%- if session.logged_in_name == 'admin' -%}
         <form action="{{ url_for('adduser')}}" method="POST" class="add">
             <h3>Add a new staff member</h3>
-            {{ new_staff_form_group('username', 'Username') }}
-            {{ new_staff_form_group('password', 'Password') }}
-            {{ new_staff_form_group('f_name', 'First Name') }}
-            {{ new_staff_form_group('l_name', 'Last Name') }}
-            {{ new_staff_form_group('phone', 'Phone') }}
+            {{ label_text('username', 'Username') }}
+            {{ label_text('password', 'Password') }}
+            {{ label_text('f_name', 'First Name') }}
+            {{ label_text('l_name', 'Last Name') }}
+            {{ label_text('phone', 'Phone') }}
             <p class="form-control-static">Include area code</p>
-            {{ new_staff_form_group('emailaddress', 'Email', 'email') }}
+            {{ label_text('emailaddress', 'Email', 'email') }}
             {{ submit('Save') }}
-            {#<button role="button" class="btn btn-primary" type="submit">Save</button>#}
         </form>
         {% endif -%}
     </div>
@@ -53,11 +45,9 @@
             </div>
             <div>
                 {{ link_button(url_for('edit_profile', uname=s.username), 'Edit Profile') }}
-                {#<a class="btn btn-default" role="button" href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>#}
                 {% if s.username != 'admin' %}
                 <form style="display: inline-block;" class="form-horizontal" role="form" method="POST" action="{{ url_for('deleteuser', username=s.username) }}">
                     {{ submit('Delete', button_class='danger') }}
-                    {#<button role="button" class="btn btn-danger" type="submit">Delete</button>#}
                 </form>
                 {% endif %}
             </div>

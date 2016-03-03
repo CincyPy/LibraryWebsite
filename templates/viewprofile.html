@@ -4,22 +4,42 @@
     <div class="row">
         <div class="col-sm-6">
             <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
-            <img class="profile-pic" src="http://loremflickr.com/250/250/1000faces" alt="">
+            {{ profilepic(staff) }}
         </div>
         <div class="col-sm-6">
             <p class="bio">{{ staff.bio }}</p>
             {{ ask_what_read(staff) }}
-            <p><a href="mailto:{{ staff.email }}">{{ button('Email me', 'button') }}{#<button type="button" class="btn btn-primary btn-md">Email me</button>#}</a></p>
+            {% if staff.emailaddress %}
+            <div>{{ email_icon() }}{{ text_link('Contact ' + staff.f_name, 'mailto:' + staff.emailaddress) }}</div>
+            {% endif %}
         </div>
     </div>
     <section>
         <div class="container">
             <div class="row">
-                <h4>Categories</h4>
+                <h4>Interests</h4>
+                {% if staff.category_list %}
                 {% for item in staff.category_list %}
-                {{ button(item, extra_classes='btn-md') }}
-                {#<button type="button" class="btn btn-primary btn-md">{{ item }}</button>#}
+                {{ category_tag(item) }}
                 {% endfor %}
+                {% else %}
+                <p>{{ exclamation_sign() }}{{ staff.f_name }} hasn't tagged any interests yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <h4>{{ staff.f_name }}'s Book Recommendations</h4>
+                {% if staff.readinglist %}
+                {% for book in staff.readinglist %}
+                {{ text_link(book.book) }}
+                <p>{{ book.recdate }}</p>
+                {% endfor %}
+                {% else %}
+                <p>{{ exclamation_sign() }}{{ staff.f_name }} has no recommendations yet.</p>
+                {% endif %}
             </div>
         </div>
     </section>

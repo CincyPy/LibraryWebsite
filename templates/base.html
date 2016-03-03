@@ -1,8 +1,10 @@
 {% extends 'skeleton.html' %}
 
-{% from 'macros.html' import ask_what_read, button, submit, link, label_text,
-                             js_init_tablesorter, profilepic, twitter,
-                             facebook, linkedin %}
+{% from 'macros.html' import ask_what_read, button, category_tag, email_icon,
+                             exclamation_sign, facebook, info_sign,
+                             js_init_tablesorter, label_text, link_button,
+                             linkedin, profilepic, submit, text_link, twitter, required_icon,
+                             %}
 
 {% block head %}
 {{ super() }}
@@ -22,38 +24,30 @@
 
 <div id="wrap">
     {% for message in get_flashed_messages() %}
-    <div class="alert alert-info">{{ message }}</div>
+    <div class="alert alert-info">{{ info_sign() }}{{ message }}</div>
     {% endfor %}
     {% if error %}
-    <div class="alert alert-danger"><strong>Error: </strong>{{ error }}</div>
+    <div class="alert alert-danger">{{ exclamation_sign() }}<strong>Error: </strong>{{ error }}</div>
     {% endif %}
     {% block content %}
     {% endblock %}
 </div>
 
-{# XXX: I don't know what to do here #}
 <nav class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
-        <ul class="nav navbar-nav navbar-left">
-            <li>{{ link('Developed by CincyPy', url_for('main')) }}</li>
+        <ul class="nav navbar-nav">
+            <li>{{ text_link('Developed by CincyPy', 'javascript:;') }}</li>
         </ul>
         <ul class="nav navbar-nav">
-            <li>{{ link('About Us', url_for('main')) }}</li>
-            <li>{{ link('Contact Support', url_for('main')) }}</li>
+            <li>{{ text_link('About Us', 'javascript:;') }}</li>
+            <li>{{ text_link('Contact Support', 'javascript:;') }}</li>
         </ul>
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav">
             <li>{{ twitter() }}</li>
             <li>{{ facebook() }}</li>
             <li>{{ linkedin() }}</li>
         </ul>
     </div>
 </nav>
-
-{#
-<footer class="footer" id="footer">
-{% block footer %}
-{% endblock footer %}
-</footer>
-#}
 
 {% endblock body %}

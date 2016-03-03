@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% macro required() -%}
-<strong><abbr title="This field is required.">*</abbr></strong>
+<strong><abbr title="This field is required.">{{ required_icon() }}</abbr></strong>
 {%- endmacro %}
 
 {% macro contact_radio(value, text) -%}
@@ -60,7 +60,7 @@ function contactChange() {
 }
 
 $(function() {
-    $("#conversation-type").first("input[type=radio]").prop("checked", true);
+    $("#conversation-type").find("input[type=radio]").first().prop("checked", true);
     contactChange();
 });
 </script>
