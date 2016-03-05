@@ -8,19 +8,28 @@
         </div>
         <div class="col-sm-6">
             <p class="bio">{{ staff.bio }}</p>
+            <p><a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations.</p>
             {{ ask_what_read(staff) }}
-            <p><a href="mailto:{{ staff.email }}"><button type="button" class="btn btn-primary btn-md">Email me</button></a></p>
         </div>
     </div>
-    <section>
-         <div class="container">
-           <div class="row">
-           <h4>Categories</h4>
-           {% for item in staff.category_list %}
-                <button type="button" class="btn btn-primary btn-md"> {{ item }} </button>
-           {% endfor %}
-           </div>
-         </div>
-     </section>
+
+<div class="container">
+    <div class="row">
+        <h4>Categories</h4>
+        {% for item in staff.category_list %}
+        <button type="button" class="btn btn-info btn-md"> {{ item }} </button>
+        {% endfor %}
+    </div>
+</div>
+    
+<div class="container">
+    <div class="row">
+        {% for RL in readinglist %}
+        <p>
+        <a href="http://catalog.kentonlibrary.org/">
+        <div class="col-md-3"><img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/medium/{{ RL.ISBN }}" ></div></a>
+        {% endfor %}
+        </p>
+   </div> 
 </div>
 {% endblock %}

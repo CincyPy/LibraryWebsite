@@ -19,9 +19,9 @@
                 <p>{{ staff.bio|truncate(100) }} <a href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
                 {{ ask_what_read(staff) }}
                 <!-- To add if we want to show categories on main page -->
-                {% for category in staff.category_list %}
+               <!--  {% for category in staff.category_list %}
                 <button type="button" class="btn btn-primary btn-xs"> {{ category }} </button>
-                {% endfor %}
+                {% endfor %} -->
             </div>
         {% endfor %}
         </div>
