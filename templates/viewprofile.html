@@ -8,6 +8,7 @@
         </div>
         <div class="col-sm-6">
             <p class="bio">{{ staff.bio }}</p>
+            <p><a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations.</p>
             {{ ask_what_read(staff) }}
             {% if staff.emailaddress %}
             <div>{{ email_icon() }}{{ text_link('Contact ' + staff.f_name, 'mailto:' + staff.emailaddress) }}</div>
@@ -36,6 +37,7 @@
                 {% for book in staff.readinglist %}
                 {{ text_link(book.book) }}
                 <p>{{ book.recdate }}</p>
+                <div class="col-md-3"><img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/medium/{{ book.ISBN }}" ></div></a>
                 {% endfor %}
                 {% else %}
                 <p>{{ exclamation_sign() }}{{ staff.f_name }} has no recommendations yet.</p>
