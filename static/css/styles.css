@@ -1,5 +1,6 @@
 html{
   height: 100%;
+  background: url('../img/symphony.png');
 }
 
 body{
@@ -35,14 +36,15 @@ section#staff:target {
 }*/
 
 .flash, .error {
-    background: #F0D6D6;
+    /*background: #F0D6D6;*/
     color: red;
     padding: 0.5em;
 }
 
 .navbar-default {
-  background: rgba(255, 255, 255, 0.5);;
+  background: rgba(255, 255, 255);
   border: none;
+  border-bottom:1px solid black;
 }
 
 .container{
