@@ -11,12 +11,12 @@
 {{ button(text, type='submit', button_class=button_class) }}
 {%- endmacro %}
 
-{% macro mailto(staff) %}
-{{ 'mailto:' + staff.emailaddress }}
+{% macro mailto(emailaddress) %}
+{{ 'mailto:' + emailaddress }}
 {% endmacro %}
 
 {% macro contact(staff) %}
-<a href="{{ mailto(staff) }}">{{ email_icon() }}{{ 'Contact ' + staff.f_name }}</a>
+<a href="{{ mailto(staff.emailaddress) }}">{{ email_icon() }}{{ 'Contact ' + staff.f_name }}</a>
 {% endmacro %}
 
 {% macro text_link(text, href) -%}
