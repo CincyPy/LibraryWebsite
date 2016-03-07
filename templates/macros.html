@@ -16,7 +16,7 @@
 {% endmacro %}
 
 {% macro contact(staff) %}
-<a href="{{ mailto(staff.emailaddress) }}">{{ email_icon() }}{{ 'Contact ' + staff.f_name }}</a>
+{{ text_link(email_icon() + 'Contact ' + staff.f_name, mailto(staff.emailaddress)) }}
 {% endmacro %}
 
 {% macro text_link(text, href) -%}
