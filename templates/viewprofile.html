@@ -26,7 +26,7 @@
     <div class="row">
         {% for RL in readinglist %}
         <p>
-        <a href="http://catalog.kentonlibrary.org/">
+        <a href="http://catalog.kentonlibrary.org/eg/opac/results?contains=contains&_special=1&loc=1&qtype=identifier%7Cisbn&query={{ RL.ISBN }}" target="_blank">
         <div class="col-md-3"><img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/medium/{{ RL.ISBN }}" ></div></a>
         {% endfor %}
         </p>
