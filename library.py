@@ -1,22 +1,24 @@
-import sqlite3
+from config import config
+import datetime
+import ast
+import re
 import time
+
 from random import shuffle
 from functools import wraps
-
 from flask import Flask, render_template, request, session, \
-    flash, redirect, url_for, g
+     flash, redirect, url_for, g, jsonify
+from flask_mail import Mail, Message
+from publisher import Publisher
 
-# configuration
-DATABASE = 'library.db'
-SECRET_KEY = '\x00\xb47\xb1\x1b<*tx\x1b2ywW\x86\x01\xfa\xcd\x0b\xeb\x94\x1c\xe5\xaf'
+from sqlalchemy import or_
+
+from database import db_session
+from models import ReadingList, Staff, PatronContact
 
 app = Flask(__name__)
-app.config.from_object(__name__)
-
-
-def connect_db():
-    return sqlite3.connect(app.config['DATABASE'])
-
+app.config.from_object(config)
+mail = Mail(app)
 
 def login_required(test):
     @wraps(test)
@@ -29,6 +31,9 @@ def login_required(test):
 
     return wrap
 
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,21 +42,18 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        g.db = connect_db()
-        cur = g.db.execute('SELECT password FROM staff WHERE username=?', [username])
-        results = cur.fetchall()
-        for row in results:
-            if row[0] == password:
-                session['logged_in'] = True
-                session['logged_in_name'] = username
-                if username == 'admin':
-                    return redirect(url_for('admin'))
-                else:
-                    return redirect(url_for('librarian'))
+        user = Staff.query.get(username)
+
+        if user and user.password == password:
+            session['logged_in'] = True
+            session["logged_in_name"] = username
+            if user.username == 'admin':
+                return redirect(url_for('admin'))
+            else:
+                return redirect(url_for('librarian'))
         else:
             error = 'Invalid Credentials.  Please try again.'
             return render_template('login.html', error=error)
-
     else:
         return render_template('login.html', error=error)
 
@@ -60,53 +62,53 @@ def login():
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('login'))
+    return redirect(url_for('main'))
 
 
 @app.route('/')
 def main():
-    g.db = connect_db()
-
-    cur = g.db.execute('SELECT username, f_name, l_name, phone FROM staff')
-    staff = [dict( username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
-
-    g.db.close()
+    staff = Staff.query.filter(Staff.username != 'admin').all()
     shuffle(staff)
     return render_template('main.html', staff=staff)
-
 
 @app.route('/admin')
 @login_required
 def admin():
-    g.db = connect_db()
-    cur = g.db.execute('SELECT username, f_name, l_name, phone FROM staff')
-    staff = [dict(username=row[0], f_name=row[1], l_name=row[2], phone=row[3]) for row in cur.fetchall()]
-    g.db.close()
-    return render_template('admin.html', staff=staff)
-
+    if session["logged_in_name"] != "admin":
+        flash("You are not authorized to perform this action.")
+        return redirect(url_for('main'))
+    return render_template('admin.html', staff=Staff.query.all())
 
 @app.route('/librarian')
+@app.route('/librarian/<rlid>', methods=['GET', 'POST'])
 @login_required
-def librarian():
-    g.db = connect_db()
-    cur = g.db.execute('SELECT recdate, book, author, comment, url, sticky FROM readinglist')
-    readinglist = [dict(recdate=row[0], book=row[1], author=row[2], comment=row[3], url=row[4], sticky=row[5])
-                   for row in cur.fetchall()]
-    g.db.close()
-    return render_template('librarian.html', readinglist=readinglist)
+def librarian(rlid=None):
+    logged_in_user = Staff.query.get(session['logged_in_name'])
+    if rlid is None:
+        return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=None)
+    else:
+        book = ReadingList.query.filter_by(RLID=rlid).first()
+        if book.username == session["logged_in_name"] or session["logged_in_name"] == 'admin':
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book)
+        else:
+            flash("Your are not authorized to perform this action.")
+            return redirect(url_for('librarian'))
 
 
 @app.route('/adduser', methods=['POST'])
 @login_required
 def adduser():
     if session["logged_in_name"] != "admin":
-        return redirect(url_for('librarian'))
+        flash("You are not authorized to perform this action.")
+        return redirect(url_for('main'))
     username = request.form['username']
     password = request.form['password']
     f_name = request.form['f_name']
     l_name = request.form['l_name']
     phone = request.form['phone']
-    if not f_name or not l_name or not phone or not username or not password:
+    phone = re.sub(r"\D","",phone) # Remove non-digit characters
+    email = request.form['email']
+    if not f_name or not l_name or not phone or not username or not password or not email:
         flash('All fields are required. Please try again.')
         return redirect(url_for('admin'))
     else:
@@ -118,84 +120,235 @@ def adduser():
         except:
             flash('Phone number must include area code. Please try again.')
             return redirect(url_for('admin'))
-    g.db = connect_db()
-    g.db.execute('INSERT INTO staff (username, password, f_name, l_name, phone) VALUES (?, ?, ?, ?, ?)',
-                 [username, password, f_name, l_name, phone])
-    g.db.execute('INSERT INTO profile(username,bio) VALUES (?, ?)', [username, ''])
-    g.db.commit()
-    g.db.close()
+
+    if Staff.query.filter(or_(Staff.username==username, Staff.emailaddress==email)).all():
+        flash('Username or email address is already used.')
+        return redirect(url_for('admin'))
+
+    staff = Staff(username=username, password=password, f_name=f_name,
+                  l_name=l_name, phonenumber=phone, emailaddress=email)
+    db_session.add(staff)
+    db_session.commit()
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
 
+@app.route('/deleteuser/<username>', methods=['POST'])
+@login_required
+def deleteuser(username):
+    if session["logged_in_name"] != "admin" or username == "admin":
+        flash("You are not authorized to perform this action.")
+        return redirect(url_for('main'))
+    recread = ReadingList.query.filter(ReadingList.username == username).all()
+    for rr in recread:
+        db_session.delete(rr)
+    staff = Staff.query.get(username)
+    db_session.delete(staff)
+    db_session.commit()
+    flash('User was successfully removed!')
+    return redirect(url_for('admin'))
 
 @app.route('/addrecread', methods=['POST'])
 @login_required
 def addrecread():
-    if session["logged_in_name"] == "admin":
-        return redirect(url_for('admin'))
+    if not request.form['book']:
+        flash('Book name is required. Please try again.')
+        return redirect(url_for('librarian'))
+
+    if not request.form['RLID']:    # add a new book
+        if session['logged_in_name'] == 'admin':
+            flash('Your are not authorized to perform this action.')
+            return redirect(url_for('admin'))
+        book_user = Staff.query.get(session['logged_in_name'])
+    else:   # edit a book
+        rl = ReadingList.query.get(request.form['RLID'])
+        book_user = Staff.query.get(rl.username)
+        db_session.delete(rl)
+        db_session.commit()
+    ISBN = request.form['ISBN']
     book = request.form['book']
     author = request.form['author']
     comment = request.form['comment']
-    url = request.form['URL']
+    category = request.form['category']
     sticky = request.form['sticky']
     if not book:
         flash('Book name is required. Please try again.')
         return redirect(url_for('librarian'))
-    g.db = connect_db()
-    g.db.execute('INSERT INTO readinglist (RLID, recdate, username, book, author, comment, url, sticky) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                 [None, time.strftime("%Y-%m-%d"), session['logged_in_name'], book, author, comment, url, sticky])
-    g.db.commit()
-    g.db.close()
+    book_user.readinglist.append(ReadingList(recdate=datetime.date.today(),
+                                             ISBN=ISBN,
+                                             book=book,
+                                             author=author,
+                                             comment=comment,
+                                             sticky=sticky,
+                                             category=category))
+    db_session.commit()
     flash('New recommending reading added.')
-    return redirect(url_for('librarian'))
+    if session['logged_in_name'] == 'admin':
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
 
 
-@app.route("/profile/<uname>", methods=['GET'])
+@app.route('/remrecread/<rlid>', methods=['POST'])
+@login_required
+def remrecread(rlid):
+    if session['logged_in_name'] == 'admin':
+        rl = ReadingList.query.filter(ReadingList.RLID == rlid).first()
+    else:
+        username = session['logged_in_name']
+        rl = ReadingList.query.filter(ReadingList.RLID == rlid, ReadingList.username == username).first()
+
+    if rl:
+        db_session.delete(rl)
+        db_session.commit()
+        flash('Deleted recommended reading.')
+    if session["logged_in_name"] == "admin":
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
+
+
+@app.route('/changeSticky/<rlid>', methods=['POST'])
+@login_required
+def changeSticky(rlid):
+    rl = ReadingList.query.get(rlid)
+    if rl:
+        rl.sticky = not(rl.sticky)
+        db_session.commit()
+        flash('Sticky changed.')
+    if session["logged_in_name"] == "admin":
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
+
+
+@app.route('/profile/<uname>', methods=['GET'])
 def profile(uname):
-    g.db = connect_db()
-
-    # get profile data
-    cur = g.db.execute("SELECT p.bio, s.f_name, s.l_name, s.phone "
-                       "FROM profile p JOIN staff s ON p.username=s.username "
-                       "WHERE p.username=?;", [uname])
-    rows = cur.fetchall()
-    c = dict(zip(["bio", "f_name", "l_name", "phone"], rows[0]))
-
-    # get reading list data
-    cur = g.db.execute("SELECT recdate, book, author, comment "
-                       "FROM readinglist WHERE username=?", [uname])
-    d = [dict(recdate=row[0], book=row[1], author=row[2], comment=row[3]) for row in cur.fetchall()]
-    return render_template('viewprofile.html', staff=c, readinglist=d)
+    staff = Staff.query.get(uname)
+    if staff:
+        return render_template('viewprofile.html', staff=staff,
+                               readinglist=staff.readinglist)
+    else:
+        flash("Profile not found")
+        return redirect(url_for('main'))
 
 
 @app.route('/edit-profile/<uname>', methods=['GET', 'POST'])
 @login_required
 def edit_profile(uname):
-    if session["logged_in_name"] != uname:
+    if session["logged_in_name"] != uname and session["logged_in_name"] != 'admin':
         flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
-    else:
-        if request.method == "GET":  # regular get, present the form to user to edit.
-            g.db = connect_db()
-            cur = g.db.execute("SELECT bio FROM profile WHERE username=?", [uname])
-            rows = cur.fetchall()
-            try:
-                bio = rows[0][0]
-            except KeyError:
-                flash("No profile found for user.")
-                return redirect(url_for('main'))
 
-            return render_template('profile.html', bio=bio)
+    staff = Staff.query.get(uname)
 
-        elif request.method == "POST":  # form was submitted, update database
-            new_bio = request.form['bio']
+    if request.method == "GET": #regular get, present the form to user to edit.
+        if staff:
+            return render_template('profile.html', staff=staff)
+        else:
+            flash("No profile found for user.")
+            return redirect(url_for('main'))
+    elif request.method == "POST": #form was submitted, update database
+        staff.bio = request.form['bio']
+        db_session.commit()
+        flash("Profile updated!")
+        return render_template('profile.html', staff=staff)
 
-            g.db = connect_db()
-            cur = g.db.execute("UPDATE profile SET bio=? WHERE username=?", [new_bio, uname])
-            g.db.commit()
-            flash("Profile updated!")
-            return render_template('profile.html', bio=new_bio)
 
+@app.route("/contact/<uname>", methods=['GET', 'POST'])
+def contact(uname):
+    inputs = request.args.get('inputs')
+    prefs = Staff.query.get(uname)
+    if request.method == "GET":  # regular get, present the form to user to edit.
+        if inputs != None: # Prepopulate with entered data
+            inputs = ast.literal_eval(inputs) # Captures any form inputs as a dictionary
+        return render_template('contact.html', pref=prefs, staff=uname, inputs=inputs)
+
+    elif request.method == "POST":  # form was submitted, update database
+        #if any([value == '' for key, value in request.form.iteritems() if key == 'name' or key == 'email']):
+        #    flash("Please enter your name and email address in the contact area.")
+        #    return  redirect(url_for('contact', uname=uname))
+        #import pdb; pdb.set_trace();
+        data = dict([(key, value) for key, value in request.form.iteritems()]) # Creates a dictionary out of the form inputs
+        name = request.form['name']
+        email = request.form['email']
+        phone, likes, dislikes, comment, audience, format_pref, chat, handle, times = None, None, None, None, None, None, None, None, None
+        if prefs['phone']:
+            phone = request.form['phone']
+            phone = re.sub(r"\D","",phone)
+            message = "\nPhone: " + phone
+        if prefs['email']:
+            likes = request.form['likes']
+            dislikes = request.form['dislikes']
+            comment = request.form['comment']
+            audience = ','.join(request.form.getlist('audience'))
+            format_pref = ','.join(request.form.getlist('format_pref'))
+            message = "\nTell us about a few books or authors you've enjoyed. What made these books great?\n"
+            message += likes
+            message = "\nDescribe some authors or titles that you DID NOT like and why\n"
+            message += dislikes
+            message = "\nIs there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?\n"
+            message += comment
+            message = "\nAre you interested in books for adults, teens, or children?\n"
+            message += audience
+            message = "\nDo you have a preferred format?\n"
+            message += format_pref
+        if prefs['chat']:
+            chat = request.form['chat']
+            handle = request.form['handle']
+            message = "\nChat service: " + chat
+            message = "\nChat handle: " + handle
+        if prefs['phone'] or prefs['chat'] or prefs['irl']:
+            times = request.form['times']
+            message += "\nTimes: " + times
+        try:
+            contact = request.form['contact']
+        except:
+            flash("Please select a contact method.")
+            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        if name == '' or email == '':
+            flash("Please enter your name and email address in the contact area.")
+            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        elif contact == 'phone' and len(phone) < 10:
+            if len(phone) == 0:
+                flash("Please enter your phone number.")
+            elif len(phone) < 10:
+                flash("Your phone number must include the area code (10 digits total).")
+            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        elif contact == 'chat' and (chat == '' or handle == ''):
+            flash("Please input your preferred chat service and handle.")
+            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"),
+                                      username=uname,
+                                      name=name,
+                                      email=email,
+                                      contact=contact,
+                                      phone=phone,
+                                      times=times,
+                                      likes=likes,
+                                      dislikes=dislikes,
+                                      comment=comment,
+                                      audience=audience,
+                                      format_pref=format_pref,
+                                      chat=chat,
+                                      handle=handle)
+        db_session.add(patroncontact)
+        db_session.commit()
+        flash("You're contact request was received!")
+        # Send email to staff member regarding request
+        lib = Staff.query.get(uname)
+        if not lib:
+            flash("Librarian not found")
+            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        msg = Message("Request for librarian contact", recipients=[email, lib.email])
+        msg.body = name + " has requested to contact " + uname + "\n\nMethod: " + contact
+        msg.body += message
+        mail.send(msg)
+        return redirect(url_for('profile', uname=uname))
+
+@app.route('/publish', methods=['POST'])
+def publish():
+    publish = Publisher('192.168.0.1', "publisher", request.json)
+    return str(publish.in_ip_address_range())
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True)

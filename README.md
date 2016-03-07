@@ -8,8 +8,16 @@ A group of CincyPy members is creating a website for [Kenton County Public Libra
 * Create a virtualenv, using `virtualenv -p python env`
 * Activate the virtualenv, on windows, `env\Scripts\activate.bat`, on UNIX, `source env/bin/activate`
 * Install dependencies. `pip install -r requirements.txt`
-* Create the database. `python db.py library.db`.  If it gives you an error, you may already have an existing db.
+* Set the environment variable to test. UNIX: `export LIBRARY_ENV=test` Windows: `set LIBRARY_ENV test`.
+* Run the tests. `python tests.py -vf`.
+* Set the environment variable to production. UNIX: `export LIBRARY_ENV=production` Windows: `set LIBRARY_ENV production`.
+* Create the database. `python models.py`.  If it gives you an error, you may already have an existing db.
 * Run the server. `python library.py`
+
+### Initialize Database
+```
+$ python models.py
+```
 
 # Authors
 * Ann

@@ -1,39 +1,39 @@
-html{
+html {
   height: 100%;
   background: url('../img/symphony.png');
 }
 
-body{
+body {
   font-family: 'Lato', sans-serif;
   padding-top: 50px;
   height: 100%;
 }
 
-.navbar-brand, .staff-name{
+.navbar-brand, .staff-name {
   font-family: 'Merriweather', serif;
 }
 
-.staff-name{
+.staff-name {
   text-decoration: none;
   color: #1e1e1e;
 }
 
-.staff-name:hover, a:hover{
+.staff-name:hover, a:hover {
   text-decoration: none;
   color: #bebebe;
 }
 
-a:hover{
+.staff-profile {
+    margin-bottom: 2em;
+}
+
+a:hover {
   cursor: pointer;
 }
 
 section#staff:target {
     padding-top: 50px;
 }
-
-/*h1, h2, h3, h4{
-  font-family: 'Merriweather', serif;
-}*/
 
 .flash, .error {
     /*background: #F0D6D6;*/
@@ -42,15 +42,9 @@ section#staff:target {
 }
 
 .navbar-default {
-  background: rgba(255, 255, 255);
+  background: rgba(255, 255, 255, 0.5);
   border: none;
   border-bottom:1px solid black;
-}
-
-.container{
-  text-align: center;
-  padding-left: 40px;
-  padding-right: 40px;
 }
 
 #wrap {
@@ -74,8 +68,8 @@ section#staff:target {
   overflow: hidden;
 }
 
-section#header{
-  	background-image: url("/static/img/hero.jpeg");
+section#header {
+    background-image: url("/static/img/hero-small.jpeg");
     background-size: cover;
     text-align: center;
     padding: 40px;
@@ -83,16 +77,16 @@ section#header{
     margin-bottom: 20px;
 }
 
-section#header h2, section#header h3{
+section#header h2, section#header h3 {
     color: #FFF8DC;
     text-shadow: 1px 1px 2px black;
 }
 
-section#header h3{
+section#header h3 {
   margin-bottom: 20px;
 }
 
-.bio{
+.bio {
   padding-top: 40px;
   font-size: 16px;
   text-align: left;
