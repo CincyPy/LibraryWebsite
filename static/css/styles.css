@@ -99,3 +99,7 @@ section#header h3 {
   text-align: left;
 
 }
+
+.bio div {
+    margin: 1em 0;
+}

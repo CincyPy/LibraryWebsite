@@ -2,45 +2,48 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
             {{ profilepic(staff) }}
         </div>
-        <div class="col-sm-6">
-            <p class="bio">{{ staff.bio }}</p>
-            <p><a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations.</p>
-            {{ ask_what_read(staff) }}
+        <div class="col-sm-8 bio">
+            <h4>Bio</h4>
+            <p>{{ staff.bio }}</p>
+
+            <h4>Interests</h4>
+            {% if staff.category_list %}
+            {% for item in staff.category_list %} {{ category_tag(item) }} {% endfor %}
+            {% else %}
+            <div>
+                <p>{{ exclamation_sign() }}{{ staff.f_name }} hasn't tagged any interests yet.</p>
+            </div>
+            {% endif %}
+
+            <div><a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations.</div>
+
+            <div>{{ ask_what_read(staff) }}</div>
+
             {% if staff.emailaddress %}
-            <div>{{ email_icon() }}{{ text_link('Contact ' + staff.f_name, 'mailto:' + staff.emailaddress) }}</div>
+            <div>{{ contact(staff) }}</div>
             {% endif %}
         </div>
     </div>
     <section>
         <div class="container">
+            <h4>{{ staff.f_name }}'s Book Recommendations</h4>
             <div class="row">
-                <h4>Interests</h4>
-                {% if staff.category_list %}
-                {% for item in staff.category_list %}
-                {{ category_tag(item) }}
-                {% endfor %}
-                {% else %}
-                <p>{{ exclamation_sign() }}{{ staff.f_name }} hasn't tagged any interests yet.</p>
-                {% endif %}
-            </div>
-        </div>
-    </section>
-    <section>
-        <div class="container">
-            <div class="row">
-                <h4>{{ staff.f_name }}'s Book Recommendations</h4>
                 {% if staff.readinglist %}
-                {% for book in staff.readinglist %}
-                {{ text_link(book.book) }}
-                <p>{{ book.recdate }}</p>
-                <div class="col-md-3"><img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/medium/{{ book.ISBN }}" ></div></a>
-                {% endfor %}
+                    {% for book in staff.readinglist %}
+                <div class="col-md-4">
+                    <p>{{ book_image(book) }}</p>
+                    <p>{{ text_link(book.book) }}</p>
+                    <p>{{ book.recdate }}</p>
+                </div>
+                    {% endfor %}
                 {% else %}
-                <p>{{ exclamation_sign() }}{{ staff.f_name }} has no recommendations yet.</p>
+                <div class="col-md-4">
+                    <p>{{ exclamation_sign() }}{{ staff.f_name }} has no recommendations yet.</p>
+                </div>
                 {% endif %}
             </div>
         </div>
