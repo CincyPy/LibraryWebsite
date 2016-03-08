@@ -1,5 +1,6 @@
 html {
   height: 100%;
+  background: url('../img/symphony.png');
 }
 
 body {
@@ -7,6 +8,7 @@ body {
   padding-top: 50px;
   padding-bottom: 50px;
   height: 100%;
+  background: url('../img/symphony.png');
 }
 
 .navbar-brand, .staff-name {
@@ -36,14 +38,15 @@ section#staff:target {
 }
 
 .flash, .error {
-    background: #F0D6D6;
+    /*background: #F0D6D6;*/
     color: red;
     padding: 0.5em;
 }
 
 .navbar-default {
-  /*background: rgba(255, 255, 255, 0.5);*/
+  background: white;
   border: none;
+  border-bottom:1px solid black;
 }
 
 #wrap {

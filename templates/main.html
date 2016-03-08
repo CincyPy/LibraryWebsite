@@ -9,8 +9,12 @@
 
 <section id="staff">
     <div class="container">
-        <div class="row">
+        <!--<div class="row">-->
+	{% set count = 0 %}
         {% for staff in staff %}
+	    {% if count % 3 == 0 %}
+	        <div class="row">
+            {% endif %}
             <div class="col-md-4 col-sm-6 staff-profile">
                 <a href="{{ url_for('profile', uname=staff.username) }}">
                     <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
@@ -27,8 +31,12 @@
                 {{ category_tag(category) }}
                 {% endfor %}
             </div>
+	    {% if count % 3 == 2 %}
+	        </div>
+            {% endif %}
+	    {% set count = count + 1 %}
         {% endfor %}
-        </div>
+        <!--</div>-->
     </div>
 </section>
 {% endblock content %}
