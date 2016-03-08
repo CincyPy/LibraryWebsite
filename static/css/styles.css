@@ -38,7 +38,6 @@ section#staff:target {
 }
 
 .flash, .error {
-    /*background: #F0D6D6;*/
     color: red;
     padding: 0.5em;
 }
