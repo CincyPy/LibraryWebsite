@@ -257,93 +257,83 @@ def edit_profile(uname):
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
     inputs = request.args.get('inputs')
+    formats = [
+        ('book','Book'),
+        ('lg_print', 'Large Print'),
+        ('cd', 'Audiobook on CD'),
+        ('eb', 'E-book'),
+        ('digital_audio', 'Digital audiobook'),
+    ]
+    auds = [
+        ('adults', 'Adults'),
+        ('teens', 'Teens'),
+        ('children', 'Children'),
+    ]
     prefs = Staff.query.get(uname)
     if request.method == "GET":  # regular get, present the form to user to edit.
         if inputs != None: # Prepopulate with entered data
-            inputs = ast.literal_eval(inputs) # Captures any form inputs as a dictionary
-        return render_template('contact.html', pref=prefs, staff=uname, inputs=inputs)
+            inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
+        return render_template('contact.html', pref=prefs, formats=formats, auds=auds, staff=uname, inputs=inputs)
 
     elif request.method == "POST":  # form was submitted, update database
-        #if any([value == '' for key, value in request.form.iteritems() if key == 'name' or key == 'email']):
-        #    flash("Please enter your name and email address in the contact area.")
-        #    return  redirect(url_for('contact', uname=uname))
-        #import pdb; pdb.set_trace();
-        data = dict([(key, value) for key, value in request.form.iteritems()]) # Creates a dictionary out of the form inputs
-        name = request.form['name']
-        email = request.form['email']
-        phone, likes, dislikes, comment, audience, format_pref, chat, handle, times = None, None, None, None, None, None, None, None, None
-        if prefs['phone']:
-            phone = request.form['phone']
-            phone = re.sub(r"\D","",phone)
-            message = "\nPhone: " + phone
-        if prefs['email']:
-            likes = request.form['likes']
-            dislikes = request.form['dislikes']
-            comment = request.form['comment']
-            audience = ','.join(request.form.getlist('audience'))
-            format_pref = ','.join(request.form.getlist('format_pref'))
-            message = "\nTell us about a few books or authors you've enjoyed. What made these books great?\n"
-            message += likes
-            message = "\nDescribe some authors or titles that you DID NOT like and why\n"
-            message += dislikes
-            message = "\nIs there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?\n"
-            message += comment
-            message = "\nAre you interested in books for adults, teens, or children?\n"
-            message += audience
-            message = "\nDo you have a preferred format?\n"
-            message += format_pref
-        if prefs['chat']:
-            chat = request.form['chat']
-            handle = request.form['handle']
-            message = "\nChat service: " + chat
-            message = "\nChat handle: " + handle
-        if prefs['phone'] or prefs['chat'] or prefs['irl']:
-            times = request.form['times']
-            message += "\nTimes: " + times
-        try:
-            contact = request.form['contact']
-        except:
-            flash("Please select a contact method.")
-            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        if name == '' or email == '':
-            flash("Please enter your name and email address in the contact area.")
-            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        elif contact == 'phone' and len(phone) < 10:
-            if len(phone) == 0:
-                flash("Please enter your phone number.")
-            elif len(phone) < 10:
-                flash("Your phone number must include the area code (10 digits total).")
-            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        elif contact == 'chat' and (chat == '' or handle == ''):
-            flash("Please input your preferred chat service and handle.")
-            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"),
-                                      username=uname,
-                                      name=name,
-                                      email=email,
-                                      contact=contact,
-                                      phone=phone,
-                                      times=times,
-                                      likes=likes,
-                                      dislikes=dislikes,
-                                      comment=comment,
-                                      audience=audience,
-                                      format_pref=format_pref,
-                                      chat=chat,
-                                      handle=handle)
-        db_session.add(patroncontact)
-        db_session.commit()
-        flash("You're contact request was received!")
-        # Send email to staff member regarding request
+        data = {}
+        for key, values in dict(request.form).items():
+            data[key] = ",".join(values)
         lib = Staff.query.get(uname)
         if not lib:
             flash("Librarian not found")
             return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        msg = Message("Request for librarian contact", recipients=[email, lib.email])
-        msg.body = name + " has requested to contact " + uname + "\n\nMethod: " + contact
+        try:
+            data['contact']
+        except:
+            flash("Please select a contact method.")
+            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        
+        try: # Input fields are required so this shouldn't be needed
+            if data['name'] == '' or data['email'] == '':
+                flash("Please enter your name and email address in the contact area.")
+                return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        except:
+            flash("Please enter your name and email address in the contact area.")
+            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        
+        message = ""
+        if data['contact'] == 'email':
+                message += "\n\nTell us about a few books or authors you've enjoyed. What made these books great?\n" + data['likes']
+                message += "\n\nDescribe some authors or titles that you DID NOT like and why.\n" + data['dislikes']
+                message += "\n\nIs there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?\n" + data['comment']
+                message += "\n\nAre you interested in books for adults, teens, or children?\n" + data['audience']
+                message += "\n\nDo you have a preferred format?\n" + data['format_pref']
+        elif data['contact'] == 'phone':
+            data['phone'] = re.sub(r"\D","",data['phone'])
+            if len(data['phone']) == 0:
+                flash("Please enter your phone number and time suggestions.")
+                return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+            elif len(data['phone']) < 10:
+                flash("Your phone number must include the area code (10 digits total).")
+                return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+            message += "\n\nPhone: " + data['phone']
+        elif data['contact'] == 'chat':
+            if data['chat'] == '' or data['handle'] == '':
+                flash("Please input your preferred chat service and handle.")
+                return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+            else:
+                message += "\n\nChat service: " + data['chat']
+                message += "\n\nChat handle: " + data['handle']
+        
+        if data['contact'] != 'email' and data['times'] != '':
+            message += "\n\nTimes: " + data['times']
+
+        patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, **data)
+        db_session.add(patroncontact)
+        db_session.commit()
+        flash("You're contact request was received!")
+        # Send email to staff member regarding request
+        msg = Message("Request for librarian contact", recipients=[data['email'], lib.emailaddress])
+        msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
         msg.body += message
         mail.send(msg)
-        return redirect(url_for('profile', uname=uname))
+    return redirect(url_for('profile', uname=uname))
 
 @app.route('/publish', methods=['POST'])
 def publish():
