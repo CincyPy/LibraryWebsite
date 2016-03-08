@@ -240,7 +240,7 @@ def edit_profile(uname):
         return redirect(url_for('main'))
 
     staff = Staff.query.get(uname)
-
+    #import pdb; pdb.set_trace();
     if request.method == "GET": #regular get, present the form to user to edit.
         if staff:
             return render_template('profile.html', staff=staff)
@@ -248,10 +248,24 @@ def edit_profile(uname):
             flash("No profile found for user.")
             return redirect(url_for('main'))
     elif request.method == "POST": #form was submitted, update database
-        staff.bio = request.form['bio']
+        data = {}
+        for key, values in dict(request.form).items():
+            data[key] = ",".join(values)
+        try:
+            if data['chat'] == 'on':
+                data['chat'] = True
+        except:
+            data['chat'] = False
+        try:
+            if data['irl'] == 'on':
+                data['irl'] = True
+        except:
+            data['irl'] = False
+        for key, value in data.iteritems(): # Dynamically update the model values for staff based on inputs
+            setattr(staff, key, value)
         db_session.commit()
         flash("Profile updated!")
-        return render_template('profile.html', staff=staff)
+    return redirect(url_for('edit_profile', uname=uname))
 
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])

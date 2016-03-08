@@ -22,6 +22,8 @@ class Staff(Base):
     phone = Column(Boolean, default=True)
     chat = Column(Boolean, default=False)
     irl = Column(Boolean, default=True)
+    
+    interests = Column(Text)
 
     patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
 
