@@ -358,4 +358,6 @@ if __name__ == '__main__':
         port = 5000
     if environ.get('HOST'):
         host = environ.get('HOST')
+    else:
+        host = '127.0.0.1'
     app.run(debug=True, port=port, host=host)
