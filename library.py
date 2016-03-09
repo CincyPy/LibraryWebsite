@@ -10,6 +10,7 @@ from flask import Flask, render_template, request, session, \
      flash, redirect, url_for, g, jsonify
 from flask_mail import Mail, Message
 from publisher import Publisher
+from os import environ
 
 from sqlalchemy import or_
 
@@ -351,4 +352,12 @@ def publish():
     return str(publish.in_ip_address_range())
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if environ.get('PORT'):
+        port = int(environ.get('PORT'))
+    else:
+        port = 5000
+    if environ.get('HOST'):
+        host = environ.get('HOST')
+    else:
+        host = '127.0.0.1'
+    app.run(debug=True, port=port, host=host)
