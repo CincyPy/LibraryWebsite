@@ -322,7 +322,7 @@ def contact(uname):
         elif data['contact'] == 'phone':
             data['phone'] = re.sub(r"\D","",data['phone'])
             if len(data['phone']) == 0:
-                flash("Please enter your phone number and time suggestions.")
+                flash("Please enter your phone number.")
                 return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
             elif len(data['phone']) < 10:
                 flash("Your phone number must include the area code (10 digits total).")

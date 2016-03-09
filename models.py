@@ -82,7 +82,7 @@ def init_models(db_session=None):
                   l_name='User', phonenumber=1111111111, bio='Admin bio')
     db_session.add(admin)
 
-    fred = Staff(username='fred', password='fred', f_name='Fred',
+    fred = Staff(username='fred', password='fred', f_name='Fred', emailaddress='KentonCountyLibrary@gmail.com',
                  l_name='Fredderson', phonenumber=2222222222, bio='I am Fred\'s incomplete bio',
                  patron_contacts=[
                      PatronContact(reqdate='2016-01-07',
