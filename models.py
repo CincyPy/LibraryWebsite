@@ -69,6 +69,7 @@ class PatronContact(Base):
     format_pref = Column(Text)
     chat = Column(Text)
     handle = Column(Text)
+    interests = Column(Text)
 
     def __getitem__(self, attr):
         return getattr(self, attr)
