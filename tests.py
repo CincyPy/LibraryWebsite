@@ -315,7 +315,117 @@ class LibrarySiteTests(unittest.TestCase):
         response = self.app.get("/profile/fred")
         self.assertIn("Fredderson",response.data)
     
+    def test_add_patroncontact(self):
+        #test contact page exists
+        response = self.app.get("/contact/fred")
+        self.assertIn("Contact fred",response.data)
+        #confirm that default contact preference is/not present
+        self.assertIn("In Person",response.data)
+        self.assertNotIn("Online Chat",response.data)
         
+        #add In Person contact request
+        response = self.app.post("/contact/fred",data=dict(
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            contact = 'irl',
+            times = 'Anytime',
+        ), follow_redirects=True)
+        self.assertIn("contact request was received",response.data)
+        patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='irl', models.PatronContact.times=='Anytime')).first()
+        self.assertIsNotNone(patroncontact)
+
+        #test missing email
+        response = self.app.post("/contact/fred",data=dict(
+            name = 'Jeff Johnson',
+            email = '',
+            contact = 'phone',
+            phone = '',
+            times = 'Anytime',
+        ), follow_redirects=True)
+        patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.contact=='phone', models.PatronContact.times=='Anytime')).first()
+        self.assertIsNone(patroncontact)
+
+        #test missing contact preference
+        response = self.app.post("/contact/fred",data=dict(
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            phone = '555-555-5555',
+            times = 'Anytime',
+        ), follow_redirects=True)
+        self.assertIn("Please select a contact method",response.data)
+        patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.phone=='555-555-5555', models.PatronContact.times=='Anytime')).first()
+        self.assertIsNone(patroncontact)
+        
+        #test missing phone number
+        response = self.app.post("/contact/fred",data=dict(
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            contact = 'phone',
+            phone = '',
+            times = 'Anytime',
+        ), follow_redirects=True)
+        self.assertIn("Please enter your phone number",response.data)
+        patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='phone', models.PatronContact.times=='Anytime')).first()
+        self.assertIsNone(patroncontact)
+        
+        #test incomplete phone number
+        response = self.app.post("/contact/fred",data=dict(
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            contact = 'phone',
+            phone = '555-5555',
+            times = 'Anytime',
+        ), follow_redirects=True)
+        self.assertIn("Your phone number must include the area code",response.data)
+        
+        #Add chat and email options to fred's contact preferences
+        staff = models.Staff.query.get('fred')
+        staff.chat, staff.email = True, True
+        db_session.add(staff)
+        db_session.commit()
+        response = self.app.get("/contact/fred")
+        self.assertIn("Online Chat",response.data)
+        
+        #Test missing chat request info
+        response = self.app.post("/contact/fred",data=dict(
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            contact = 'chat',
+            chat = '',
+            handle = 'bigDog',
+        ), follow_redirects=True)
+        self.assertIn("Please input your preferred chat service and handle",response.data)
+
+        #test email entry
+        response = self.app.post("/contact/fred",data=dict(
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            contact = 'phone',
+            phone = '555-5555',
+            times = 'Anytime',
+        ), follow_redirects=True)
+        self.assertIn("Your phone number must include the area code",response.data)
+        
+        #test email entry
+        response = self.app.post("/contact/fred",data=dict(
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            contact = 'email',
+            phone = '555-555-5555',
+            times = 'Anytime',
+            likes = 'I like books',
+            dislikes = 'Sans books',
+            comment = 'No comment',
+            audience = 'adults,children',
+            format_pref = 'book,eb',
+            chat = 'Skype',
+            handle = 'bigDog',
+        ), follow_redirects=True)
+        self.assertIn("contact request was received",response.data)
+        patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='email', \
+                                                             models.PatronContact.likes=='I like books', models.PatronContact.dislikes=='Sans books', models.PatronContact.comment=='No comment', models.PatronContact.format_pref=='book,eb', models.PatronContact.audience=='adults,children')).first()
+        self.assertIsNotNone(patroncontact)
+               
     def test_github_ip_check(self):
         publish = Publisher('192.168.0.1', "dontmatter", "")
         self.assertFalse(publish.in_ip_address_range())
