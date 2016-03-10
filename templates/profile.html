@@ -9,9 +9,9 @@
                 <div class="col-sm-6" style="padding-left: 0">
                   <div class="name">
                       <label for="f_name">Fist:</label>
-                      <input type="text" name="f_name" value="{{ staff.f_name }}" required />
+                      <input type="text" name="f_name" value="{{ inputs.f_name if inputs else staff.f_name }}" required />
                       <label for="l_name">Last:</label>
-                      <input type="text" name="l_name" value="{{ staff.l_name }}" required />
+                      <input type="text" name="l_name" value="{{ inputs.l_name if inputs else staff.l_name }}" required />
                   </div>
                   {% if staff.pic %}
                     <img class="profile-pic img-responsive" src="{{ staff.pic }}" alt="">
@@ -22,28 +22,33 @@
                 </div>
                 <div class="col-sm-6" style="padding-right: 0">
                     <label for="bio">Bio:</label><br/>
-                    <textarea name="bio" id="bio" class="btn-block" rows="10">{{ staff.bio if staff.bio != None else '' }}</textarea><br/>
+                    <textarea name="bio" id="bio" class="btn-block" rows="10">{{ inputs.bio if inputs else staff.bio if staff.bio != None else '' }}</textarea><br/>
                 </div>
             </div>
 
             <div class="row">
                 <label for="Interests">Interests:</label><br/>
-                <textarea name="interests" rows="2" class="btn-block">{{ staff.interests if staff.interests != None else '' }}</textarea></br>
+                <textarea name="interests" rows="2" class="btn-block">{{ inputs.interests if inputs else staff.interests if staff.interests != None else '' }}</textarea></br>
             </div>
 
             <div class="row">
                 <legend>Contact Info</legend>
                     <label for="emailaddress">Email: </label>
-                    <input type="email" name="emailaddress" value="{{ staff.emailaddress }}" required /></br>
+                    <input type="email" name="emailaddress" value="{{ inputs.emailaddress if inputs else staff.emailaddress }}" required /></br>
                     <label for="phonenumber">Phone: </label>
-                    <input type="text" name="phonenumber" value="{{ staff.phonenumber }}" required /></br></br>
+                    <input type="text" name="phonenumber" value="{{ inputs.phonenumber if inputs else staff.phonenumber }}" required /></br></br>
                     <strong>
                         <p>Patron Contact Preferences:</p>
                         Phone (required)</br>
-                        Email (required)</br>
+                        In Person (required)</br>
                     </strong>
-                    <input type="checkbox" name="chat" {% if staff.chat %}checked{% endif %}><label for="chat"> Online Chat</label></br>
-                    <input type="checkbox" name="irl" {% if staff.irl %}checked{% endif %}><label for="irl"> In Person</label></br>
+                    {% if inputs %}
+                        <input type="checkbox" name="email" {% if inputs.email %}checked{% endif %}><label for="email"> Email</label></br>
+                        <input type="checkbox" name="chat" {% if inputs.chat %}checked{% endif %}><label for="chat"> Online Chat</label></br>
+                    {% else %}    
+                        <input type="checkbox" name="email" {% if staff.email %}checked{% endif %}><label for="email"> Email</label></br>
+                        <input type="checkbox" name="chat" {% if staff.chat %}checked{% endif %}><label for="chat"> Online Chat</label></br>
+                    {% endif %}
                 </div>
             </div>
 

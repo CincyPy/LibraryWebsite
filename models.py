@@ -79,7 +79,7 @@ def init_models(db_session=None):
     if db_session is None:
         from database import db_session
 
-    admin = Staff(username='admin', password='admin', f_name='Admin',
+    admin = Staff(username='admin', password='admin', f_name='Admin', emailaddress='KentonCountyLibrary@gmail.com',
                   l_name='User', phonenumber=1111111111, bio='Admin bio')
     db_session.add(admin)
 

@@ -239,12 +239,13 @@ def edit_profile(uname):
     if session["logged_in_name"] != uname and session["logged_in_name"] != 'admin':
         flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
-
+    inputs = request.args.get('inputs')
     staff = Staff.query.get(uname)
-    #import pdb; pdb.set_trace();
     if request.method == "GET": #regular get, present the form to user to edit.
         if staff:
-            return render_template('profile.html', staff=staff)
+            if inputs != None: # Prepopulate with entered data
+                inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
+            return render_template('profile.html', staff=staff, inputs=inputs)
         else:
             flash("No profile found for user.")
             return redirect(url_for('main'))
@@ -252,16 +253,28 @@ def edit_profile(uname):
         data = {}
         for key, values in dict(request.form).items():
             data[key] = ",".join(values)
+
+        try:
+            data['phonenumber'] = re.sub(r"\D","",data['phonenumber'])
+            if len(data['phonenumber']) == 0: # This shouldn't happen since the HTML has a required field
+                flash("Please enter your phone number.")
+                return redirect(url_for('edit_profile', uname=uname) + '?inputs=' + str(data))
+            elif len(data['phonenumber']) < 10:
+                flash("Your phone number must include the area code (10 digits total).")
+                return redirect(url_for('edit_profile', uname=uname) + '?inputs=' + str(data))
+        except:
+            pass
+
         try:
             if data['chat'] == 'on':
                 data['chat'] = True
         except:
             data['chat'] = False
         try:
-            if data['irl'] == 'on':
-                data['irl'] = True
+            if data['email'] == 'on':
+                data['email'] = True
         except:
-            data['irl'] = False
+            data['email'] = False
         for key, value in data.iteritems(): # Dynamically update the model values for staff based on inputs
             setattr(staff, key, value)
         db_session.commit()
