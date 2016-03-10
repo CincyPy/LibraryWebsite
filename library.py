@@ -325,15 +325,18 @@ def contact(uname):
         if data['contact'] != 'email' and data['times'] != '':
             message += "\n\nTimes: " + data['times']
 
+        try:
+            test = request.form['test'] # Check if running tests
+            data.pop('test',None) # Remove test from data dictionary prior to database entry
+        except: # If not testing, send email to patron and staff member
+            msg = Message("Request for librarian contact", recipients=[data['email'], lib.emailaddress])
+            msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
+            msg.body += message
+            mail.send(msg)            
         patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, **data)
         db_session.add(patroncontact)
         db_session.commit()
         flash("You're contact request was received!")
-        # Send email to staff member regarding request
-        msg = Message("Request for librarian contact", recipients=[data['email'], lib.emailaddress])
-        msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
-        msg.body += message
-        #mail.send(msg)
     return redirect(url_for('profile', uname=uname))
 
 @app.route('/publish', methods=['POST'])

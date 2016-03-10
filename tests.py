@@ -325,6 +325,7 @@ class LibrarySiteTests(unittest.TestCase):
         
         #add In Person contact request
         response = self.app.post("/contact/fred",data=dict(
+            test = True,
             name = 'Jeff Johnson',
             email = 'test@test.net',
             contact = 'irl',
@@ -336,6 +337,7 @@ class LibrarySiteTests(unittest.TestCase):
 
         #test missing email
         response = self.app.post("/contact/fred",data=dict(
+            test = True,
             name = 'Jeff Johnson',
             email = '',
             contact = 'phone',
@@ -344,9 +346,10 @@ class LibrarySiteTests(unittest.TestCase):
         ), follow_redirects=True)
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.contact=='phone', models.PatronContact.times=='Anytime')).first()
         self.assertIsNone(patroncontact)
-
+        
         #test missing contact preference
         response = self.app.post("/contact/fred",data=dict(
+            test = True,
             name = 'Jeff Johnson',
             email = 'test@test.net',
             phone = '555-555-5555',
@@ -358,6 +361,7 @@ class LibrarySiteTests(unittest.TestCase):
         
         #test missing phone number
         response = self.app.post("/contact/fred",data=dict(
+            test = True,
             name = 'Jeff Johnson',
             email = 'test@test.net',
             contact = 'phone',
@@ -370,6 +374,7 @@ class LibrarySiteTests(unittest.TestCase):
         
         #test incomplete phone number
         response = self.app.post("/contact/fred",data=dict(
+            test = True,
             name = 'Jeff Johnson',
             email = 'test@test.net',
             contact = 'phone',
@@ -388,6 +393,7 @@ class LibrarySiteTests(unittest.TestCase):
         
         #Test missing chat request info
         response = self.app.post("/contact/fred",data=dict(
+            test = True,
             name = 'Jeff Johnson',
             email = 'test@test.net',
             contact = 'chat',
@@ -395,9 +401,10 @@ class LibrarySiteTests(unittest.TestCase):
             handle = 'bigDog',
         ), follow_redirects=True)
         self.assertIn("Please input your preferred chat service and handle",response.data)
-
+        
         #test email entry
         response = self.app.post("/contact/fred",data=dict(
+            test = True,
             name = 'Jeff Johnson',
             email = 'test@test.net',
             contact = 'phone',
@@ -408,6 +415,7 @@ class LibrarySiteTests(unittest.TestCase):
         
         #test email entry
         response = self.app.post("/contact/fred",data=dict(
+            test = True,
             name = 'Jeff Johnson',
             email = 'test@test.net',
             contact = 'email',
