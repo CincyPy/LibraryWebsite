@@ -333,7 +333,7 @@ def contact(uname):
         msg = Message("Request for librarian contact", recipients=[data['email'], lib.emailaddress])
         msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
         msg.body += message
-        mail.send(msg)
+        #mail.send(msg)
     return redirect(url_for('profile', uname=uname))
 
 @app.route('/publish', methods=['POST'])
