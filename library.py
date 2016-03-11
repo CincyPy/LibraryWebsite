@@ -289,7 +289,7 @@ def contact(uname):
         except:
             flash("Please select a contact method.")
             return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        
+
         try: # Input fields are required so this shouldn't be needed
             if data['name'] == '' or data['email'] == '':
                 flash("Please enter your name and email address in the contact area.")
@@ -297,7 +297,7 @@ def contact(uname):
         except:
             flash("Please enter your name and email address in the contact area.")
             return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        
+
         message = ""
         if data['contact'] == 'email':
                 message += "\n\nTell us about a few books or authors you've enjoyed. What made these books great?\n" + data['likes']
@@ -321,7 +321,7 @@ def contact(uname):
             else:
                 message += "\n\nChat service: " + data['chat']
                 message += "\n\nChat handle: " + data['handle']
-        
+
         if data['contact'] != 'email' and data['times'] != '':
             message += "\n\nTimes: " + data['times']
 
@@ -332,7 +332,7 @@ def contact(uname):
             msg = Message("Request for librarian contact", recipients=[data['email'], lib.emailaddress])
             msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
             msg.body += message
-            mail.send(msg)            
+            mail.send(msg)
         patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, **data)
         db_session.add(patroncontact)
         db_session.commit()
