@@ -1,25 +1,30 @@
+{% macro request_content() -%}
+    {% if req.contact == 'chat' %}
+        <strong>Chat service: </strong>{{ req.chat }}</br>
+        <strong>Chat handle: </strong>{{ req.handle }}</br>
+    {% endif %}
+    {% if req.contact != 'email' and req.times %}
+        <strong>Times: </strong>{{ req.times }}</br>
+    {% endif %}
+    {% if req.contact == 'email' %}
+        <strong>Tell us about a few books or authors you've enjoyed. What made these books great?</br>
+        {{ req.likes }}</br>
+        <strong>Describe some authors or titles that you DID NOT like and why.</br>
+        {{ req.dislikes }}</br>
+        <strong>Additional comments.</br>
+        {{ req.comment }}</br>
+        <strong>Audience: </stong>{{ req.audience }}</br>
+        <strong>Format prefs: </stong>{{ req.format_pref }}</br>
+    {% endif %}
+{%- endmacro %}
+
 <h4 style="text-align: center">Status: {{ req.status }}</h4>
 
 <legend>Contact Info</legend>
 <strong>Name: </strong>{{ req.name }}</br>
-<strong>Email: </strong><a href="mailto:{{ req.email }}">{{ req.email }}</a></br>
-{% if req.contact == 'phone' %}
-    <strong>Phone: </strong>{{ req.phone }}</br>
-{% endif %}
-{% if req.contact == 'chat' %}
-    <strong>Chat service: </strong>{{ req.chat }}</br>
-    <strong>Chat handle: </strong>{{ req.handle }}</br>
-{% endif %}
-{% if req.contact != 'email' and req.times %}
-    <strong>Times: </strong>{{ req.times }}</br>
-{% endif %}
-{% if req.contact == 'email' %}
-    <strong>Tell us about a few books or authors you've enjoyed. What made these books great?</br>
-    {{ req.likes }}</br>
-    <strong>Describe some authors or titles that you DID NOT like and why.</br>
-    {{ req.dislikes }}</br>
-    <strong>Additional comments.</br>
-    {{ req.comment }}</br>
-    <strong>Audience: </stong>{{ req.audience }}</br>
-    <strong>Format prefs: </stong>{{ req.format_pref }}</br>
-{% endif %}
+<strong>Email: </strong><a href="mailto:{{ req.email }}?subject=Response from {{ req.username }} at the Kenton County Library
+                                &body=/n/nReqeust:/n{{ request_content() }}">{{ req.email }}</a></br>
+    {% if req.contact == 'phone' %}
+        <strong>Phone: </strong>{{ req.phone }}</br>
+    {% endif %}
+{{ request_content() }}
