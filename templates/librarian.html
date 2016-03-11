@@ -9,51 +9,57 @@
 <div class="container">
     <div class="row">
         <h2>Welcome to the Librarian Staff Page for the Library Site</h2>
-        <p>Hello, {{ session.logged_in_name }}</p>
+        <h2 style="color: blue">Hello, {{ session.logged_in_name }}</h2>
         {% if session.logged_in_name != 'admin' %}
-        {% if not existingValues %}
-            <h3>Add a recommended reading</h3>
-            {% else %}
-            <h3>Edit a recommended reading
-                {% if session.logged_in_name == 'admin' %}
-                    for {{ existingValues.username }}
+            
+            <div class="col-sm-6"> <!--Recommended reading adds/edits-->
+                {% if not existingValues %}
+                    <h3>Add a recommended reading</h3>
+                {% else %}
+                    <h3>Edit recommended reading</h3>
                 {% endif %}
-            </h3>
+                <form role="form" action="{{ url_for('addrecread')}}" method="POST">
+                    <div class="form-group">
+                        <label for="book">Book</label>
+                        <input class="form-control" name="book" type="text" value="{{ existingValues.book }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="ISBN">ISBN</label>
+                        <input class="form-control" name="ISBN" type="text" value="{{ existingValues.ISBN }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="author">Author</label>
+                        <input class="form-control" name="author" type="text" value="{{ existingValues.author }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Comment</label>
+                        <input class="form-control" name="comment" type="text" value="{{ existingValues.comment }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="url">Category</label>
+                        <input class="form-control" name="category" type="text" value="{{ existingValues.category }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Sticky</label>
+                        <div class="radio">
+                            <label for="sticky-yes"><input id="sticky-yes" name="sticky" type="radio" value='1'>Yes</label>
+                        </div>
+                        <div class="radio">
+                            <label for="sticky-no"><input id="sticky-no" name="sticky" type="radio" value='0' checked>No</label>
+                        </div>
+                    </div>
+                    <input class="hidden" name="RLID" value="{{ existingValues.RLID }}">
+                    <button role="button" class="btn btn-primary" type="submit">Save</button>
+                </form>
+            </div>
+            
+            <div class="col-sm-6"> <!--Patron contact tracking-->
+                {% include "patron_requests.html" %}
+                <h4>Open patron requests: {{ patron_reqs.count() }}</h4>
+            </div>
         {% endif %}
-        <form role="form" action="{{ url_for('addrecread')}}" method="POST">
-            <div class="form-group">
-                <label for="book">Book</label>
-                <input class="form-control" name="book" type="text">
-            </div>
-            <div class="form-group">
-                <label for="ISBN">ISBN</label>
-                <input class="form-control" name="ISBN" type="text">
-            </div>
-            <div class="form-group">
-                <label for="author">Author</label>
-                <input class="form-control" name="author" type="text">
-            </div>
-            <div class="form-group">
-                <label for="comment">Comment</label>
-                <input class="form-control" name="comment" type="text">
-            </div>
-            <div class="form-group">
-                <label for="url">Category</label>
-                <input class="form-control" name="category" type="text">
-            </div>
-            <div class="form-group">
-                <label>Sticky</label>
-                <div class="radio">
-                    <label for="sticky-yes"><input id="sticky-yes" name="sticky" type="radio" value='1'>Yes</label>
-                </div>
-                <div class="radio">
-                    <label for="sticky-no"><input id="sticky-no" name="sticky" type="radio" value='0' checked>No</label>
-                </div>
-            </div>
-            <button role="button" class="btn btn-primary" type="submit">Save</button>
-        </form>
     </div>
-    {% endif %}
+
 
     <div class="row">
         <h3>Reading List</h3>

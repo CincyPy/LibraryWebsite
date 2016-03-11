@@ -1,0 +1,55 @@
+<style>
+    .tablesorter-default td {
+        vertical-align: middle;
+    }
+</style>
+
+<h4>Patron Contact Requests</h4>
+
+<table class="tablesorter">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Patron</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>View Request</th>
+            <th>Edit Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for req in patron_reqs|sort(attribute='reqdate', reverse=True)|sort(attribute='status', reverse=True) %}
+        <tr>
+            <td>{{ req.reqdate }}</td>
+            <td>{{ req.name }}</td>
+            <td>{{ req.contact }}</td>
+            <td>{{ req.status }}</td>
+            <td>
+                <a href='#' class='btn btn-primary btn-sm' data-toggle="modal" data-target="#{{ req.PCID }}">View</a>
+                <!-- Modal -->
+                <div class="modal fade" id="{{ req.PCID }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Patron Contact Request</h4>
+                      </div>
+                      <div class="modal-body">
+                        {% include "p_request.html" %}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </td>
+            <td>
+                <form action="{{ url_for('contact_status', PCID=req.PCID, status='edit')}}" method="POST">
+                    <input class='btn btn-success btn-sm' type='submit' value='Edit'>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

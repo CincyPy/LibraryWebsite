@@ -85,16 +85,17 @@ def admin():
 @login_required
 def librarian(rlid=None):
     logged_in_user = Staff.query.get(session['logged_in_name'])
+    reqs = PatronContact.query.filter(PatronContact.username==logged_in_user.username, PatronContact.status=='open')
+    #reqs = []
     if rlid is None:
-        return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=None)
+        return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=None, patron_reqs=reqs)
     else:
         book = ReadingList.query.filter_by(RLID=rlid).first()
         if book.username == session["logged_in_name"] or session["logged_in_name"] == 'admin':
-            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book)
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book, patron_reqs=reqs)
         else:
             flash("Your are not authorized to perform this action.")
             return redirect(url_for('librarian'))
-
 
 @app.route('/adduser', methods=['POST'])
 @login_required
@@ -160,11 +161,13 @@ def addrecread():
             flash('Your are not authorized to perform this action.')
             return redirect(url_for('admin'))
         book_user = Staff.query.get(session['logged_in_name'])
+        flash('New recommended reading added.')
     else:   # edit a book
         rl = ReadingList.query.get(request.form['RLID'])
         book_user = Staff.query.get(rl.username)
         db_session.delete(rl)
         db_session.commit()
+        flash('Recommended reading edited.')
     ISBN = request.form['ISBN']
     book = request.form['book']
     author = request.form['author']
@@ -182,7 +185,6 @@ def addrecread():
                                              sticky=sticky,
                                              category=category))
     db_session.commit()
-    flash('New recommending reading added.')
     if session['logged_in_name'] == 'admin':
         return redirect(url_for('admin'))
     else:
@@ -360,11 +362,20 @@ def contact(uname):
             msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
             msg.body += message
             mail.send(msg)            
-        patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, **data)
+        patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, status='open', **data)
         db_session.add(patroncontact)
         db_session.commit()
         flash("You're contact request was received!")
     return redirect(url_for('profile', uname=uname))
+
+@app.route("/contact_status/<PCID>", methods=['POST'])
+def contact_status(PCID):
+    contact_req = PatronContact.query.get(PCID)
+    if not contact_req:
+        flash("Patron request not found")
+        return redirect(url_for('librarian'))
+    flash(contact_req.name + " Patron request status has been updated")
+    return redirect(url_for('librarian'))
 
 @app.route('/publish', methods=['POST'])
 def publish():
