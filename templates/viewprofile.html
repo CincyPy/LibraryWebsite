@@ -1,4 +1,56 @@
 {% extends "base.html" %}
+
+{% set CATEGORY_FILTER_FORM_AUTOSUBMIT = false %}
+
+{% macro categories_filter_form(staff) %}
+<form id="categories-selector-form"
+      action="{{ url_for('profile', uname=staff.username) }}"
+      method="GET">
+    {% for item in staff.category_list %}
+    <div class="checkbox-inline">
+        <input id="category-{{ item }}" type="checkbox" name="category"
+               data-toggle="toggle"
+               data-on="{{ item }}"
+               data-off="{{ item }}"
+               data-size="small"
+               value="{{ item }}"
+               {{ 'checked' if item in selected_categories }}>
+        <label class="fallback-label" for="category-{{ item }}">{{ item }}</label>
+    </div>
+    {% endfor %}
+    <button role="button" class="btn btn-secondary" type="submit">Filter</button>
+</form>
+{% endmacro %}
+
+{% macro js_categories_filter_form_init() %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap-toggle.min.css') }}">
+<script src="{{ url_for('static', filename='js/bootstrap-toggle.min.js') }}"></script>
+<script>
+$(function() {
+    var form = $("#categories-selector-form");
+    var checkboxes = form.find("input[type=checkbox]");
+    if (checkboxes) {
+        form.find(".fallback-label").hide();
+
+        {% if CATEGORY_FILTER_FORM_AUTOSUBMIT %}
+        form.find("button[type=submit]").hide();
+
+        checkboxes.change(function() {
+            setTimeout(function() {
+                form.submit();
+            }, 250);
+        });
+        {% endif %}
+    }
+});
+</script>
+{% endmacro %}
+
+{% block head %}
+{{ super() }}
+{{ js_categories_filter_form_init() }}
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="row">
@@ -17,9 +69,7 @@
 <div class="container">
     <div class="row">
         <h4>Categories</h4>
-        {% for item in staff.category_list %}
-        <button type="button" class="btn btn-info btn-md"> {{ item }} </button>
-        {% endfor %}
+        {{ categories_filter_form(staff) }}
     </div>
 </div>
 

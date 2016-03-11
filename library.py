@@ -12,7 +12,7 @@ from flask_mail import Mail, Message
 from publisher import Publisher
 from os import environ
 
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 from database import db_session
 from models import ReadingList, Staff, PatronContact
@@ -225,9 +225,21 @@ def changeSticky(rlid):
 @app.route('/profile/<uname>', methods=['GET'])
 def profile(uname):
     staff = Staff.query.get(uname)
+
+    selected_categories = request.args.getlist('category')
+    if selected_categories:
+        readinglist = (ReadingList.query
+                       .filter(and_(
+                           ReadingList.username==staff.username,
+                           ReadingList.category.in_(selected_categories)))
+                       .all())
+    else:
+        readinglist = staff.readinglist
+
     if staff:
         return render_template('viewprofile.html', staff=staff,
-                               readinglist=staff.readinglist)
+                               readinglist=readinglist,
+                               selected_categories=selected_categories)
     else:
         flash("Profile not found")
         return redirect(url_for('main'))
