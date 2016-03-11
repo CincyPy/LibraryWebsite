@@ -21,7 +21,7 @@ $ python models.py
 
 ### Quick interactive shell with app context
 ```
-python -i shell.py`
+python -i shell.py
 >>> Staff.query.get()
 <models.Staff object at 0x7f955fbd11d0>
 >>> _.emailaddress
