@@ -19,6 +19,15 @@ A group of CincyPy members is creating a website for [Kenton County Public Libra
 $ python models.py
 ```
 
+### Quick interactive shell with app context
+```
+python -i shell.py`
+>>> Staff.query.get()
+<models.Staff object at 0x7f955fbd11d0>
+>>> _.emailaddress
+u'KentonCountyLibrary@gmail.com'
+```
+
 # Authors
 * Ann
 * Cindy
