@@ -269,8 +269,6 @@ def upload_picture(uname):
     form = UploadForm()
     if form.validate_on_submit():
         image = 'uploads/' + form.image_file.data.filename
-        #when the picture is uploaded how do I rename it in the database
-        #so it matches the first name of the librarian ie. fred.jpg ?
         form.image_file.data.save(os.path.join(app.static_folder, image))
     return render_template('picture.html', form=form, image=image, staff=staff)
 
