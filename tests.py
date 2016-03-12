@@ -189,6 +189,75 @@ class LibrarySiteTests(unittest.TestCase):
         s = models.Staff.query.filter(models.Staff.username=="elmo").first()
         self.assertIsNone(s)
 
+    def test_edituser(self):
+        #try with admin
+        self.logout()
+        self.login("admin","admin")
+        response = self.app.get("/edit-profile/admin")
+        self.assertIn("Staff Profile for admin",response.data)
+        #try with non admin
+        self.login("fred","fred")
+        response = self.app.get("/edit-profile/fred")
+        self.assertIn("2222222222",response.data) # Verify that correct phone number is retrieved for fred
+        
+        #try name change
+        self.login("fred","fred")
+        response = self.app.post("/edit-profile/fred",data=dict(
+            f_name = 'Freddy',
+            l_name = 'Fredderson',
+        ), follow_redirects=True)
+        self.assertIn("Profile updated",response.data)
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Freddy', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='KentonCountyLibrary@gmail.com', \
+                                             models.Staff.phonenumber=='2222222222', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==0, models.Staff.chat==0)).first()
+        self.assertIsNotNone(staff)
+
+        #try adding interests (and change name back to Fred)
+        self.login("fred","fred")
+        response = self.app.post("/edit-profile/fred",data=dict(
+            f_name = 'Fred',
+            l_name = 'Fredderson',
+            interests = 'books',
+        ), follow_redirects=True)
+        self.assertIn("Profile updated",response.data)
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Fred', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='KentonCountyLibrary@gmail.com', models.Staff.interests=='books',\
+                                             models.Staff.phonenumber=='2222222222', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==0, models.Staff.chat==0)).first()
+        self.assertIsNotNone(staff)
+
+        #try changing with incorrect phone number
+        self.login("fred","fred")
+        response = self.app.post("/edit-profile/fred",data=dict(
+            emailaddress = 'test@test.net',
+            phonenumber = '111-1111',
+        ), follow_redirects=True)
+        self.assertIn("Your phone number must include the area code",response.data)
+        self.assertIn("test@test.net",response.data) # Verify that input data was retained
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Fred', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='test@test.net', models.Staff.interests=='books',\
+                                             models.Staff.phonenumber=='1111111', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==0, models.Staff.chat==0)).first()
+        self.assertIsNone(staff)
+
+        #try changing email and phone number
+        self.login("fred","fred")
+        response = self.app.post("/edit-profile/fred",data=dict(
+            emailaddress = 'test@test.net',
+            phonenumber = '111-111-1111',
+        ), follow_redirects=True)
+        self.assertIn("Profile updated",response.data)
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Fred', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='test@test.net', models.Staff.interests=='books',\
+                                             models.Staff.phonenumber=='1111111111', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==0, models.Staff.chat==0)).first()
+        self.assertIsNotNone(staff)
+        
+        #try adding email and chat contact pref (change email and phone number back)
+        self.login("fred","fred")
+        response = self.app.post("/edit-profile/fred",data=dict(
+            emailaddress = 'KentonCountyLibrary@gmail.com',
+            phonenumber = '222-222-2222',
+            email = 'on',
+            chat = 'on',
+        ), follow_redirects=True)
+        self.assertIn("Profile updated",response.data)
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Fred', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='KentonCountyLibrary@gmail.com', models.Staff.interests=='books',\
+                                             models.Staff.phonenumber=='2222222222', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==1, models.Staff.chat==1)).first()
+        self.assertIsNotNone(staff)
 
     def test_addrecread(self):
         # admin can edit, but book name must exist.
@@ -344,6 +413,8 @@ class LibrarySiteTests(unittest.TestCase):
             phone = '',
             times = 'Anytime',
         ), follow_redirects=True)
+        self.assertIn("Please enter your name and email address in the contact area",response.data)
+        self.assertIn("Jeff Johnson",response.data) # Verify that input data was retained
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.contact=='phone', models.PatronContact.times=='Anytime')).first()
         self.assertIsNone(patroncontact)
         
