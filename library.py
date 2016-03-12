@@ -12,7 +12,7 @@ from flask_mail import Mail, Message
 from publisher import Publisher
 from os import environ
 
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 from database import db_session
 from models import ReadingList, Staff, PatronContact
@@ -225,9 +225,21 @@ def changeSticky(rlid):
 @app.route('/profile/<uname>', methods=['GET'])
 def profile(uname):
     staff = Staff.query.get(uname)
+
+    selected_categories = request.args.getlist('category')
+    if selected_categories:
+        readinglist = (ReadingList.query
+                       .filter(and_(
+                           ReadingList.username==staff.username,
+                           ReadingList.category.in_(selected_categories)))
+                       .all())
+    else:
+        readinglist = staff.readinglist
+
     if staff:
         return render_template('viewprofile.html', staff=staff,
-                               readinglist=staff.readinglist)
+                               readinglist=readinglist,
+                               selected_categories=selected_categories)
     else:
         flash("Profile not found")
         return redirect(url_for('main'))
@@ -239,20 +251,47 @@ def edit_profile(uname):
     if session["logged_in_name"] != uname and session["logged_in_name"] != 'admin':
         flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
-
+    inputs = request.args.get('inputs')
     staff = Staff.query.get(uname)
-
     if request.method == "GET": #regular get, present the form to user to edit.
         if staff:
-            return render_template('profile.html', staff=staff)
+            if inputs != None: # Prepopulate with entered data
+                inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
+            return render_template('profile.html', staff=staff, inputs=inputs)
         else:
             flash("No profile found for user.")
             return redirect(url_for('main'))
     elif request.method == "POST": #form was submitted, update database
-        staff.bio = request.form['bio']
+        data = {}
+        for key, values in dict(request.form).items():
+            data[key] = ",".join(values)
+
+        try:
+            data['phonenumber'] = re.sub(r"\D","",data['phonenumber'])
+            if len(data['phonenumber']) == 0: # This shouldn't happen since the HTML has a required field
+                flash("Please enter your phone number.")
+                return redirect(url_for('edit_profile', uname=uname) + '?inputs=' + str(data))
+            elif len(data['phonenumber']) < 10:
+                flash("Your phone number must include the area code (10 digits total).")
+                return redirect(url_for('edit_profile', uname=uname) + '?inputs=' + str(data))
+        except:
+            pass
+
+        try:
+            if data['chat'] == 'on':
+                data['chat'] = True
+        except:
+            data['chat'] = False
+        try:
+            if data['email'] == 'on':
+                data['email'] = True
+        except:
+            data['email'] = False
+        for key, value in data.iteritems(): # Dynamically update the model values for staff based on inputs
+            setattr(staff, key, value)
         db_session.commit()
         flash("Profile updated!")
-        return render_template('profile.html', staff=staff)
+    return redirect(url_for('edit_profile', uname=uname))
 
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
@@ -289,7 +328,7 @@ def contact(uname):
         except:
             flash("Please select a contact method.")
             return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        
+
         try: # Input fields are required so this shouldn't be needed
             if data['name'] == '' or data['email'] == '':
                 flash("Please enter your name and email address in the contact area.")
@@ -297,7 +336,7 @@ def contact(uname):
         except:
             flash("Please enter your name and email address in the contact area.")
             return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-        
+
         message = ""
         if data['contact'] == 'email':
                 message += "\n\nTell us about a few books or authors you've enjoyed. What made these books great?\n" + data['likes']
@@ -321,7 +360,7 @@ def contact(uname):
             else:
                 message += "\n\nChat service: " + data['chat']
                 message += "\n\nChat handle: " + data['handle']
-        
+
         if data['contact'] != 'email' and data['times'] != '':
             message += "\n\nTimes: " + data['times']
 
@@ -332,7 +371,7 @@ def contact(uname):
             msg = Message("Request for librarian contact", recipients=[data['email'], lib.emailaddress])
             msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
             msg.body += message
-            mail.send(msg)            
+            mail.send(msg)
         patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, **data)
         db_session.add(patroncontact)
         db_session.commit()

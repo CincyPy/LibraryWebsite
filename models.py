@@ -22,6 +22,8 @@ class Staff(Base):
     phone = Column(Boolean, default=True)
     chat = Column(Boolean, default=False)
     irl = Column(Boolean, default=True)
+    
+    interests = Column(Text)
 
     patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
 
@@ -67,6 +69,7 @@ class PatronContact(Base):
     format_pref = Column(Text)
     chat = Column(Text)
     handle = Column(Text)
+    interests = Column(Text)
 
     def __getitem__(self, attr):
         return getattr(self, attr)
@@ -76,7 +79,7 @@ def init_models(db_session=None):
     if db_session is None:
         from database import db_session
 
-    admin = Staff(username='admin', password='admin', f_name='Admin',
+    admin = Staff(username='admin', password='admin', f_name='Admin', emailaddress='KentonCountyLibrary@gmail.com',
                   l_name='User', phonenumber=1111111111, bio='Admin bio')
     db_session.add(admin)
 
