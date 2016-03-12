@@ -1,52 +1,117 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-sm-4">
-            <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
-            {{ profilepic(staff) }}
-        </div>
-        <div class="col-sm-8 bio">
-            <h4>Bio</h4>
-            <p>{{ staff.bio }}</p>
 
-            <h4>Interests</h4>
-            {% if staff.category_list %}
-            {% for item in staff.category_list %} {{ category_tag(item) }} {% endfor %}
-            {% else %}
-            <div>
-                <p>{{ exclamation_sign() }}{{ staff.f_name }} hasn't tagged any interests yet.</p>
-            </div>
-            {% endif %}
+{% set CATEGORY_FILTER_FORM_AUTOSUBMIT = false %}
 
-            <div><a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations.</div>
-
-            <div>{{ ask_what_read(staff) }}</div>
-
-            {% if staff.emailaddress %}
-            <div>{{ contact(staff) }}</div>
-            {% endif %}
-        </div>
+{% macro categories_filter_form(staff) %}
+<form role="form"
+      id="categories-selector-form"
+      action="{{ url_for('profile', uname=staff.username) }}"
+      method="GET">
+    {% for item in staff.category_list %}
+    <div class="checkbox-inline">
+        <input id="category-{{ item }}" type="checkbox" name="category"
+               data-toggle="toggle"
+               data-on="{{ item }}"
+               data-off="{{ item }}"
+               data-size="small"
+               value="{{ item }}"
+               {{ 'checked' if item in selected_categories }}>
+        <label class="fallback-label" for="category-{{ item }}">{{ item }}</label>
     </div>
-    <section>
-        <div class="container">
-            <h4>{{ staff.f_name }}'s Book Recommendations</h4>
-            <div class="row">
-                {% if staff.readinglist %}
-                    {% for book in staff.readinglist %}
-                <div class="col-md-4">
-                    <p>{{ book_image(book) }}</p>
-                    <p>{{ text_link(book.book) }}</p>
-                    <p>{{ book.recdate }}</p>
-                </div>
-                    {% endfor %}
+    {% endfor %}
+    <button role="button" class="btn btn-secondary" type="submit">Filter</button>
+</form>
+{% endmacro %}
+
+{% macro js_categories_filter_form_init() %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap-toggle.min.css') }}">
+<script src="{{ url_for('static', filename='js/bootstrap-toggle.min.js') }}"></script>
+<script>
+$(function() {
+    var form = $("#categories-selector-form");
+    var checkboxes = form.find("input[type=checkbox]");
+    if (checkboxes) {
+        form.find(".fallback-label").hide();
+
+        {% if CATEGORY_FILTER_FORM_AUTOSUBMIT %}
+        form.find("button[type=submit]").hide();
+
+        checkboxes.change(function() {
+            setTimeout(function() {
+                form.submit();
+            }, 250);
+        });
+        {% endif %}
+    }
+});
+</script>
+{% endmacro %}
+
+{% block head %}
+{{ super() }}
+{{ js_categories_filter_form_init() }}
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
+                {{ profilepic(staff) }}
+            </div>
+            <div class="col-md-8 bio">
+                <h4>Bio</h4>
+                <p>{{ staff.bio }}</p>
+
+                <h4>Interests</h4>
+                {% if staff.category_list %}
+                {% for item in staff.category_list %} {{ category_tag(item) }} {% endfor %}
                 {% else %}
-                <div class="col-md-4">
-                    <p>{{ exclamation_sign() }}{{ staff.f_name }} has no recommendations yet.</p>
+                <div>
+                    <p>{{ exclamation_sign() }}{{ staff.f_name }} hasn't tagged any interests yet.</p>
                 </div>
+                {% endif %}
+
+                <div><a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations.</div>
+
+                <div>{{ ask_what_read(staff) }}</div>
+
+                {% if staff.emailaddress %}
+                <div>{{ contact(staff) }}</div>
                 {% endif %}
             </div>
         </div>
-    </section>
-</div>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Categories</h4>
+                {{ categories_filter_form(staff) }}
+            </div>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <h4>{{ staff.f_name }}'s Book Recommendations</h4>
+        <div class="row">
+            {% if staff.readinglist %}
+                {% for book in readinglist %}
+            <div class="col-md-4">
+                <p>{{ book_image(book) }}</p>
+                <p>{{ text_link(book.book) }}</p>
+                <p>{{ book.recdate }}</p>
+            </div>
+                {% endfor %}
+            {% else %}
+            <div class="col-md-4">
+                <p>{{ exclamation_sign() }}{{ staff.f_name }} has no recommendations yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
 {% endblock %}
