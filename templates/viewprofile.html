@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% from 'macros.html' import ask_what_read, book_image, category_tag, contact,
-                             exclamation_sign, profilepic, submit , text_link
-                             %}
+{% from 'macros/core.html' import ask_what_read, book_image, category_tag,
+                                  contact, profilepic, submit, text_link %}
+{% from 'macros/icons.html' import exclamation_sign %}
 
 {% set CATEGORY_FILTER_FORM_AUTOSUBMIT = false %}
 

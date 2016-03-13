@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% from 'macros.html' import js_init_tablesorter, label_text, link_button, submit %}
+{% from 'macros/core.html' import label_text, link_button, submit %}
+{% from 'macros/tablesorter.html' import js_init_tablesorter %}
 
 {% block head %}
 {{ super() }}

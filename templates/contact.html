@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% from 'macros.html' import required_icon, submit %}
+{% from 'macros/core.html' import submit %}
+{% from 'macros/icons.html' import required_icon %}
 
 {% macro required() -%}
 <strong><abbr title="This field is required.">{{ required_icon() }}</abbr></strong>

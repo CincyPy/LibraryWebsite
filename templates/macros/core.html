@@ -1,8 +1,13 @@
-{# put this in config somehow #}
-{% set placeholders = True %}
+{% from 'macros/icons.html' import email_icon %}
+
+{% set PLACEHOLDERS = True %}
 
 {% macro ask_what_read(staff) %}
 <a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
+{% endmacro %}
+
+{% macro stylesheet(href) %}
+<link rel="stylesheet" type="text/css" href="{{ href }}">
 {% endmacro %}
 
 {% macro button(text, type='button', button_class='primary', extra_classes=none) -%}
@@ -36,28 +41,12 @@
 </div>
 {%- endmacro %}
 
-{% macro js_init_tablesorter() %}
-<script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>
-<script>
-$(function(){
-    $('table').tablesorter({
-        theme: 'default',
-        widgets: ['zebra'],
-        usNumberFormat: false,
-        sortReset: true,
-        sortRestart: true
-    })
-});
-</script>
-{% endmacro %}
-
 {% macro category_tag(name) -%}
 {{ button(name, button_class='secondary', extra_classes='btn-xs') }}
 {%- endmacro %}
 
 {% macro profilepic(staff) -%}
-{% if placeholders %}
+{% if PLACEHOLDERS %}
 <img src="{{ url_for('static', filename='img/placeholder-250x250.png') }}" alt="">
 {% else %}
 <img class="profile-pic" src="{{ url_for('static', filename=staff.profile_path(staff.f_name)) }}">
@@ -65,35 +54,13 @@ $(function(){
 {%- endmacro %}
 
 {% macro book_image(book, size='medium') %}
-{% if placeholders %}
+{% if PLACEHOLDERS %}
 <img src="{{ url_for('static', filename='img/placeholder-250x360.png') }}"></img>
 {% else %}
 <img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/{{ size }}/{{ book.ISBN }}"></img>
 {% endif %}
 {% endmacro %}
 
-{% macro required_icon() %}<span style="color: #a94442; font-size: .7em;" class="glyphicon glyphicon-asterisk"></span> {% endmacro %}
-
-{% macro email_icon() %}<span style="color: #337ab7;" class="glyphicon glyphicon-envelope"></span> {% endmacro %}
-
-{% macro info_sign() %}<span style="color: #31708f;" class="glyphicon glyphicon-info-sign"></span>{% endmacro %}
-
-{% macro exclamation_sign() %}<span style="color: #a94442;" class="glyphicon glyphicon-exclamation-sign"></span> {% endmacro %}
-
-{% macro remove_icon() %}<span class="glyphicon glyphicon-remove"></span> {% endmacro %}
-
-{% macro image(fn) %}
+{% macro static_image(fn) %}
 <img class="img-responsive" src="{{ url_for('static', filename='img/' + fn) }}">
 {% endmacro %}
-
-{% macro twitter() -%}
-<a href="javascript:;">{{ image('twitter-logo.png') }}</a>
-{%- endmacro %}
-
-{% macro facebook() -%}
-<a href="javascript:;">{{ image('facebook-logo.png') }}</a>
-{%- endmacro %}
-
-{% macro linkedin() -%}
-<a href="javascript:;">{{ image('linkedin-logo.png') }}</a>
-{%- endmacro %}
