@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from 'macros.html' import required_icon %}
+
 {% macro required() -%}
 <strong><abbr title="This field is required.">{{ required_icon() }}</abbr></strong>
 {%- endmacro %}

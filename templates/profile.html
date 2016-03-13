@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% from 'macros.html' import submit %}
+
 {% block content %}
 <div class="container">
     <h2>Staff Profile for {{ staff.username }}</h2>

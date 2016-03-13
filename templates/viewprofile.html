@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% from 'macros.html' import ask_what_read, book_image, category_tag, contact,
+                             exclamation_sign, profilepic, text_link %}
+
 {% set CATEGORY_FILTER_FORM_AUTOSUBMIT = false %}
 
 {% macro categories_filter_form(staff) %}
