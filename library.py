@@ -382,7 +382,7 @@ def contact(uname):
 def publish():
     ip = request.remote_addr
     publish = Publisher(ip, "publisher", request.json)
-    if not publish.in_ip_address_range():
+    if publish.in_ip_address_range():
         return "Yup"
     abort(403)
 
