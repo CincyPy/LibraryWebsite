@@ -1,11 +1,6 @@
 {% extends 'skeleton.html' %}
 
-{% from 'macros.html' import ask_what_read, book_image, button, category_tag,
-                             contact, email_icon, exclamation_sign, facebook,
-                             info_sign, js_init_tablesorter, label_text,
-                             link_button, linkedin, mailto, profilepic,
-                             required_icon, submit, text_link, twitter
-                             %}
+{% from 'macros.html' import button, exclamation_sign, info_sign %}
 
 {% block head %}
 {{ super() }}
@@ -37,21 +32,6 @@
     {% endblock %}
 </div>
 
-<nav class="navbar navbar-default navbar-fixed-bottom">
-    <div class="container">
-        <ul class="nav navbar-nav">
-            <li>{{ text_link('Developed by CincyPy', 'javascript:;') }}</li>
-        </ul>
-        <ul class="nav navbar-nav">
-            <li>{{ text_link('About Us', 'javascript:;') }}</li>
-            <li>{{ text_link('Contact Support', 'javascript:;') }}</li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-            <li>{{ twitter() }}</li>
-            <li>{{ facebook() }}</li>
-            <li>{{ linkedin() }}</li>
-        </ul>
-    </div>
-</nav>
+{% include 'footer.html' %}
 
 {% endblock body %}
