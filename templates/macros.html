@@ -57,7 +57,6 @@ $(function(){
 {%- endmacro %}
 
 {% macro profilepic(staff) -%}
-{# TODO: staff.profile_picture argument #}
 {% if placeholders %}
 <img src="{{ url_for('static', filename='img/placeholder-250x250.png') }}" alt="">
 {% else %}
@@ -80,6 +79,8 @@ $(function(){
 {% macro info_sign() %}<span style="color: #31708f;" class="glyphicon glyphicon-info-sign"></span>{% endmacro %}
 
 {% macro exclamation_sign() %}<span style="color: #a94442;" class="glyphicon glyphicon-exclamation-sign"></span> {% endmacro %}
+
+{% macro remove_icon() %}<span class="glyphicon glyphicon-remove"></span> {% endmacro %}
 
 {% macro image(fn) %}
 <img class="img-responsive" src="{{ url_for('static', filename='img/' + fn) }}">
