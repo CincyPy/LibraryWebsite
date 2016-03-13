@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from 'macros.html' import required_icon %}
+{% from 'macros.html' import required_icon, submit %}
 
 {% macro required() -%}
 <strong><abbr title="This field is required.">{{ required_icon() }}</abbr></strong>
@@ -174,7 +174,7 @@ $(function() {
             </div>
         </fieldset>
 
-        <input type="submit" value="Submit" id="submit" class="btn btn-primary">
+        {{ submit('Submit') }}
     </form>
 </div>
 {% endblock %}

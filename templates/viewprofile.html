@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% from 'macros.html' import ask_what_read, book_image, category_tag, contact,
-                             exclamation_sign, profilepic, text_link %}
+                             exclamation_sign, profilepic, submit , text_link
+                             %}
 
 {% set CATEGORY_FILTER_FORM_AUTOSUBMIT = false %}
 
@@ -22,7 +23,8 @@
         <label class="fallback-label" for="category-{{ item }}">{{ item }}</label>
     </div>
     {% endfor %}
-    <button role="button" class="btn btn-secondary" type="submit">Filter</button>
+
+    {{ submit('Filter', button_class='secondary') }}
 </form>
 {% endmacro %}
 

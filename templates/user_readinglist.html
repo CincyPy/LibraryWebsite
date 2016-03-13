@@ -1,5 +1,7 @@
 <h4>Recommended Readings</h4>
 
+{% from 'macros.html' import submit, remove_icon %}
+
 <table class="tablesorter">
     <thead>
         <tr>
@@ -29,17 +31,17 @@
             <td>{{ RL.username }}</td>
             <td>
                 <form action="{{ url_for('changeSticky', rlid=RL.RLID)}}" method="POST">
-                    <input class='btn btn-default' type='submit' value='{{ RL.sticky }}'>
+                    {{ submit(RL.sticky, button_class='default') }}
                 </form>
             </td>
             <td>
                 <form action="{{ url_for('librarian', rlid=RL.RLID)}}" method="POST">
-                    <input class='btn btn-success' type='submit' value='Edit'   >
+                    {{ submit('Edit', button_class='success') }}
                 </form>
             </td>
             <td>
                 <form action="{{ url_for('remrecread', rlid=RL.RLID)}}" method="POST">
-                    <input class='btn btn-danger' type='submit' value='X'   >
+                    {{ submit(remove_icon(), button_class='danger') }}
                 </form>
             </td>
         </tr>
