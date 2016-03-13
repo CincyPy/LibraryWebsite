@@ -380,8 +380,11 @@ def contact(uname):
 
 @app.route('/publish', methods=['POST'])
 def publish():
-    publish = Publisher('192.168.0.1', "publisher", request.json)
-    return str(publish.in_ip_address_range())
+    ip = request.remote_addr
+    publish = Publisher(ip, "publisher", request.json)
+    if not publish.in_ip_address_range():
+        return "Yup"
+    abort(500)
 
 if __name__ == '__main__':
     if environ.get('PORT'):
