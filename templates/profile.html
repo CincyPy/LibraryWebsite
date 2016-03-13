@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
 <div class="container">
@@ -29,14 +30,14 @@
             <div class="col-md-8">
                 <div class="form-group">
                     <label for="bio">Bio</label>
-                    <textarea name="bio" id="bio" class="form-control" rows="10">{{ inputs.bio if inputs else staff.bio if staff.bio != None else '' }}</textarea>
+                    <textarea name="bio" id="bio" class="form-control" rows="10">{{ inputs.bio if inputs else staff.bio if staff.bio is not none else '' }}</textarea>
                 </div>
             </div>
         </div>
 
         <div class="form-group">
             <label for="Interests">Interests</label>
-            <textarea id="Interests" name="interests" rows="2" class="form-control">{{ inputs.interests if inputs else staff.interests if staff.interests != None else '' }}</textarea>
+            <textarea id="Interests" name="interests" rows="2" class="form-control">{{ inputs.interests if inputs else staff.interests if staff.interests is not none else '' }}</textarea>
         </div>
 
         <fieldset>

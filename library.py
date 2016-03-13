@@ -3,6 +3,7 @@ import datetime
 import ast
 import re
 import time
+import os
 
 from random import shuffle
 from functools import wraps
@@ -17,9 +18,13 @@ from sqlalchemy import or_, and_
 from database import db_session
 from models import ReadingList, Staff, PatronContact
 
+from upload_form import UploadForm
+from flask.ext.bootstrap import Bootstrap
+
 app = Flask(__name__)
 app.config.from_object(config)
 mail = Mail(app)
+bootstrap = Bootstrap(app)
 
 def login_required(test):
     @wraps(test)
@@ -293,6 +298,19 @@ def edit_profile(uname):
         flash("Profile updated!")
     return redirect(url_for('edit_profile', uname=uname))
 
+@app.route('/edit-profile/<uname>/upload-picture', methods=['GET', 'POST'])
+@login_required
+def upload_picture(uname):
+    if session["logged_in_name"] != uname and session["logged_in_name"] != 'admin':
+        flash("Access denied: You are not " + uname + ".")
+        return redirect(url_for('main'))
+    staff = Staff.query.get(uname)
+    image = None
+    form = UploadForm()
+    if form.validate_on_submit():
+        image = os.path.join('uploads/', staff.f_name + ".jpg")
+        form.image_file.data.save(os.path.join(app.static_folder, image))
+    return render_template('picture.html', form=form, image=image, staff=staff)
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):

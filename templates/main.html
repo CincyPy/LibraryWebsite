@@ -9,34 +9,32 @@
 
 <section id="staff">
     <div class="container">
-        <!--<div class="row">-->
 	{% set count = 0 %}
-        {% for staff in staff %}
-	    {% if count % 3 == 0 %}
-	        <div class="row">
+    {% for staff in staff %}
+    {% if count % 3 == 0 %}
+        <div class="row">
+    {% endif %}
+        <div class="col-md-4 col-sm-6 staff-profile">
+            <a href="{{ url_for('profile', uname=staff.username) }}">
+                <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
+                {{ profilepic(staff) }}
+            </a>
+            {% if staff.bio|length > 100 %}
+            <p>{{ staff.bio|truncate(100) }}<a href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
+            {% else %}
+            <p>{{ staff.bio }}</p>
             {% endif %}
-            <div class="col-md-4 col-sm-6 staff-profile">
-                <a href="{{ url_for('profile', uname=staff.username) }}">
-                    <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
-                    {{ profilepic(staff) }}
-                </a>
-                {% if staff.bio|length > 100 %}
-                <p>{{ staff.bio|truncate(100) }}<a href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
-                {% else %}
-                <p>{{ staff.bio }}</p>
-                {% endif %}
-                {{ ask_what_read(staff) }}
-                <!-- To add if we want to show categories on main page -->
-                {% for category in staff.category_list %}
-                {{ category_tag(category) }}
-                {% endfor %}
-            </div>
-	    {% if count % 3 == 2 %}
-	        </div>
-            {% endif %}
-	    {% set count = count + 1 %}
-        {% endfor %}
-        <!--</div>-->
+            {{ ask_what_read(staff) }}
+            <!-- To add if we want to show categories on main page -->
+            {% for category in staff.category_list %}
+            {{ category_tag(category) }}
+            {% endfor %}
+        </div>
+        {% if count % 3 == 2 %}
+        </div>
+        {% endif %}
+        {% set count = count + 1 %}
+    {% endfor %}
     </div>
 </section>
 {% endblock content %}
