@@ -9,9 +9,8 @@
 
 <section id="staff">
     <div class="container">
-	{% set count = 0 %}
-    {% for staff in staff %}
-    {% if count % 3 == 0 %}
+    {% for staff in staffmembers %}
+        {% if loop.index0 % 3 == 0 %}
         <div class="row">
     {% endif %}
         <div class="col-md-4 col-sm-6 staff-profile">
