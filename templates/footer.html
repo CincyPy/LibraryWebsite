@@ -1,0 +1,27 @@
+{% from 'macros.html' import text_link, twitter, facebook, linkedin, text_link %}
+
+<nav class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#library-footer">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="library-footer">
+            <ul class="nav navbar-nav">
+                <li>{{ text_link('Developed by CincyPy', 'javascript:;') }}</li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li>{{ text_link('About Us', 'javascript:;') }}</li>
+                <li>{{ text_link('Contact Support', 'javascript:;') }}</li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>{{ twitter() }}</li>
+                <li>{{ facebook() }}</li>
+                <li>{{ linkedin() }}</li>
+            </ul>
+        </div>
+    </div>
+</nav>
