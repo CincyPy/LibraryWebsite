@@ -1,4 +1,5 @@
 {% macro request_content() -%}
+    <strong>Contact Method: </strong>{{ req.contact }}</br>
     {% if req.contact == 'chat' %}
         <strong>Chat service: </strong>{{ req.chat }}</br>
         <strong>Chat handle: </strong>{{ req.handle }}</br>
@@ -18,13 +19,33 @@
     {% endif %}
 {%- endmacro %}
 
+<script>
+    window.onload = function() {
+        var formattedBody = "\n\n-- Original Request--\nContact Pref: {{ req.contact }}";
+        if ('{{ req.contact }}' == 'email') {
+            formattedBody += "\nTell us about a few books or authors you've enjoyed. What made these books great?\n {{ req.likes }}";
+            formattedBody += "\nDescribe some authors or titles that you DID NOT like and why.\n {{ req.dislikes }}";
+            formattedBody += "\nAdditional comments.\n {{ req.comment }}";
+        } else {
+            if ('{{ req.contact }}' == 'chat') {
+                formattedBody += "\nChat service: {{ req.chat }}";
+                formattedBody += "\nChat handle: {{ req.handle }}";
+            } else {
+                formattedBody += "\nTimes: {{ req.times }}";
+            }
+        }
+        console.log(formattedBody);
+        var mailToLink = "mailto:{{ req.email }}&subject=Response from {{ req.username }} at the Kenton County Library&body=" + encodeURIComponent(formattedBody);
+        document.getElementById('default_email').innerHTML = "<strong>Email: </strong><a href='" + mailToLink + "'>{{ req.email }}</a></br>"
+    }
+</script>
+
 <h4 style="text-align: center">Status: {{ req.status }}</h4>
 
 <legend>Contact Info</legend>
 <strong>Name: </strong>{{ req.name }}</br>
-<strong>Email: </strong><a href="mailto:{{ req.email }}?subject=Response from {{ req.username }} at the Kenton County Library
-                                &body=/n/nReqeust:/n{{ request_content() }}">{{ req.email }}</a></br>
-    {% if req.contact == 'phone' %}
-        <strong>Phone: </strong>{{ req.phone }}</br>
-    {% endif %}
+<div id="default_email"></div>
+{% if req.contact == 'phone' %}
+    <strong>Phone: </strong>{{ req.phone }}</br>
+{% endif %}
 {{ request_content() }}
