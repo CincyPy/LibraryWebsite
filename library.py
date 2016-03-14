@@ -7,7 +7,7 @@ import time
 from random import shuffle
 from functools import wraps
 from flask import Flask, render_template, request, session, \
-     flash, redirect, url_for, g, jsonify
+     flash, redirect, url_for, g, jsonify, abort
 from flask_mail import Mail, Message
 from publisher import Publisher
 from os import environ
@@ -380,8 +380,11 @@ def contact(uname):
 
 @app.route('/publish', methods=['POST'])
 def publish():
-    publish = Publisher('192.168.0.1', "publisher", request.json)
-    return str(publish.in_ip_address_range())
+    ip = request.remote_addr
+    publish = Publisher(ip, "publisher", request.json)
+    if publish.in_ip_address_range():
+        return "Yup"
+    abort(403)
 
 if __name__ == '__main__':
     if environ.get('PORT'):
