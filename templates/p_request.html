@@ -34,7 +34,6 @@
                 formattedBody += "\nTimes: {{ req.times }}";
             }
         }
-        console.log(formattedBody);
         var mailToLink = "mailto:{{ req.email }}&subject=Response from {{ req.username }} at the Kenton County Library&body=" + encodeURIComponent(formattedBody);
         document.getElementById('default_email').innerHTML = "<strong>Email: </strong><a href='" + mailToLink + "'>{{ req.email }}</a></br>"
     }

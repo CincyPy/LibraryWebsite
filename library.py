@@ -85,7 +85,7 @@ def admin():
 @login_required
 def librarian(rlid=None):
     logged_in_user = Staff.query.get(session['logged_in_name'])
-    reqs = PatronContact.query.filter(PatronContact.username==logged_in_user.username, PatronContact.status=='open')
+    reqs = PatronContact.query.filter(PatronContact.username==logged_in_user.username, PatronContact.status!='closed')
     #reqs = []
     if rlid is None:
         return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=None, patron_reqs=reqs)
@@ -386,6 +386,8 @@ def contact_status(PCID):
     if not contact_req:
         flash("Patron request not found")
         return redirect(url_for('librarian'))
+    contact_req.status = request.form['status']
+    db_session.commit()
     flash(contact_req.name + " Patron request status has been updated")
     return redirect(url_for('librarian'))
 

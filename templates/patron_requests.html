@@ -4,8 +4,26 @@
     }
 </style>
 
-<h4>Patron Contact Requests</h4>
 
+<script>
+    function edit_status(id, stat) {
+        var drpdwn = document.getElementById('edit_status' + id)
+        document.getElementById('status_form').action = "{{ url_for('contact_status', PCID=id)}}" + id + "?status=edit";
+        document.getElementById('btn' + id).innerHTML = "<input class='btn btn-success btn-sm' type='submit' value='Save'>";
+        drpdwn.innerHTML = "<select name='status' id='status" + id + "'> \
+                            <option value='open'>open</option> \
+                            <option value='contacted'>contacted</option> \
+                            <option value='pending'>pending</option> \
+                            <option value='closed'>closed</option> \
+                        </select>";
+        document.getElementById('status' + id).value = stat;
+    }
+</script>
+
+
+
+<h4>Patron Contact Requests</h4>
+<form id="status_form" action="" method="POST">
 <table class="tablesorter">
     <thead>
         <tr>
@@ -23,9 +41,9 @@
             <td>{{ req.reqdate }}</td>
             <td>{{ req.name }}</td>
             <td>{{ req.contact }}</td>
-            <td>{{ req.status }}</td>
+            <td id="edit_status{{ req.PCID }}">{{ req.status }}</td>
             <td>
-                <a href='#' class='btn btn-primary btn-sm' data-toggle="modal" data-target="#{{ req.PCID }}">View</a>
+                <a href='#' class='btn btn-default btn-sm' data-toggle="modal" data-target="#{{ req.PCID }}">View</a>
                 <!-- Modal -->
                 <div class="modal fade" id="{{ req.PCID }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
@@ -44,12 +62,11 @@
                   </div>
                 </div>
             </td>
-            <td>
-                <form action="{{ url_for('contact_status', PCID=req.PCID, status='edit')}}" method="POST">
-                    <input class='btn btn-success btn-sm' type='submit' value='Edit'>
-                </form>
+            <td id="btn{{ req.PCID }}">
+                <button class='btn btn-primary btn-sm' onclick='edit_status({{ req.PCID }},"{{ req.status }}")'>Edit</button>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+</form>
