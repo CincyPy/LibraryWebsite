@@ -78,21 +78,25 @@ def admin():
     if session["logged_in_name"] != "admin":
         flash("You are not authorized to perform this action.")
         return redirect(url_for('main'))
-    return render_template('admin.html', staff=Staff.query.all())
+    return render_template('admin.html', staff=Staff.query.all(), readinglist=ReadingList.query.all(), patron_reqs=PatronContact.query.all())
 
 @app.route('/librarian')
 @app.route('/librarian/<rlid>', methods=['GET', 'POST'])
 @login_required
 def librarian(rlid=None):
     logged_in_user = Staff.query.get(session['logged_in_name'])
-    reqs = PatronContact.query.filter(PatronContact.username==logged_in_user.username, PatronContact.status!='closed')
-    #reqs = []
+    patron_reqs = PatronContact.query.filter(PatronContact.username==logged_in_user.username, PatronContact.status!='closed')
     if rlid is None:
-        return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=None, patron_reqs=reqs)
+        if session["logged_in_name"] == 'admin':
+            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=None, patron_reqs=patron_reqs)
+        else:
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=None, patron_reqs=patron_reqs)
     else:
         book = ReadingList.query.filter_by(RLID=rlid).first()
-        if book.username == session["logged_in_name"] or session["logged_in_name"] == 'admin':
-            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book, patron_reqs=reqs)
+        if book.username == session["logged_in_name"]:
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book, patron_reqs=patron_reqs)
+        elif session["logged_in_name"] == 'admin':
+            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=book, patron_reqs=patron_reqs)
         else:
             flash("Your are not authorized to perform this action.")
             return redirect(url_for('librarian'))
@@ -389,7 +393,10 @@ def contact_status(PCID):
     contact_req.status = request.form['status']
     db_session.commit()
     flash(contact_req.name + " Patron request status has been updated")
-    return redirect(url_for('librarian'))
+    if session['logged_in_name'] == 'admin':
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('librarian'))
 
 @app.route('/publish', methods=['POST'])
 def publish():

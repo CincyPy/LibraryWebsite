@@ -1,31 +1,33 @@
 {% macro request_content() -%}
-    <strong>Contact Method: </strong>{{ req.contact }}</br>
+    <b>Contact Method: </b>{{ req.contact }}</br>
     {% if req.contact == 'chat' %}
-        <strong>Chat service: </strong>{{ req.chat }}</br>
-        <strong>Chat handle: </strong>{{ req.handle }}</br>
+        <b>Chat service: </b>{{ req.chat }}</br>
+        <b>Chat handle: </b>{{ req.handle }}</br>
     {% endif %}
     {% if req.contact != 'email' and req.times %}
-        <strong>Times: </strong>{{ req.times }}</br>
+        <b>Times: </b>{{ req.times }}</br>
     {% endif %}
     {% if req.contact == 'email' %}
-        <strong>Tell us about a few books or authors you've enjoyed. What made these books great?</br>
+        <b>Tell us about a few books or authors you've enjoyed. What made these books great?</b></br>
         {{ req.likes }}</br>
-        <strong>Describe some authors or titles that you DID NOT like and why.</br>
+        <b>Describe some authors or titles that you DID NOT like and why.</b></br>
         {{ req.dislikes }}</br>
-        <strong>Additional comments.</br>
+        <b>Additional comments.</b></br>
         {{ req.comment }}</br>
-        <strong>Audience: </stong>{{ req.audience }}</br>
-        <strong>Format prefs: </stong>{{ req.format_pref }}</br>
+        <b>Audience: </b>{{ req.audience }}</br>
+        <b>Format prefs: </b>{{ req.format_pref }}</br>
     {% endif %}
 {%- endmacro %}
 
 <script>
-    window.onload = function() {
+    function view_req{{ req.PCID }}() {
         var formattedBody = "\n\n-- Original Request--\nContact Pref: {{ req.contact }}";
         if ('{{ req.contact }}' == 'email') {
-            formattedBody += "\nTell us about a few books or authors you've enjoyed. What made these books great?\n {{ req.likes }}";
+            formattedBody += "\nTell us about a few books or authors you enjoyed. What made these books great?\n {{ req.likes }}";
             formattedBody += "\nDescribe some authors or titles that you DID NOT like and why.\n {{ req.dislikes }}";
             formattedBody += "\nAdditional comments.\n {{ req.comment }}";
+            formattedBody += "\nAudience: {{ req.audience }}";
+            formattedBody += "\nFormat prefs: {{ req.format_pref }}";
         } else {
             if ('{{ req.contact }}' == 'chat') {
                 formattedBody += "\nChat service: {{ req.chat }}";
@@ -35,15 +37,15 @@
             }
         }
         var mailToLink = "mailto:{{ req.email }}&subject=Response from {{ req.username }} at the Kenton County Library&body=" + encodeURIComponent(formattedBody);
-        document.getElementById('default_email').innerHTML = "<strong>Email: </strong><a href='" + mailToLink + "'>{{ req.email }}</a></br>"
+        document.getElementById('default_email{{ req.PCID }}').innerHTML = "<strong>Email: </strong><a href='" + mailToLink + "'>{{ req.email }}</a></br>"
     }
 </script>
 
-<h4 style="text-align: center">Status: {{ req.status }}</h4>
+<h3 style="text-align: center; color: blue">Status: {{ req.status }}</h3>
 
 <legend>Contact Info</legend>
 <strong>Name: </strong>{{ req.name }}</br>
-<div id="default_email"></div>
+<div id="default_email{{ req.PCID }}"></div>
 {% if req.contact == 'phone' %}
     <strong>Phone: </strong>{{ req.phone }}</br>
 {% endif %}

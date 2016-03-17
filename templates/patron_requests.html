@@ -42,8 +42,8 @@
             <td>{{ req.name }}</td>
             <td>{{ req.contact }}</td>
             <td id="edit_status{{ req.PCID }}">{{ req.status }}</td>
-            <td>
-                <a href='#' class='btn btn-default btn-sm' data-toggle="modal" data-target="#{{ req.PCID }}">View</a>
+            <td> <!--View request-->
+                <a href='#' class='btn btn-default btn-sm' onclick="view_req{{ req.PCID }}()" data-toggle="modal" data-target="#{{ req.PCID }}">View</a>
                 <!-- Modal -->
                 <div class="modal fade" id="{{ req.PCID }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
