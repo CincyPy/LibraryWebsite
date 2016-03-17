@@ -11,7 +11,7 @@ class Publisher:
 
         ipranges = [list(ip_network(ip).hosts()) for ip in ipranges]
 
-        # Flatten the matrix to and array
+        # Flatten the matrix to an array
         flat_range = list(chain.from_iterable(ipranges))
         return flat_range
 
