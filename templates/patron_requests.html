@@ -8,7 +8,7 @@
 <script>
     function edit_status(id, stat) {
         var drpdwn = document.getElementById('edit_status' + id)
-        document.getElementById('status_form').action = "{{ url_for('contact_status', PCID=id)}}" + id + "?status=edit";
+        document.getElementById('status_form').action = "{{ url_for('contact_status', PCID=id)}}" + id;
         document.getElementById('btn' + id).innerHTML = "<input class='btn btn-success btn-sm' type='submit' value='Save'>";
         drpdwn.innerHTML = "<select name='status' id='status" + id + "'> \
                             <option value='open'>open</option> \
