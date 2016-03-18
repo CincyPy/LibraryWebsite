@@ -14,7 +14,7 @@
         <h2>Welcome to the Staff Page for the Library Site</h2>
         <p>Hello, {{ session.logged_in_name }}</p>
         {%- if session.logged_in_name == 'admin' -%}
-        <form action="{{ url_for('adduser')}}" method="POST" class="add">
+        <form action="{{ url_for('adduser')}}" method="POST">
             <h3>Add a new staff member</h3>
             {{ label_text('username', 'Username') }}
             {{ label_text('password', 'Password') }}
@@ -27,7 +27,6 @@
         </form>
         <div class="col-sm-6">  <!--Patron contact tracking-->
             {% include "patron_requests.html" %}
-
         </div>
         {% endif -%}
     </div>
