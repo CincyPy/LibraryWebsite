@@ -4,6 +4,10 @@
 <a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
 {% endmacro %}
 
+{% macro profile_image(staff) %}
+<img class="profile-pic img-responsive" src="{{ url_for('static', filename=staff.profile_path()) }}" alt="">
+{% endmacro %}
+
 {% macro js_init_tablesorter() %}
 <script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>

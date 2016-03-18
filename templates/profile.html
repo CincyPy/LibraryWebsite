@@ -14,12 +14,8 @@
                       <label for="l_name">Last:</label>
                       <input type="text" name="l_name" value="{{ inputs.l_name if inputs else staff.l_name }}" required />
                   </div>
-                  {% if staff.pic %}
-                    <img class="profile-pic img-responsive" src="{{ staff.pic }}" alt="">
-                  {% else %}
-                    <img src="http://placehold.it/250x250">
-                  {% endif %}
-                  <a href="" type="button" class="btn btn-default">Update Image</a>
+                  {{ profile_image(staff) }}
+                  <a href="{{ url_for('upload_picture', uname=staff.username) }}" type="button" class="btn btn-default">Update Image</a>
                 </div>
                 <div class="col-sm-6" style="padding-right: 0">
                     <label for="bio">Bio:</label><br/>
@@ -46,7 +42,7 @@
                     {% if inputs %}
                         <input type="checkbox" name="email" {% if inputs.email %}checked{% endif %}><label for="email"> Email</label></br>
                         <input type="checkbox" name="chat" {% if inputs.chat %}checked{% endif %}><label for="chat"> Online Chat</label></br>
-                    {% else %}    
+                    {% else %}
                         <input type="checkbox" name="email" {% if staff.email %}checked{% endif %}><label for="email"> Email</label></br>
                         <input type="checkbox" name="chat" {% if staff.chat %}checked{% endif %}><label for="chat"> Online Chat</label></br>
                     {% endif %}

@@ -35,9 +35,9 @@ class Staff(Base):
     def category_list(self):
         return set([item.category for item in self.readinglist])
 
-    def profile_path(self, first_name):
-        if os.path.isfile('static/uploads/' + first_name + '.jpg'):
-            pic_file_name = 'uploads/'+ first_name + '.jpg'
+    def profile_path(self):
+        if os.path.isfile('static/uploads/' + self.username + '.jpg'):
+            pic_file_name = 'uploads/'+ self.username + '.jpg'
             print pic_file_name
         else: 
             pic_file_name = 'uploads/anon.jpg'
