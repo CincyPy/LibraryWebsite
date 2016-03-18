@@ -56,7 +56,7 @@ $(function() {
     <div class="row">
         <div class="col-sm-6">
             <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
-            <img class="profile-pic" src="{{ url_for('static', filename=staff.profile_path(staff.f_name))}} "/>
+            <img class="profile-pic" src="{{ url_for('static', filename=staff.profile_path())}} "/>
         </div>
         <div class="col-sm-6">
             <p class="bio">{{ staff.bio }}</p>
