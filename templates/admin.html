@@ -25,6 +25,10 @@
             {{ label_text('emailaddress', 'Email', 'email') }}
             {{ submit('Save') }}
         </form>
+        <div class="col-sm-6">  <!--Patron contact tracking-->
+            {% include "patron_requests.html" %}
+
+        </div>
         {% endif -%}
     </div>
     <div class="row">
