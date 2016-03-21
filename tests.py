@@ -504,7 +504,30 @@ class LibrarySiteTests(unittest.TestCase):
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='email', \
                                                              models.PatronContact.likes=='I like books', models.PatronContact.dislikes=='Sans books', models.PatronContact.comment=='No comment', models.PatronContact.format_pref=='book,eb', models.PatronContact.audience=='adults,children')).first()
         self.assertIsNotNone(patroncontact)
-               
+    
+    def test_edit_patroncontact(self):
+        #test patron contact exists on librarian page
+        self.login("fred", "fred")
+        response = self.app.get("/librarian")
+        self.assertIn("Joe Johnson",response.data) # Test that patron contact request is shown
+        #confirm status can be changed
+        response = self.app.post("/contact_status/1",data=dict(
+            status = 'pending',
+        ), follow_redirects=True)
+        self.assertIn("Joe Johnson Patron request status has been updated",response.data)
+        self.assertIn("2016-01-07",response.data)
+        patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Joe Johnson', models.PatronContact.email=='jjohanson@bigpimpn.net', models.PatronContact.contact=='phone', \
+                                                             models.PatronContact.phone=='5555555555', models.PatronContact.times=='M-Th 12-2 pm', models.PatronContact.status=='pending')).first()
+        self.assertIsNotNone(patroncontact)
+        #confirm closed contact requests are not shown
+        response = self.app.post("/contact_status/1",data=dict(
+            status = 'closed',
+        ), follow_redirects=True)
+        self.assertNotIn("2016-01-07",response.data)
+        patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Joe Johnson', models.PatronContact.email=='jjohanson@bigpimpn.net', models.PatronContact.contact=='phone', \
+                                                             models.PatronContact.phone=='5555555555', models.PatronContact.times=='M-Th 12-2 pm', models.PatronContact.status=='closed')).first()
+        self.assertIsNotNone(patroncontact)
+        
     def test_github_ip_check(self):
         publish = Publisher('192.168.0.1', "dontmatter", "")
         self.assertFalse(publish.in_ip_address_range())
