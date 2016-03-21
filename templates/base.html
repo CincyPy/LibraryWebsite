@@ -1,7 +1,7 @@
 {% extends "skeleton.html" %}
 
 {% macro ask_what_read(staff) %}
-<a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
+<a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read!</a>
 {% endmacro %}
 
 {% macro js_init_tablesorter() %}
