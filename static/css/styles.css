@@ -115,4 +115,7 @@ div.staff-image{
     border-radius: 50%;
     width: 250px;
     height: 250px;
+
+    display: table;
+    margin: 0 auto;
 }
