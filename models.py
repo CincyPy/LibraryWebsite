@@ -38,7 +38,6 @@ class Staff(Base):
     def profile_path(self, first_name):
         if os.path.isfile('static/uploads/' + first_name + '.jpg'):
             pic_file_name = 'uploads/'+ first_name + '.jpg'
-            print pic_file_name
         else: 
             pic_file_name = 'uploads/anon.jpg'
         return pic_file_name
