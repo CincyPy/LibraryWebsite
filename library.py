@@ -311,10 +311,12 @@ def upload_picture(uname):
         flash("Access denied: You are not " + uname + ".")
         return redirect(url_for('main'))
     staff = Staff.query.get(uname)
-    image = None
+    if staff is None:
+        flash('User %s not found' % uname)
+        return redirect(url_for('main'))
+    image = staff.profile_path()
     form = UploadForm()
     if form.validate_on_submit():
-        image = os.path.join('uploads/', staff.f_name + ".jpg")
         form.image_file.data.save(os.path.join(app.static_folder, image))
     return render_template('picture.html', form=form, image=image, staff=staff)
 

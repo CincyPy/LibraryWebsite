@@ -11,8 +11,6 @@
                 {{ wtf.quick_form(form, enctype='multipart/form-data') }}
             </div>
         </div>
-        {% if image %}
-            <img src="{{ url_for('static', filename=image) }}">
-        {% endif %}
+        {{ profile_image(staff) }}
     </div>
 {% endblock %}
