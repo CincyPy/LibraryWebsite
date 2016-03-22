@@ -4,14 +4,16 @@ html {
 }
 
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Raleway', sans-serif;
   padding-top: 50px;
   height: 100%;
   background: url('../img/symphony.png');
 }
 
 .navbar-brand, .staff-name {
-  font-family: 'Merriweather', serif;
+    /*font-family: 'Merriweather', serif;*/
+    font-weight:100;
+    font-size:200%;
 }
 
 .staff-name {
@@ -32,9 +34,10 @@ a:hover {
   cursor: pointer;
 }
 
+/*
 section#staff:target {
     padding-top: 50px;
-}
+}*/
 
 .flash, .error {
     /*background: #F0D6D6;*/
@@ -75,7 +78,7 @@ section#header {
     text-align: center;
     padding: 40px;
     box-shadow: inset 0px 0px 0 2000px rgba(0,0,0,0.5);
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
 }
 
 section#header h2, section#header h3 {
@@ -92,4 +95,27 @@ section#header h3 {
   font-size: 16px;
   text-align: left;
 
+}
+
+
+p.truncated-bio{
+    font-size:110%;
+}
+
+div.home-container{
+    background-color:rgb(255,255,255);
+    background-color:rgba(255,255,255,.70);
+    padding-top:20px;
+    border:1px solid rgb(200,200,200);
+}
+
+div.staff-image{
+    background-repeat: no-repeat;
+    background-position: 50%;
+    border-radius: 50%;
+    width: 250px;
+    height: 250px;
+
+    display: table;
+    margin: 0 auto;
 }
