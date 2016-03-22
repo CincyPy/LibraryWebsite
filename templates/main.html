@@ -10,28 +10,34 @@
 </section>
 
 <section id="staff">
-    <div class="container">
+    <div class="container home-container">
     {% for staff in staffmembers %}
-        {% if loop.index0 % 3 == 0 %}
+        {% if loop.index0 % 2 == 0 %}
         <div class="row">
         {% endif %}
-            <div class="col-md-4 col-sm-6 staff-profile">
-                <a href="{{ url_for('profile', uname=staff.username) }}">
-                    <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
-                    {{ profilepic(staff) }}
-                </a>
-                {% if staff.bio|length > 100 %}
-                <p>{{ staff.bio|truncate(100) }}<a href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
-                {% else %}
-                <p>{{ staff.bio }}</p>
-                {% endif %}
-                {{ ask_what_read(staff) }}
-                <!-- To add if we want to show categories on main page -->
-                {% for category in staff.category_list %}
-                {{ category_tag(category) }}
-                {% endfor %}
+            <div class="col-md-6 staff-profile">
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="{{ url_for('profile', uname=staff.username) }}">
+                            <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('profile', uname=staff.username) }}">
+                            {{ profilepic(staff) }}
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        {% if staff.bio|length > 200 %}
+                        <p>{{ staff.bio|truncate(200) }}<a class="truncated-bio" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
+                        {% else %}
+                        <p>{{ staff.bio }}</p>
+                        {% endif %}
+                        <p>{{ ask_what_read(staff) }}</p>
+                    </div>
+                </div>
             </div>
-        {% if loop.index0 % 3 == 2 %}
+        {% if loop.index0 % 2 == 1 %}
         </div>
         {% endif %}
     {% endfor %}

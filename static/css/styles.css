@@ -4,7 +4,7 @@ html {
 }
 
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Raleway', sans-serif;
   padding-top: 50px;
   padding-bottom: 50px;
   height: 100%;
@@ -12,7 +12,9 @@ body {
 }
 
 .navbar-brand, .staff-name {
-  font-family: 'Merriweather', serif;
+    /*font-family: 'Merriweather', serif;*/
+    font-weight:100;
+    font-size:200%;
 }
 
 .staff-name {
@@ -33,9 +35,10 @@ a:hover {
   cursor: pointer;
 }
 
+/*
 section#staff:target {
     padding-top: 50px;
-}
+}*/
 
 .flash, .error {
     color: red;
@@ -83,7 +86,7 @@ section#header {
     text-align: center;
     padding: 40px;
     box-shadow: inset 0px 0px 0 2000px rgba(0,0,0,0.5);
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
 }
 
 section#header h2, section#header h3 {
@@ -102,6 +105,24 @@ section#header h3 {
 
 }
 
-.bio div {
-    margin: 1em 0;
+p.truncated-bio{
+    font-size:110%;
+}
+
+div.home-container{
+    background-color:rgb(255,255,255);
+    background-color:rgba(255,255,255,.70);
+    padding-top:20px;
+    border:1px solid rgb(200,200,200);
+}
+
+.staff-image{
+    background-repeat: no-repeat;
+    background-position: 50%;
+    border-radius: 50%;
+    width: 250px;
+    height: 250px;
+
+    display: table;
+    margin: 0 auto;
 }
