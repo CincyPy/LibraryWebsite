@@ -2,13 +2,13 @@
 
 {% set PLACEHOLDERS = False %}
 
-{% macro ask_what_read(staff) %}
+{% macro ask_what_read(staff) -%}
 <a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
-{% endmacro %}
+{%- endmacro %}
 
-{% macro stylesheet(href) %}
+{% macro stylesheet(href) -%}
 <link rel="stylesheet" type="text/css" href="{{ href }}">
-{% endmacro %}
+{%- endmacro %}
 
 {% macro button(text, type='button', button_class='primary', extra_classes=none) -%}
 <button role="button" class="btn btn-{{ button_class }} {{ extra_classes }}" type="{{ type }}">{{ text }}</button>
@@ -18,16 +18,12 @@
 {{ button(text, type='submit', button_class=button_class) }}
 {%- endmacro %}
 
-{% macro mailto(emailaddress) %}
+{% macro mailto(emailaddress) -%}
 {{ 'mailto:' + emailaddress }}
-{% endmacro %}
+{%- endmacro %}
 
-{% macro contact(staff) %}
-{{ text_link(email_icon() + 'Contact ' + staff.f_name, mailto(staff.emailaddress)) }}
-{% endmacro %}
-
-{% macro text_link(text, href) -%}
-<a href="{{ href }}">{{ text }}</a>
+{% macro contact(staff) -%}
+<a href="{{ mailto(staff.emailaddress) }}">{{ email_icon() + 'Contact ' + staff.f_name }}</a>
 {%- endmacro %}
 
 {% macro link_button(href, text) -%}
@@ -53,14 +49,14 @@
 {% endif %}
 {%- endmacro %}
 
-{% macro book_image(book, size='medium') %}
-{% if PLACEHOLDERS %}
+{% macro book_image(book, size='medium') -%}
+{% if PLACEHOLDERS -%}
 <img src="{{ url_for('static', filename='img/placeholder-250x360.png') }}"></img>
-{% else %}
+{%- else -%}
 <img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/{{ size }}/{{ book.ISBN }}"></img>
-{% endif %}
-{% endmacro %}
+{%- endif %}
+{%- endmacro %}
 
-{% macro static_image(fn) %}
+{% macro static_image(fn) -%}
 <img class="img-responsive" src="{{ url_for('static', filename='img/' + fn) }}">
-{% endmacro %}
+{%- endmacro %}

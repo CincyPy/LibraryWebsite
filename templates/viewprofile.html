@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% from 'macros/core.html' import ask_what_read, book_image, category_tag,
-                                  contact, profilepic, submit, text_link %}
+                                  contact, profilepic, submit %}
 {% from 'macros/icons.html' import exclamation_sign %}
 
 {% set CATEGORY_FILTER_FORM_AUTOSUBMIT = false %}
@@ -107,7 +107,7 @@ $(function() {
                 {% for book in readinglist %}
             <div class="col-md-4">
                 <p>{{ book_image(book) }}</p>
-                <p>{{ text_link(book.book) }}</p>
+                <p><a href="javascript:;">{{ book.book }}</a></p>
                 <p>{{ book.recdate }}</p>
             </div>
                 {% endfor %}

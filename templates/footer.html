@@ -1,4 +1,3 @@
-{% from 'macros/core.html' import text_link %}
 {% from 'macros/social.html' import twitter, facebook, linkedin %}
 
 <nav class="navbar navbar-default navbar-fixed-bottom">
@@ -12,11 +11,11 @@
         </div>
         <div class="collapse navbar-collapse" id="library-footer">
             <ul class="nav navbar-nav">
-                <li>{{ text_link('Developed by CincyPy', 'javascript:;') }}</li>
+                <li><a href="javascript:;">Developed by CincyPy</a></li>
             </ul>
             <ul class="nav navbar-nav">
-                <li>{{ text_link('About Us', 'javascript:;') }}</li>
-                <li>{{ text_link('Contact Support', 'javascript:;') }}</li>
+                <li><a href="javascript:;">About Us</a></li>
+                <li><a href="javascript:;">Contact Support</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li>{{ twitter() }}</li>
