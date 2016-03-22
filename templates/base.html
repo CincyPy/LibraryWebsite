@@ -29,7 +29,7 @@ $(function(){
 <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.default.min.css') }}">
 
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css')}}">
-
+<link href='https://fonts.googleapis.com/css?family=Raleway:400,100' rel='stylesheet' type='text/css'>
 
 <script src="{{ url_for('static', filename='js/jquery-1.12.0.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
@@ -48,6 +48,7 @@ $(function(){
     {% endif %}
     {% block content %}
     {% endblock %}
+
 </div>
 
 <footer class="footer" id="footer">
