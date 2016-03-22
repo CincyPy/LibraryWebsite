@@ -316,8 +316,9 @@ def upload_picture(uname):
         return redirect(url_for('main'))
     image = staff.profile_path()
     form = UploadForm()
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         form.image_file.data.save(os.path.join(app.static_folder, image))
+        return redirect(url_for('edit_profile', uname=uname))
     return render_template('picture.html', form=form, image=image, staff=staff)
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
@@ -397,7 +398,7 @@ def contact(uname):
             msg = Message("Request for librarian contact", recipients=[data['email'], lib.emailaddress])
             msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
             msg.body += message
-            mail.send(msg)            
+            mail.send(msg)
         patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, status='open', **data)
         db_session.add(patroncontact)
         db_session.commit()

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% from 'macros/core.html' import submit %}
+{% from 'macros/core.html' import submit, profilepic %}
 
 {% block content %}
 <div class="container">
@@ -17,15 +17,11 @@
 
         <div class="row">
             <div class="col-md-4">
-                <div class="form-group">
+                <div class="form-group" style="text-align: center">
                     <p class="form-control-static">
-                    {% if staff.pic %}
-                    <img class="profile-pic img-responsive" src="{{ staff.pic }}" alt="">
-                    {% else %}
-                    <img src="http://placehold.it/250x250">
-                    {% endif %}
+                      {{ profilepic(staff) }}
                     </p>
-                    <a href="" type="button" class="btn btn-default">Update Image</a>
+                    <a href="{{ url_for('upload_picture', uname=staff.username) }}" type="button" class="btn btn-default">Update Image</a>
                 </div>
             </div>
 
