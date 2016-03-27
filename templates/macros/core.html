@@ -41,11 +41,11 @@
 {{ button(name, button_class='secondary', extra_classes='btn-xs') }}
 {%- endmacro %}
 
-{% macro profilepic(staff) -%}
+{% macro profilepic(staff, rounded=False) -%}
 {% if PLACEHOLDERS %}
 <img src="{{ url_for('static', filename='img/placeholder-250x250.png') }}" alt="">
 {% else %}
-<img class="staff-image profile-pic" src="{{ url_for('static', filename=staff.profile_path()) }}">
+<img class="{% if rounded %}staff-image{% endif %} profile-pic" src="{{ url_for('static', filename=staff.profile_path()) }}">
 {% endif %}
 {%- endmacro %}
 
