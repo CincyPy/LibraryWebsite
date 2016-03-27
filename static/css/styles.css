@@ -30,6 +30,11 @@ body {
     margin-bottom: 2em;
 }
 
+.staff-bio {
+    height: 150px;
+    overflow: auto;
+}
+
 a:hover {
   cursor: pointer;
 }
