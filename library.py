@@ -314,7 +314,7 @@ def upload_picture(uname):
     if staff is None:
         flash('User %s not found' % uname)
         return redirect(url_for('main'))
-    image = staff.profile_path()
+    image = "uploads/" + uname + ".jpg"
     form = UploadForm()
     if request.method == 'POST' and form.validate_on_submit():
         form.image_file.data.save(os.path.join(app.static_folder, image))
