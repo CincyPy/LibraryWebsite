@@ -118,7 +118,7 @@ def adduser():
     l_name = request.form['l_name']
     phone = request.form['phone']
     phone = re.sub(r"\D","",phone) # Remove non-digit characters
-    email = request.form['email']
+    email = request.form['emailaddress']
     if not f_name or not l_name or not phone or not username or not password or not email:
         flash('All fields are required. Please try again.')
         return redirect(url_for('admin'))
@@ -137,7 +137,7 @@ def adduser():
         return redirect(url_for('admin'))
 
     staff = Staff(username=username, password=password, f_name=f_name,
-                  l_name=l_name, phonenumber=phone, emailaddress=email)
+                  l_name=l_name, phonenumber=phone, emailaddress=email, bio="")
     db_session.add(staff)
     db_session.commit()
     flash('New entry was successfully posted!')
