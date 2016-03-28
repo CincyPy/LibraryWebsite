@@ -1,0 +1,62 @@
+{% from 'macros/icons.html' import email_icon %}
+
+{% set PLACEHOLDERS = False %}
+
+{% macro ask_what_read(staff) -%}
+<a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
+{%- endmacro %}
+
+{% macro stylesheet(href) -%}
+<link rel="stylesheet" type="text/css" href="{{ href }}">
+{%- endmacro %}
+
+{% macro button(text, type='button', button_class='primary', extra_classes=none) -%}
+<button role="button" class="btn btn-{{ button_class }} {{ extra_classes }}" type="{{ type }}">{{ text }}</button>
+{%- endmacro %}
+
+{% macro submit(text, button_class='primary') -%}
+{{ button(text, type='submit', button_class=button_class) }}
+{%- endmacro %}
+
+{% macro mailto(emailaddress) -%}
+{{ 'mailto:' + emailaddress }}
+{%- endmacro %}
+
+{% macro contact(staff) -%}
+<a href="{{ mailto(staff.emailaddress) }}">{{ email_icon() + 'Contact ' + staff.f_name }}</a>
+{%- endmacro %}
+
+{% macro link_button(href, text) -%}
+<a class="btn btn-default" role="button" href="{{ href }}">{{ text }}</a>
+{%- endmacro %}
+
+{% macro label_text(name, text, type='text') -%}
+<div class="form-group">
+    <label for="{{ name }}">{{ text }}</label>
+    <input class="form-control" id="{{ name }}" name="{{ name }}" type="{{ type }}">
+</div>
+{%- endmacro %}
+
+{% macro category_tag(name) -%}
+{{ button(name, button_class='secondary', extra_classes='btn-xs') }}
+{%- endmacro %}
+
+{% macro profilepic(staff, rounded=False) -%}
+{% if PLACEHOLDERS %}
+<img src="{{ url_for('static', filename='img/placeholder-250x250.png') }}" alt="">
+{% else %}
+<img class="{% if rounded %}staff-image{% endif %} profile-pic" src="{{ url_for('static', filename=staff.profile_path()) }}">
+{% endif %}
+{%- endmacro %}
+
+{% macro book_image(book, size='medium') -%}
+{% if PLACEHOLDERS -%}
+<img src="{{ url_for('static', filename='img/placeholder-250x360.png') }}"></img>
+{%- else -%}
+<img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/{{ size }}/{{ book.ISBN }}"></img>
+{%- endif %}
+{%- endmacro %}
+
+{% macro static_image(fn) -%}
+<img class="img-responsive" src="{{ url_for('static', filename='img/' + fn) }}">
+{%- endmacro %}

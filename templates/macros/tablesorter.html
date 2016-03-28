@@ -1,0 +1,15 @@
+{% macro js_init_tablesorter() %}
+<script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.min.js') }}"></script>
+<script>
+$(function(){
+    $('table').tablesorter({
+        theme: 'default',
+        widgets: ['zebra'],
+        usNumberFormat: false,
+        sortReset: true,
+        sortRestart: true
+    })
+});
+</script>
+{% endmacro %}

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from 'macros/core.html' import ask_what_read, category_tag, profilepic %}
+
 {% block content %}
 <section id="header">
     <h2>Welcome to the Library Site!</h2>
@@ -9,42 +11,36 @@
 
 <section id="staff">
     <div class="container home-container">
-        <!--<div class="row">-->
-	{% set count = 0 %}
-        {% for staff in staff %}
-	    {% if count % 2 == 0 %}
-	        <div class="row">
-            {% endif %}
+    {% for staff in staffmembers %}
+        {% if loop.index0 % 2 == 0 %}
+        <div class="row">
+        {% endif %}
             <div class="col-md-6 staff-profile">
-	      <div class="row">
-		<div class="col-md-12">
-		  <a href="{{ url_for('profile', uname=staff.username) }}">
-		  <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
-		  </a>
-		</div>
-		<div class="col-md-6">
-		  <a href="{{ url_for('profile', uname=staff.username) }}">
-		    <div class="staff-image" style="background-image:url('http://loremflickr.com/250/250/1000faces')"></div>
-		  </a>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="{{ url_for('profile', uname=staff.username) }}">
+                            <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('profile', uname=staff.username) }}">
+                            {{ profilepic(staff, rounded=True) }}
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        {% if staff.bio|length > 200 %}
+                        <p>{{ staff.bio|truncate(200) }}<a class="truncated-bio" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
+                        {% else %}
+                        <p>{{ staff.bio }}</p>
+                        {% endif %}
+                        <p>{{ ask_what_read(staff) }}</p>
+                    </div>
                 </div>
-		<div class="col-md-6">
-		  
-                  <p class="truncated-bio">{{ staff.bio|truncate(200) }}
-		  <a href="{{ url_for('profile', uname=staff.username) }}">Find out more</a></p>
-                <p>{{ ask_what_read(staff) }}</p>
-                <!-- To add if we want to show categories on main page -->
-               <!--  {% for category in staff.category_list %}
-                <button type="button" class="btn btn-primary btn-xs"> {{ category }} </button>
-                {% endfor %} -->
-		</div>
-	       </div>
             </div>
-	    {% if count % 2 == 1 %}
-	        </div>
-            {% endif %}
-	    {% set count = count + 1 %}
-        {% endfor %}
-        <!--</div>-->
+        {% if loop.index0 % 2 == 1 %}
+        </div>
+        {% endif %}
+    {% endfor %}
     </div>
 </section>
 {% endblock content %}

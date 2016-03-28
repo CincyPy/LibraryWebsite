@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
+{% from 'macros/core.html' import submit %}
+{% from 'macros/icons.html' import required_icon %}
+
 {% macro required() -%}
-<strong><abbr title="This field is required.">*</abbr></strong>
+<strong><abbr title="This field is required.">{{ required_icon() }}</abbr></strong>
 {%- endmacro %}
 
 {% macro contact_radio(value, text) -%}
@@ -69,7 +72,7 @@ function contactChange() {
 }
 
 $(function() {
-    $("#conversation-type").first("input[type=radio]").prop("checked", true);
+    $("#conversation-type").find("input[type=radio]").first().prop("checked", true);
     contactChange();
 });
 </script>
@@ -181,7 +184,7 @@ $(function() {
             </div>
         </fieldset>
 
-        <input type="submit" value="Submit" id="submit" class="btn btn-primary">
+        {{ submit('Submit') }}
     </form>
     <br/>
     </div>

@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import os
+import os.path
 
 from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
@@ -33,6 +34,13 @@ class Staff(Base):
     @property 
     def category_list(self):
         return set([item.category for item in self.readinglist])
+
+    def profile_path(self):
+        if os.path.isfile('static/uploads/' + self.username + '.jpg'):
+            pic_file_name = 'uploads/'+ self.username + '.jpg'
+        else: 
+            pic_file_name = 'uploads/anon.jpg'
+        return pic_file_name
 
 class ReadingList(Base):
     __tablename__ = 'readinglist'

@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% from 'macros/core.html' import label_text, link_button, submit %}
+{% from 'macros/tablesorter.html' import js_init_tablesorter %}
+
 {% block head %}
 {{ super() }}
 {{ js_init_tablesorter() }}
@@ -11,40 +14,19 @@
         <h2>Welcome to the Staff Page for the Library Site</h2>
         <p>Hello, {{ session.logged_in_name }}</p>
         {%- if session.logged_in_name == 'admin' -%}
-        <div class="col-sm-6"> <!--Add new staff member-->
-            <form action="{{ url_for('adduser')}}" method="POST" class="add">
-                <h3>Add a new staff member</h3>
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input class="form-control" id="username" name="username" type="text">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input class="form-control" id="password" name="password" type="text">
-                </div>
-                <div class="form-group">
-                    <label for="f_name">First Name</label>
-                    <input class="form-control" id="f_name" name="f_name" type="text">
-                </div>
-                <div class="form-group">
-                    <label for="l_name">Last Name</label>
-                    <input class="form-control" id="l_name" name="l_name" type="text">
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone</label>
-                    <input class="form-control" id="phone" name="phone" type="text">
-                    <p>Include area code</p>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input class="form-control" id="email" name="email" type="email">
-                </div>
-                <button role="button" class="btn btn-primary" type="submit">Save</button>
-            </form>
-        </div>
+        <form action="{{ url_for('adduser')}}" method="POST">
+            <h3>Add a new staff member</h3>
+            {{ label_text('username', 'Username') }}
+            {{ label_text('password', 'Password') }}
+            {{ label_text('f_name', 'First Name') }}
+            {{ label_text('l_name', 'Last Name') }}
+            {{ label_text('phone', 'Phone') }}
+            <p class="form-control-static">Include area code</p>
+            {{ label_text('emailaddress', 'Email', 'email') }}
+            {{ submit('Save') }}
+        </form>
         <div class="col-sm-6">  <!--Patron contact tracking-->
             {% include "patron_requests.html" %}
-
         </div>
         {% endif -%}
     </div>
@@ -68,10 +50,10 @@
                 </table>
             </div>
             <div>
-                <a class="btn btn-default" role="button" href="{{ url_for('edit_profile', uname=s.username) }}">Edit Profile</a>
+                {{ link_button(url_for('edit_profile', uname=s.username), 'Edit Profile') }}
                 {% if s.username != 'admin' %}
                 <form style="display: inline-block;" class="form-horizontal" role="form" method="POST" action="{{ url_for('deleteuser', username=s.username) }}">
-                    <button role="button" class="btn btn-danger" type="submit">Delete</button>
+                    {{ submit('Delete', button_class='danger') }}
                 </form>
                 {% endif %}
             </div>
@@ -80,7 +62,7 @@
     </div>
 
     <div class="row">
-        <h3>Reading List:</h3>
+        <h3>Reading List</h3>
         {% include "user_readinglist.html" %}
     </div>
 </div>
