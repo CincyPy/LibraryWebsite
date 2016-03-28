@@ -45,7 +45,7 @@
 {% if PLACEHOLDERS %}
 <img src="{{ url_for('static', filename='img/placeholder-250x250.png') }}" alt="">
 {% else %}
-<img class="{% if rounded %}staff-image{% endif %} profile-pic" src="{{ url_for('static', filename=staff.profile_path()) }}">
+<img class="{% if rounded %}rounded{% endif %} staff-image" src="{{ url_for('static', filename=staff.profile_path()) }}">
 {% endif %}
 {%- endmacro %}
 

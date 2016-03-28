@@ -19,7 +19,7 @@
             <div class="col-md-4">
                 <div class="form-group" style="text-align: center">
                     <p class="form-control-static">
-                      {{ profilepic(staff) }}
+                      {{ profilepic(staff, rounded=True) }}
                     </p>
                     <a href="{{ url_for('upload_picture', uname=staff.username) }}" type="button" class="btn btn-default">Update Image</a>
                 </div>

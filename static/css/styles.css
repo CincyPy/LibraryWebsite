@@ -122,10 +122,12 @@ div.home-container{
 .staff-image{
     background-repeat: no-repeat;
     background-position: 50%;
-    border-radius: 50%;
     width: 250px;
     height: 250px;
-
     display: table;
     margin: 0 auto;
+}
+
+.rounded{
+    border-radius: 50%;
 }
