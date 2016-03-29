@@ -137,7 +137,7 @@ def adduser():
         return redirect(url_for('admin'))
 
     staff = Staff(username=username, password=password, f_name=f_name,
-                  l_name=l_name, phonenumber=phone, emailaddress=email, bio="")
+                  l_name=l_name, phonenumber=phone, emailaddress=email)
     db_session.add(staff)
     db_session.commit()
     flash('New entry was successfully posted!')

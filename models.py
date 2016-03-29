@@ -18,7 +18,7 @@ class Staff(Base):
     phonenumber = Column(String)
     emailaddress = Column(String)
 
-    bio = Column(Text)
+    bio = Column(Text, default='')
     email = Column(Boolean, default=False)
     phone = Column(Boolean, default=True)
     chat = Column(Boolean, default=False)
