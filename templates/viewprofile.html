@@ -4,7 +4,7 @@
                                   contact, profilepic, submit %}
 {% from 'macros/icons.html' import exclamation_sign %}
 
-{% set CATEGORY_FILTER_FORM_AUTOSUBMIT = false %}
+{% set CATEGORY_FILTER_FORM_AUTOSUBMIT = true %}
 
 {% macro categories_filter_form(staff) %}
 <form role="form"
@@ -92,7 +92,6 @@ $(function() {
         </div>
     </div>
 </div>
-
 <div class="panel panel-default">
     <div class="panel-body">
         <div class="container">
@@ -104,7 +103,6 @@ $(function() {
                 </div>
             </div>
         </div>
-
         <div class="container">
             <div class="row">
                 {% for RL in readinglist %}
