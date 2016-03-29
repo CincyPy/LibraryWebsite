@@ -4,7 +4,7 @@
                                   contact, profilepic, submit %}
 {% from 'macros/icons.html' import exclamation_sign %}
 
-{% set CATEGORY_FILTER_FORM_AUTOSUBMIT = false %}
+{% set CATEGORY_FILTER_FORM_AUTOSUBMIT = true %}
 
 {% macro categories_filter_form(staff) %}
 <form role="form"
@@ -58,65 +58,61 @@ $(function() {
 {% endblock %}
 
 {% block content %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
-                {{ profilepic(staff, rounded=True) }}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-4">
+            <h2>{{ staff.f_name }} {{ staff.l_name }}</h2></br>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            {{ profilepic(staff, rounded=True) }}
+            <div class="panel-body contact-center">
+                <h3 class="contact-center" >Contact Me</h3>
+                <p class="staff-profile">
+                    {{ ask_what_read(staff) }} </br><br>
+                    <a href="http://www.kentonlibrary.org/email-newsletter" type="button" class="btn btn-success">Get Recommendations</a>
+                    <!--a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations. </br-->
+                </p>
             </div>
-            <div class="col-md-8 bio">
-                <h4>Bio</h4>
-                <p>{{ staff.bio }}</p>
-
-                <h4>Interests</h4>
-                {% if staff.category_list %}
-                {% for item in staff.category_list %} {{ category_tag(item) }} {% endfor %}
-                {% else %}
-                <div>
-                    <p>{{ exclamation_sign() }}{{ staff.f_name }} hasn't tagged any interests yet.</p>
+        </div>
+        <div class="col-sm-8">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Bio</h3>
+                    <p class="staff-profile staff-bio">{{ staff.bio }}</p>
                 </div>
-                {% endif %}
-
-                <div><a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations.</div>
-
-                <div>{{ ask_what_read(staff) }}</div>
-
-                {% if staff.emailaddress %}
-                <div>{{ contact(staff) }}</div>
-                {% endif %}
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Interests</h3>
+					<p class="staff-profile">{{ staff.interests if staff.interests is not none else '' }}</p>
+                </div>
             </div>
         </div>
     </div>
-</section>
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h4>Categories</h4>
-                {{ categories_filter_form(staff) }}
+</div>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3>Reading Recommendations</h3>
+                    <h4>Categories</h4>
+                    {{ categories_filter_form(staff) }}
+                </div>
             </div>
         </div>
-    </div>
-</section>
-<section>
-    <div class="container">
-        <h4>{{ staff.f_name }}'s Book Recommendations</h4>
-        <div class="row">
-            {% if staff.readinglist %}
-                {% for book in readinglist %}
-            <div class="col-md-4">
-                <p>{{ book_image(book) }}</p>
-                <p><a href="javascript:;">{{ book.book }}</a></p>
-                <p>{{ book.recdate }}</p>
-            </div>
+        <div class="container">
+            <div class="row">
+                {% for RL in readinglist %}
+                <p>
+                <a href="http://catalog.kentonlibrary.org/eg/opac/results?contains=contains&_special=1&loc=1&qtype=identifier%7Cisbn&query={{ RL.ISBN }}" target="_blank">
+                <div class="col-md-3"><img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/medium/{{ RL.ISBN }}" ></div></a>
                 {% endfor %}
-            {% else %}
-            <div class="col-md-4">
-                <p>{{ exclamation_sign() }}{{ staff.f_name }} has no recommendations yet.</p>
-            </div>
-            {% endif %}
+                </p>
+           </div>
         </div>
     </div>
-</section>
+</div
 {% endblock %}
