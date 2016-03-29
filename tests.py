@@ -112,7 +112,7 @@ class LibrarySiteTests(unittest.TestCase):
             f_name="",
             l_name="",
             phone="",
-            email=""),follow_redirects=True)
+            emailaddress=""),follow_redirects=True)
         self.assertIn("All fields are required. Please try again.",response.data)
         response = self.app.post("/adduser",data=dict(
             username="",
@@ -120,7 +120,7 @@ class LibrarySiteTests(unittest.TestCase):
             f_name="t",
             l_name="t",
             phone="",
-            email=""),follow_redirects=True)
+            emailaddress=""),follow_redirects=True)
         self.assertIn("All fields are required. Please try again.",response.data)
         #try with bogus phone number
         response = self.app.post("/adduser",data=dict(
@@ -129,7 +129,7 @@ class LibrarySiteTests(unittest.TestCase):
             f_name="t",
             l_name="t",
             phone="1112222",
-            email="test@testing.com"),follow_redirects=True)
+            emailaddress="test@testing.com"),follow_redirects=True)
         self.assertIn("Phone number must include area code.",response.data)
         #all is well, make sure stored in db
         response = self.app.post("/adduser",data=dict(
@@ -138,7 +138,7 @@ class LibrarySiteTests(unittest.TestCase):
             f_name="t",
             l_name="t",
             phone="1112223333",
-            email="test@testing.com"),follow_redirects=True)
+            emailaddress="test@testing.com"),follow_redirects=True)
         staff=models.Staff.query.filter(and_(models.Staff.username=='t', models.Staff.password=='t', models.Staff.f_name=='t', models.Staff.l_name=='t', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test@testing.com')).first()
         self.assertIsNotNone(staff)
         #try adding an existing username
@@ -148,7 +148,7 @@ class LibrarySiteTests(unittest.TestCase):
             f_name="t",
             l_name="t",
             phone="1112223333",
-            email="test2@testing.com"),follow_redirects=True)
+            emailaddress="test2@testing.com"),follow_redirects=True)
         self.assertIn("Username or email address is already used.",response.data)
         #try adding an existing email address
         response = self.app.post("/adduser",data=dict(
@@ -157,7 +157,7 @@ class LibrarySiteTests(unittest.TestCase):
             f_name="u",
             l_name="u",
             phone="1112223333",
-            email="test@testing.com"),follow_redirects=True)
+            emailaddress="test@testing.com"),follow_redirects=True)
         self.assertIn("Username or email address is already used.",response.data)
         #second all is well check with non-digit chars in phone
         response = self.app.post("/adduser",data=dict(
@@ -166,7 +166,7 @@ class LibrarySiteTests(unittest.TestCase):
             f_name="u",
             l_name="u",
             phone="111-222-3333",
-            email="test2@testing.com"),follow_redirects=True)
+            emailaddress="test2@testing.com"),follow_redirects=True)
         staff=models.Staff.query.filter(and_(models.Staff.username=='u', models.Staff.password=='u', models.Staff.f_name=='u', models.Staff.l_name=='u', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test2@testing.com')).first()
         self.assertIsNotNone(staff)
 

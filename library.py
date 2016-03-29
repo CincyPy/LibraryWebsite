@@ -118,7 +118,7 @@ def adduser():
     l_name = request.form['l_name']
     phone = request.form['phone']
     phone = re.sub(r"\D","",phone) # Remove non-digit characters
-    email = request.form['email']
+    email = request.form['emailaddress']
     if not f_name or not l_name or not phone or not username or not password or not email:
         flash('All fields are required. Please try again.')
         return redirect(url_for('admin'))
@@ -314,7 +314,7 @@ def upload_picture(uname):
     if staff is None:
         flash('User %s not found' % uname)
         return redirect(url_for('main'))
-    image = staff.profile_path()
+    image = "uploads/" + uname + ".jpg"
     form = UploadForm()
     if request.method == 'POST' and form.validate_on_submit():
         form.image_file.data.save(os.path.join(app.static_folder, image))
