@@ -19,7 +19,7 @@
         </div>
         <div class="collapse navbar-collapse" id="library-navbar">
             <ul class="nav navbar-nav navbar-right">
-                {{ nav_link('main', 'Main') }}
+                {{ nav_link('main', 'Home') }}
             {% if session.logged_in %}
                 {% if session.logged_in_name == 'admin' %}
                 {{ nav_link('admin', 'Admin') }}

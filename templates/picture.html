@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% from 'macros/core.html' import profilepic %}
+
+{% block content %}
+    <div class="container">
+    	<h2>Upload profile picture</h2>
+        <p>Currently only .jpg format</p>
+        <div class="row">
+            <div class="col-md-4">
+                {{ wtf.quick_form(form, enctype='multipart/form-data') }}
+            </div>
+        </div>
+        {{ profilepic(staff) }}
+    </div>
+{% endblock %}

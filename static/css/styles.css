@@ -6,6 +6,7 @@ html {
 body {
   font-family: 'Raleway', sans-serif;
   padding-top: 50px;
+  padding-bottom: 50px;
   height: 100%;
   background: url('../img/symphony.png');
 }
@@ -45,13 +46,12 @@ section#staff:target {
 }*/
 
 .flash, .error {
-    /*background: #F0D6D6;*/
     color: red;
     padding: 0.5em;
 }
 
 .navbar-default {
-  background: rgba(255, 255, 255);
+  background: white;
   border: none;
   border-bottom:1px solid black;
 }
@@ -77,6 +77,14 @@ section#staff:target {
   overflow: hidden;
 }
 
+#footer ul li {
+    display: inline-block;
+}
+
+.footer-center {
+    margin: 0 2em;
+}
+
 section#header {
     background-image: url("/static/img/hero-small.jpeg");
     background-size: cover;
@@ -99,9 +107,11 @@ section#header h3 {
   padding-top: 20px;
   font-size: 16px;
   text-align: left;
-
 }
 
+.bio div {
+    margin-top: 1em;
+}
 
 p.truncated-bio{
     font-size:110%;
@@ -114,26 +124,20 @@ div.home-container{
     border:1px solid rgb(200,200,200);
 }
 
-div.staff-image{
+.staff-image{
     background-repeat: no-repeat;
     background-position: 50%;
-    border-radius: 50%;
     width: 250px;
     height: 250px;
-
     display: table;
     margin: 0 auto;
-}
-
-div.staff-profimage{
-    background-repeat: no-repeat;
-    background-position: 50%;
-    border-radius: 50%;
-    width: 250px;
-    height: 250px;
 }
 
 div.contact-center{
     display: table;
     margin: 0 auto;
+}
+
+.rounded{
+    border-radius: 50%;
 }

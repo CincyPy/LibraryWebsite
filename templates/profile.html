@@ -1,62 +1,72 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% from 'macros/core.html' import submit, profilepic %}
 
 {% block content %}
 <div class="container">
     <h2>Staff Profile for {{ staff.username }}</h2>
-    <form method="POST" action="" >
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-6" style="padding-left: 0">
-                  <div class="name">
-                      <label for="f_name">First:</label>
-                      <input type="text" name="f_name" value="{{ inputs.f_name if inputs else staff.f_name }}" required />
-                      <label for="l_name">Last:</label>
-                      <input type="text" name="l_name" value="{{ inputs.l_name if inputs else staff.l_name }}" required />
-                  </div>
-                  {% if staff.pic %}
-                    <img class="profile-pic img-responsive" src="{{ staff.pic }}" alt="">
-                  {% else %}
-                    <img src="http://placehold.it/250x250">
-                  {% endif %}
-                  <a href="" type="button" class="btn btn-default">Update Image</a>
-                </div>
-                <div class="col-sm-6" style="padding-right: 0">
-                    <label for="bio">Bio:</label><br/>
-                    <textarea name="bio" id="bio" class="btn-block" rows="10">{{ inputs.bio if inputs else staff.bio if staff.bio != None else '' }}</textarea><br/>
+    <form method="POST" action="">
+
+        <div class="form-group">
+            <label for="f_name">First<input id="f_name" type="text" class="form-control" name="f_name" value="{{ inputs.f_name if inputs else staff.f_name }}" required>
+            </label>
+            <label for="l_name">Last<input id="l_name" type="text" class="form-control" name="l_name" value="{{ inputs.l_name if inputs else staff.l_name }}" required>
+            </label>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group" style="text-align: center">
+                    <p class="form-control-static">
+                      {{ profilepic(staff, rounded=True) }}
+                    </p>
+                    <a href="{{ url_for('upload_picture', uname=staff.username) }}" type="button" class="btn btn-default">Update Image</a>
                 </div>
             </div>
 
-            <div class="row">
-                <label for="Interests">Interests:</label><br/>
-                <textarea name="interests" rows="2" class="btn-block">{{ inputs.interests if inputs else staff.interests if staff.interests != None else '' }}</textarea></br>
-            </div>
-
-            <div class="row">
-                <legend>Contact Info</legend>
-                    <label for="emailaddress">Email: </label>
-                    <input type="email" name="emailaddress" value="{{ inputs.emailaddress if inputs else staff.emailaddress }}" required /></br>
-                    <label for="phonenumber">Phone: </label>
-                    <input type="text" name="phonenumber" value="{{ inputs.phonenumber if inputs else staff.phonenumber }}" required /></br></br>
-                    <strong>
-                        <p>Patron Contact Preferences:</p>
-                        Phone (required)</br>
-                        In Person (required)</br>
-                    </strong>
-                    {% if inputs %}
-                        <input type="checkbox" name="email" {% if inputs.email %}checked{% endif %}><label for="email"> Email</label></br>
-                        <input type="checkbox" name="chat" {% if inputs.chat %}checked{% endif %}><label for="chat"> Online Chat</label></br>
-                    {% else %}    
-                        <input type="checkbox" name="email" {% if staff.email %}checked{% endif %}><label for="email"> Email</label></br>
-                        <input type="checkbox" name="chat" {% if staff.chat %}checked{% endif %}><label for="chat"> Online Chat</label></br>
-                    {% endif %}
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="bio">Bio</label>
+                    <textarea name="bio" id="bio" class="form-control" rows="10">{{ inputs.bio if inputs else staff.bio if staff.bio is not none else '' }}</textarea>
                 </div>
-            </div>
-
-            </br>
-            <div style="text-align: center">
-                <input value="Update" type="submit" class="btn btn-lg btn-success" style="text-align: center"/>
             </div>
         </div>
+
+        <div class="form-group">
+            <label for="Interests">Interests</label>
+            <textarea id="Interests" name="interests" rows="2" class="form-control">{{ inputs.interests if inputs else staff.interests if staff.interests is not none else '' }}</textarea>
+        </div>
+
+        <fieldset>
+            <legend>Contact Info</legend>
+            <div class="form-group">
+                <label for="emailaddress">Email</label>
+                <input type="email" id="emailaddress" class="form-control" name="emailaddress" value="{{ inputs.emailaddress if inputs else staff.emailaddress }}" required>
+            </div>
+            <div class="form-group">
+                <label for="phonenumber">Phone</label>
+                <input type="text" id="phonenumber" class="form-control" name="phonenumber" value="{{ inputs.phonenumber if inputs else staff.phonenumber }}" required>
+            </div>
+            <p class="form-control-static">
+                <strong>
+                    <p>Patron Contact Preferences:</p>
+                    <p>Phone (required)</p>
+                    <p>In Person (required)</p>
+                </strong>
+            </p>
+            <div class="checkbox">
+                <label for="email">
+                    <input id="email" type="checkbox" name="email" {% if inputs.email or staff.email %}checked{% endif %}>Email
+                </label>
+            </div>
+            <div class="checkbox">
+                <label for="chat">
+                    <input id="chat" type="checkbox" name="chat" {% if inputs.chat or staff.chat %}checked{% endif %}>Online Chat
+                </label>
+            </div>
+        </fieldset>
+        {{ submit('Update') }}
     </form>
 </div>
 {% endblock %}
