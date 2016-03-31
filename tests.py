@@ -272,6 +272,36 @@ class LibrarySiteTests(unittest.TestCase):
             category="t",
             sticky=1), follow_redirects=True)
         self.assertIn("Book name is required.", response.data)
+        # admin EDIT - no ISBN
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("ISBN is required.", response.data)
+        # admin EDIT - no author
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="t",
+            author="",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Author is required.", response.data)
+        # admin EDIT - no category
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Category is required.", response.data)
         # admin EDIT - with book name
         self.login("admin", "admin")
         response = self.app.post("/addrecread", data=dict(
@@ -302,6 +332,33 @@ class LibrarySiteTests(unittest.TestCase):
             category="t",
             sticky=1), follow_redirects=True)
         self.assertIn("Book name is required.", response.data)
+        # fred ADD - no ISBN
+        response = self.app.post("/addrecread", data=dict(
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("ISBN is required.", response.data)
+        # fred ADD - no author
+        response = self.app.post("/addrecread", data=dict(
+            book="t",
+            author="",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Author is required.", response.data)
+        # fred ADD - no Cateogry
+        response = self.app.post("/addrecread", data=dict(
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Category is required.", response.data)
         # fred ADD - with book name
         response = self.app.post("/addrecread", data=dict(
             book="t",
@@ -328,6 +385,36 @@ class LibrarySiteTests(unittest.TestCase):
             category="t",
             sticky=1), follow_redirects=True)
         self.assertIn("Book name is required.", response.data)
+        # fred EDIT - no ISBN name
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("ISBN is required.", response.data)
+        # fred EDIT - no author
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="t",
+            author="",
+            comment="t",
+            ISBN="t",
+            category="t",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Author is required.", response.data)
+        # fred EDIT - no cateogry
+        response = self.app.post("/addrecread", data=dict(
+            RLID="1",
+            book="t",
+            author="t",
+            comment="t",
+            ISBN="t",
+            category="",
+            sticky=1), follow_redirects=True)
+        self.assertIn("Category is required.", response.data)
         # fred EDIT - with book name
         response = self.app.post("/addrecread", data=dict(
             RLID="1",

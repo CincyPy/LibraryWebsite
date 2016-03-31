@@ -164,6 +164,15 @@ def addrecread():
     if not request.form['book']:
         flash('Book name is required. Please try again.')
         return redirect(url_for('librarian'))
+    if not request.form['ISBN']:
+        flash('ISBN is required. Please try again.')
+        return redirect(url_for('librarian'))
+    if not request.form['author']:
+        flash('Author is required. Please try again.')
+        return redirect(url_for('librarian'))
+    if not request.form['category']:
+        flash('Category is required. Please try again.')
+        return redirect(url_for('librarian'))
 
     if not request.form['RLID']:    # add a new book
         if session['logged_in_name'] == 'admin':

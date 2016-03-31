@@ -50,11 +50,7 @@
 {%- endmacro %}
 
 {% macro book_image(book, size='medium') -%}
-{% if PLACEHOLDERS -%}
-<img src="{{ url_for('static', filename='img/placeholder-250x360.png') }}"></img>
-{%- else -%}
-<img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/{{ size }}/{{ book.ISBN }}"></img>
-{%- endif %}
+<img class="book-image-{{ size }}" src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/{{ size }}/{{ book.ISBN }}"></img>
 {%- endmacro %}
 
 {% macro static_image(fn) -%}

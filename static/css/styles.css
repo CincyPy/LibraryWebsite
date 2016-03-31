@@ -133,6 +133,24 @@ div.home-container{
     margin: 0 auto;
 }
 
+.book-image-medium{
+    background-repeat: no-repeat;
+    background-position: 50%;
+    width: 250px;
+    height: 300px;
+    display: table;
+    margin: 0 auto;
+}
+
+.book-image-small{
+    background-repeat: no-repeat;
+    background-position: 50%;
+    width: 100px;
+    height: 150px;
+    display: table;
+    margin: 0 auto;
+}
+
 div.contact-center{
     display: table;
     margin: 0 auto;
