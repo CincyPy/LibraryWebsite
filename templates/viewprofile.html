@@ -105,7 +105,7 @@ $(function() {
         </div>
         <div class="container">
             <div class="row">
-                {% for RL in readinglist %}
+                {% for RL in readinglist|sort(attribute='recdate', reverse=True)|sort(attribute='sticky', reverse=True) %}
                 <p>
                 <a href="http://catalog.kentonlibrary.org/eg/opac/results?contains=contains&_special=1&loc=1&qtype=identifier%7Cisbn&query={{ RL.ISBN }}" target="_blank">
                     <div class="col-md-3">{{ book_image(RL) }}</div>
