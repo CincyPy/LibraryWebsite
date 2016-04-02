@@ -86,7 +86,7 @@ section#staff:target {
 }
 
 section#header {
-    background-image: url("/static/img/hero-small.jpeg");
+    background-image: url("/static/img/books.jpg");
     background-size: cover;
     text-align: center;
     padding: 40px;
