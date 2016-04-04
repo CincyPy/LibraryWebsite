@@ -21,15 +21,15 @@
             {% endif %}
             <form role="form" action="{{ url_for('addrecread')}}" method="POST">
                 <div class="form-group">
-                    <label for="book">Book</label>
+                    <label for="book">Book *</label>
                     <input class="form-control" name="book" type="text" value="{{ existingValues.book }}">
                 </div>
                 <div class="form-group">
-                    <label for="ISBN">ISBN</label>
+                    <label for="ISBN">ISBN *</label>
                     <input class="form-control" name="ISBN" type="text" value="{{ existingValues.ISBN }}">
                 </div>
                 <div class="form-group">
-                    <label for="author">Author</label>
+                    <label for="author">Author *</label>
                     <input class="form-control" name="author" type="text" value="{{ existingValues.author }}">
                 </div>
                 <div class="form-group">
@@ -37,7 +37,7 @@
                     <input class="form-control" name="comment" type="text" value="{{ existingValues.comment }}">
                 </div>
                 <div class="form-group">
-                    <label for="url">Category</label>
+                    <label for="url">Category *</label>
                     <input class="form-control" name="category" type="text" value="{{ existingValues.category }}">
                 </div>
                 <div class="form-group">

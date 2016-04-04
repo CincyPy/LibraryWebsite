@@ -1,6 +1,6 @@
 <h4>Recommended Readings</h4>
 
-{% from 'macros/core.html' import submit %}
+{% from 'macros/core.html' import submit, book_image %}
 {% from 'macros/icons.html' import remove_icon %}
 
 <table class="tablesorter">
@@ -24,7 +24,7 @@
         <tr>
             <td>{{ RL.recdate }}</td>
             <td>{{ RL.ISBN }}</td>
-            <td><img src="http://catalog.kentonlibrary.org/opac/extras/ac/jacket/small/{{ RL.ISBN }}" ></td>
+            <td>{{ book_image(RL, 'small') }}</td>
             <td>{{ RL.book }}</td>
             <td>{{ RL.author }}</td>
             <td>{{ RL.comment }}</td>

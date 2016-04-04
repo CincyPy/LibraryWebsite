@@ -86,7 +86,7 @@ section#staff:target {
 }
 
 section#header {
-    background-image: url("/static/img/hero-small.jpeg");
+    background-image: url("/static/img/books.jpg");
     background-size: cover;
     text-align: center;
     padding: 40px;
@@ -129,6 +129,24 @@ div.home-container{
     background-position: 50%;
     width: 250px;
     height: 250px;
+    display: table;
+    margin: 0 auto;
+}
+
+.book-image-medium{
+    background-repeat: no-repeat;
+    background-position: 50%;
+    width: 250px;
+    height: 300px;
+    display: table;
+    margin: 0 auto;
+}
+
+.book-image-small{
+    background-repeat: no-repeat;
+    background-position: 50%;
+    width: 100px;
+    height: 150px;
     display: table;
     margin: 0 auto;
 }

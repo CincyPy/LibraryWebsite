@@ -91,20 +91,23 @@ def admin():
 def librarian(rlid=None):
     logged_in_user = Staff.query.get(session['logged_in_name'])
     patron_reqs = PatronContact.query.filter(PatronContact.username==logged_in_user.username, PatronContact.status!='closed')
+    inputs = request.args.get('inputs')
+    if inputs != None: # Prepopulate with entered data
+        inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
     if rlid is None:
         if session["logged_in_name"] == 'admin':
-            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=None, patron_reqs=patron_reqs)
+            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=inputs, patron_reqs=patron_reqs)
         else:
-            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=None, patron_reqs=patron_reqs)
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=inputs, patron_reqs=patron_reqs)
     else:
         book = ReadingList.query.filter_by(RLID=rlid).first()
         if book.username == session["logged_in_name"]:
-            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book, patron_reqs=patron_reqs)
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book, patron_reqs=patron_reqs, inputs=inputs)
         elif session["logged_in_name"] == 'admin':
-            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=book, patron_reqs=patron_reqs)
+            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=book, patron_reqs=patron_reqs, inputs=inputs)
         else:
             flash("Your are not authorized to perform this action.")
-            return redirect(url_for('librarian'))
+            return redirect(url_for('librarian'), existingValues=inputs)
 
 @app.route('/adduser', methods=['POST'])
 @login_required
@@ -161,9 +164,22 @@ def deleteuser(username):
 @app.route('/addrecread', methods=['POST'])
 @login_required
 def addrecread():
+    if request.method == "POST":  # form was submitted, update database
+        data = {}
+        for key, values in dict(request.form).items():
+            data[key] = ",".join(values)
     if not request.form['book']:
         flash('Book name is required. Please try again.')
-        return redirect(url_for('librarian'))
+        return redirect(url_for('librarian') + '?inputs=' + str(data))
+    if not request.form['ISBN']:
+        flash('ISBN is required. Please try again.')
+        return redirect(url_for('librarian') + '?inputs=' + str(data))
+    if not request.form['author']:
+        flash('Author is required. Please try again.')
+        return redirect(url_for('librarian') + '?inputs=' + str(data))
+    if not request.form['category']:
+        flash('Category is required. Please try again.')
+        return redirect(url_for('librarian') + '?inputs=' + str(data))
 
     if not request.form['RLID']:    # add a new book
         if session['logged_in_name'] == 'admin':
