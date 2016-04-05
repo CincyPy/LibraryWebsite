@@ -39,7 +39,7 @@ class LibrarySiteTests(unittest.TestCase):
 
     def test_main(self):
         response = self.app.get('/')
-        self.assertIn("Librarian Recommended",response.data)
+        self.assertIn("NextRead",response.data)
     
     def test_login(self):
         #test initial get request

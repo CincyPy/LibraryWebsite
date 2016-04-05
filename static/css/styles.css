@@ -15,6 +15,15 @@ body {
     /*font-family: 'Merriweather', serif;*/
     font-weight:100;
     font-size:200%;
+    
+}
+.title-next{
+    font-weight:bolder;
+    color:#E34426;
+}
+.title-read{
+    font-weight:bolder;
+    color:#133A65;
 }
 
 .staff-name {
@@ -36,6 +45,9 @@ body {
     overflow: auto;
 }
 
+a,a:hover,a:active{
+    color:#E34426;
+}
 a:hover {
   cursor: pointer;
 }
@@ -119,7 +131,6 @@ p.truncated-bio{
 
 div.home-container{
     background-color:rgb(255,255,255);
-    background-color:rgba(255,255,255,.70);
     padding-top:20px;
     border:1px solid rgb(200,200,200);
 }
@@ -131,6 +142,8 @@ div.home-container{
     height: 250px;
     display: table;
     margin: 0 auto;
+    max-width:100%;
+    height:auto;
 }
 
 .book-image-medium{
@@ -158,4 +171,28 @@ div.contact-center{
 
 .rounded{
     border-radius: 50%;
+}
+
+.btn-primary{
+    background-color:#133A65;
+}
+.btn-primary:hover{
+    background-color:#96D4D3;
+    border-color:#DDDDDD;
+}
+.btn-info{
+    background-color:#E1C43C;
+    border-color:#D0B32B;
+}
+.btn-info:hover{
+    background-color:#F2D54D;
+    border-color:#DDDDDD;
+}
+.btn-success{
+    background-color:#E34426;
+    border-color:#D23315;
+}
+.btn-success:hover{
+    background-color:#F25537;
+    border-color:#D23315;
 }
