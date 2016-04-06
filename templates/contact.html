@@ -83,35 +83,34 @@ $(function() {
 <div class="container home-container">
   <div class="row">
     <div class="col-md-12">
-      <h2>Contact {{ staff }}</h2>
+      <h2>Contact {{ staff.username }}</h2>
     </div>
     <div class="col-md-4">
       <a href="{{ url_for('profile', uname=staff.username) }}">
-	<!--<div class="staff-image" style="background-image:url('http://loremflickr.com/250/250/1000faces')"></div>-->
-	{{ profilepic(pref, rounded=True) }}
+        {{ profilepic(staff, rounded=True) }}
       </a>
     </div>
     <div class="col-md-8">
-    <form method="POST" action="{{ url_for('contact', uname=staff) }}" role="form">
+    <form method="POST" action="{{ url_for('contact', uname=staff.username) }}" role="form">
         <fieldset id="conversation-type">
             <legend>How do you want to have this conversation?</legend>
             <p>Required fields are followed by {{ required() }}.</p>
-            {% if pref.email %}
+            {% if staff.email %}
             {{ contact_radio('email', 'Email') }}
             {% endif %}
-            {% if pref.phone %}
+            {% if staff.phone %}
             {{ contact_radio('phone', 'Phone') }}
             {% endif %}
-            {% if pref.chat %}
+            {% if staff.chat %}
             {{ contact_radio('chat', 'Online Chat') }}
             {% endif %}
-            {% if pref.irl %}
+            {% if staff.irl %}
             {{ contact_radio('irl', 'In Person') }}
             {% endif %}
             <p class="form-control-static">Pick one.</p>
         </fieldset>
 
-        {% if pref.email %}
+        {% if staff.email %}
         <div class="hidden" id="email_input">
 
             <div class="form-group">
@@ -146,13 +145,13 @@ $(function() {
         </div>
         {% endif %}
 
-        {% if pref.phone %}
+        {% if staff.phone %}
         <div class="hidden form-group" id="phone_input">
             <label for="phone" class="form-label">Please enter your phone number (incl area code) {{ required() }}<input id="phone" type="text" placeholder="555-555-5555" class="form-control" name="phone" value="{{ inputs.phone }}"></label>
         </div>
         {% endif %}
 
-        {% if pref.chat %}
+        {% if staff.chat %}
         <div class="hidden" id="chat_input">
             <div class="hidden form-group" >
                 <label for="chat">Select the online chat service {{ required() }}</label>
