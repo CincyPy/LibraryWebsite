@@ -352,11 +352,11 @@ def contact(uname):
         ('teens', 'Teens'),
         ('children', 'Children'),
     ]
-    prefs = Staff.query.get(uname)
+    staff = Staff.query.get(uname)
     if request.method == "GET":  # regular get, present the form to user to edit.
         if inputs != None: # Prepopulate with entered data
             inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
-        return render_template('contact.html', pref=prefs, formats=formats, auds=auds, staff=uname, inputs=inputs)
+        return render_template('contact.html', staff=staff, formats=formats, auds=auds, inputs=inputs)
 
     elif request.method == "POST":  # form was submitted, update database
         data = {}
