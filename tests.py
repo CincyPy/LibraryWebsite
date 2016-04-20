@@ -14,6 +14,8 @@ import os
 import sys
 import datetime
 
+from config import config
+
 if os.environ.get("LIBRARY_ENV",None) != "test":
     print "You need to set LIBRARY_ENV to test!"
     sys.exit(1)
@@ -39,7 +41,7 @@ class LibrarySiteTests(unittest.TestCase):
 
     def test_main(self):
         response = self.app.get('/')
-        self.assertIn("NextRead",response.data)
+        self.assertIn(config.SITENAME, response.data)
     
     def test_login(self):
         #test initial get request

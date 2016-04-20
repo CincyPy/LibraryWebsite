@@ -37,6 +37,10 @@ def login_required(test):
 
     return wrap
 
+@app.context_processor
+def inject_sitename():
+    return dict(sitename=config.SITENAME, sitenameparts=config.SITENAMEPARTS)
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
