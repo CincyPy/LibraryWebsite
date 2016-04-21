@@ -15,14 +15,19 @@ from os import environ
 
 from sqlalchemy import or_, and_
 
-from database import db_session
+from database import Database
 from models import ReadingList, Staff, PatronContact
 
 from upload_form import UploadForm
 from flask.ext.bootstrap import Bootstrap
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
 app.config.from_object(config)
+
+if config.NAME != "TEST":
+    app.config.from_pyfile('production.py', silent=True)
+
+db = Database(app)
 mail = Mail(app)
 bootstrap = Bootstrap(app)
 
@@ -36,10 +41,6 @@ def login_required(test):
             return redirect(url_for('login'))
 
     return wrap
-
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    db_session.remove()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -141,8 +142,8 @@ def adduser():
 
     staff = Staff(username=username, password=password, f_name=f_name,
                   l_name=l_name, phonenumber=phone, emailaddress=email)
-    db_session.add(staff)
-    db_session.commit()
+    db.session.add(staff)
+    db.session.commit()
     flash('New entry was successfully posted!')
     return redirect(url_for('admin'))
 
@@ -154,10 +155,10 @@ def deleteuser(username):
         return redirect(url_for('main'))
     recread = ReadingList.query.filter(ReadingList.username == username).all()
     for rr in recread:
-        db_session.delete(rr)
+        db.session.delete(rr)
     staff = Staff.query.get(username)
-    db_session.delete(staff)
-    db_session.commit()
+    db.session.delete(staff)
+    db.session.commit()
     flash('User was successfully removed!')
     return redirect(url_for('admin'))
 
@@ -189,9 +190,12 @@ def addrecread():
         flash('New recommended reading added.')
     else:   # edit a book
         rl = ReadingList.query.get(request.form['RLID'])
+        if not rl:
+            flash('Book not found.')
+            return redirect(url_for('librarian'))
         book_user = Staff.query.get(rl.username)
-        db_session.delete(rl)
-        db_session.commit()
+        db.session.delete(rl)
+        db.session.commit()
         flash('Recommended reading edited.')
     ISBN = request.form['ISBN']
     book = request.form['book']
@@ -209,7 +213,7 @@ def addrecread():
                                              comment=comment,
                                              sticky=sticky,
                                              category=category))
-    db_session.commit()
+    db.session.commit()
     if session['logged_in_name'] == 'admin':
         return redirect(url_for('admin'))
     else:
@@ -226,8 +230,8 @@ def remrecread(rlid):
         rl = ReadingList.query.filter(ReadingList.RLID == rlid, ReadingList.username == username).first()
 
     if rl:
-        db_session.delete(rl)
-        db_session.commit()
+        db.session.delete(rl)
+        db.session.commit()
         flash('Deleted recommended reading.')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
@@ -241,7 +245,7 @@ def changeSticky(rlid):
     rl = ReadingList.query.get(rlid)
     if rl:
         rl.sticky = not(rl.sticky)
-        db_session.commit()
+        db.session.commit()
         flash('Sticky changed.')
     if session["logged_in_name"] == "admin":
         return redirect(url_for('admin'))
@@ -316,7 +320,7 @@ def edit_profile(uname):
             data['email'] = False
         for key, value in data.iteritems(): # Dynamically update the model values for staff based on inputs
             setattr(staff, key, value)
-        db_session.commit()
+        db.session.commit()
         flash("Profile updated!")
     return redirect(url_for('edit_profile', uname=uname))
 
@@ -416,8 +420,8 @@ def contact(uname):
             msg.body += message
             mail.send(msg)
         patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, status='open', **data)
-        db_session.add(patroncontact)
-        db_session.commit()
+        db.session.add(patroncontact)
+        db.session.commit()
         flash("You're contact request was received!")
     return redirect(url_for('profile', uname=uname))
 
@@ -428,7 +432,7 @@ def contact_status(PCID):
         flash("Patron request not found")
         return redirect(url_for('librarian'))
     contact_req.status = request.form['status']
-    db_session.commit()
+    db.session.commit()
     flash(contact_req.name + " Patron request status has been updated")
     if session['logged_in_name'] == 'admin':
         return redirect(url_for('admin'))
@@ -452,4 +456,4 @@ if __name__ == '__main__':
         host = environ.get('HOST')
     else:
         host = '127.0.0.1'
-    app.run(debug=True, port=port, host=host)
+    app.run(port=port, host=host)
