@@ -6,7 +6,6 @@ from ipaddress import ip_network
 
 import library
 from publisher import Publisher
-from database import db_session
 from sqlalchemy import or_, and_
 import models
 import flask
@@ -23,12 +22,13 @@ if os.environ.get("LIBRARY_ENV",None) != "test":
 class LibrarySiteTests(unittest.TestCase):
 
     def setUp(self):
-        models.Base.metadata.create_all(bind=models.engine)
-        models.init_models()
+        models.Base.metadata.create_all(bind=library.db.engine)
         self.app = library.app.test_client()
+        models.init_models(library.db.session)
+        self.session = library.db.session
 
     def tearDown(self):
-        models.Base.metadata.drop_all(bind=models.engine)
+        models.Base.metadata.drop_all(bind=library.db.engine)
 
     def login(self,u,p):
          response = self.app.post('/login', data=dict(
@@ -452,7 +452,7 @@ class LibrarySiteTests(unittest.TestCase):
             sticky=0,
             category="category")
         fred.readinglist.append(readinglist)
-        db_session.commit()
+        self.session.commit()
         rlid = readinglist.RLID
         #try another user
         self.logout()
@@ -546,8 +546,8 @@ class LibrarySiteTests(unittest.TestCase):
         #Add chat and email options to fred's contact preferences
         staff = models.Staff.query.get('fred')
         staff.chat, staff.email = True, True
-        db_session.add(staff)
-        db_session.commit()
+        self.session.add(staff)
+        self.session.commit()
         response = self.app.get("/contact/fred")
         self.assertIn("Online Chat",response.data)
         

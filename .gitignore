@@ -66,3 +66,6 @@ target/
 
 #emacs
 *~
+
+# Flask Instance Folder
+instance
