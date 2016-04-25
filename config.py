@@ -1,4 +1,26 @@
 import os
+import re
+
+def sitename_from_readme():
+    """
+    Return text after hash on first non-blank line, if found, otherwise None.
+    """
+    with open('README.md') as f:
+        for line in f:
+            if not line.strip():
+                continue
+            m = re.match('#(.*)$', line)
+            return m.group(1).strip() if m else None
+
+def splitcamel(s):
+    """
+    Split string s into CamelCase parts.
+    """
+    r = re.findall('[A-Z][^A-Z]+', s)
+    if r:
+        return r
+    else:
+        return [s]
 
 class Config(object):
     # configuration
@@ -14,9 +36,14 @@ class Config(object):
     DBPATH = "sqlite:///library.db"
     DBFILE = "library.db"
 
+    SITENAME = sitename_from_readme()
+    if not SITENAME:
+        raise RuntimeError("The site's name not found in README.")
+    SITENAMEPARTS = splitcamel(SITENAME)
+
     def __init__(self):
         print "Config environment is: " + self.NAME
-    
+
 class TestConfig(Config):
     NAME = "TEST"
     DBPATH = "sqlite://"
