@@ -7,13 +7,15 @@ from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
+from passwordtype import PasswordType
+
 Base = declarative_base()
 
 class Staff(Base):
     __tablename__ = 'staff'
 
     username = Column(String, primary_key=True)
-    password = Column(String)
+    password = Column(PasswordType)
     f_name = Column(String)
     l_name = Column(String)
     phonenumber = Column(String)
