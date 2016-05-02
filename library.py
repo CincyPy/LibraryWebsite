@@ -460,6 +460,8 @@ def changepassword():
             flash("Password verification failed")
         else:
             newpass = request.form.get('newpass', '').strip()
+            #XXX: password requirements?
+            #     validate decorator in Staff
             if len(newpass) < 3:
                 flash("Bad new password")
             else:
