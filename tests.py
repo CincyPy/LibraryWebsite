@@ -70,6 +70,12 @@ class LibrarySiteTests(unittest.TestCase):
 
         self.assertIn('Welcome to the Librarian Staff Page', response.data)
 
+        #test change password
+        response = self.app.post('/changepassword', data=dict(
+                oldpass='fred', newpass='fred'),
+                follow_redirects=True)
+        self.assertIn('Welcome to the Staff Login', response.data)
+
     def test_logout(self):
         with self.app:
             response = self.app.get('/logout',follow_redirects=True)
