@@ -1,20 +1,20 @@
+import sys
 import bcrypt
 from sqlalchemy import types
 
-def hashpassword(password):
-    return bcrypt.hashpw(password, bcrypt.gensalt())
-
-def checkpassword(password, hashed):
-    return bcrypt.hashpw(password, hashed) == hashed
-
 class Password(object):
 
-    def __init__(self, value):
-        self.hashed = value
+    def __init__(self, password):
+        self.hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+
+    def verify(self, password):
+        return bcrypt.hashpw(password.encode('utf8'), self.hashed) == self.hashed
 
     def __eq__(self, password):
-        print '__eq__'
-        return checkpassword(password, self.hashed)
+        return self.verify(password)
+
+    def __ne__(self, password):
+        return not self == password
 
 
 class PasswordType(types.TypeDecorator):
@@ -25,11 +25,10 @@ class PasswordType(types.TypeDecorator):
     def process_bind_param(self, value, dialect):
         if isinstance(value, Password):
             return value.hashed
-
-            value = Password(value.encode('utf-8'))
-
-        if isinstance(value, (str, unicode)):
-            return hashpassword(value)
+        elif isinstance(value, basestring):
+            #XXX: this is hashing hashes because this method handles in/out.
+            #     make this a Mutable class?
+            return Password(value).hashed
 
     def process_result_value(self, value, dialect):
         if value is not None:

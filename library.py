@@ -31,6 +31,9 @@ db = Database(app)
 mail = Mail(app)
 bootstrap = Bootstrap(app)
 
+def logout_user():
+    session.pop('logged_in', None)
+
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
@@ -71,7 +74,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
+    logout_user()
     flash('You were logged out')
     return redirect(url_for('main'))
 
@@ -442,6 +445,32 @@ def contact_status(PCID):
         return redirect(url_for('admin'))
     else:
         return redirect(url_for('librarian'))
+
+
+@app.route('/changepassword', methods=['GET', 'POST'])
+@login_required
+def changepassword():
+    if request.method == 'POST':
+        user = Staff.query.get(session['logged_in_name'])
+        if user is None:
+            flash("Server error")
+            return redirect(url_for('main'))
+
+        if user.password != request.form.get('oldpass'):
+            flash("Password verification failed")
+        else:
+            newpass = request.form.get('newpass', '').strip()
+            if len(newpass) < 3:
+                flash("Bad new password")
+            else:
+                user.password = newpass
+                db.session.commit()
+                flash("Password changed")
+                logout_user()
+                return redirect(url_for('login'))
+
+    return render_template('changepassword.html', username=session['logged_in_name'])
+
 
 @app.route('/publish', methods=['POST'])
 def publish():

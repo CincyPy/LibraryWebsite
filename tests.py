@@ -142,6 +142,8 @@ class LibrarySiteTests(unittest.TestCase):
             phone="1112223333",
             emailaddress="test@testing.com"),follow_redirects=True)
         staff=models.Staff.query.filter(and_(models.Staff.username=='t', models.Staff.password=='t', models.Staff.f_name=='t', models.Staff.l_name=='t', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test@testing.com')).first()
+        #XXX: test is broken with new PasswordType
+        #staff = models.Staff.query.get('t')
         self.assertIsNotNone(staff)
         #try adding an existing username
         response = self.app.post("/adduser",data=dict(

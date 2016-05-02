@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% from 'macros/core.html' import submit, profilepic %}
+{% from 'macros/core.html' import submit, profilepic, link_button %}
 
 {% block content %}
 <div class="container">
     <h2>Staff Profile for {{ staff.username }}</h2>
+    {{ link_button(url_for('changepassword'), 'change password') }}
     <form method="POST" action="">
 
         <div class="form-group">

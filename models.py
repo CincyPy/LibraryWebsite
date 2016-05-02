@@ -180,6 +180,7 @@ def init_models(session):
 def ArgParser():
     parser = argparse.ArgumentParser(description=main.__doc__)
     _a = parser.add_argument
+    _a('--noconfirm', action='store_true', help='do not ask for confirmation')
     _a('--echo', action='store_true', help='echo SQL')
     return parser
 
@@ -198,6 +199,8 @@ def main():
         raise RuntimeError('unable to parse URI: %s' % uri)
 
     def confirm(msg):
+        if cmdargs.noconfirm:
+            return True
         return raw_input(msg).lower().startswith('y')
 
     def abort():
