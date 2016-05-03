@@ -79,6 +79,7 @@ class PatronContact(Base):
     format_pref = Column(Text)
     chat = Column(Text)
     handle = Column(Text)
+    location = Column(Text)
     status = Column(Text)
 
     def __getitem__(self, attr):

@@ -70,9 +70,10 @@ $(function() {
             <div class="panel-body contact-center">
                 <h3 class="contact-center" >Contact Me</h3>
                 <p class="staff-profile">
-                    {{ ask_what_read(staff) }} </br><br>
-                    <a href="http://eepurl.com/bWNh1L" type="button" class="btn btn-success">Get Recommendations</a>
+                    {{ ask_what_read(staff) }} </br></br>
+                    <a href="http://eepurl.com/bWNh1L" type="button" class="btn btn-success">Get Recommendations</a></br></br>
                     <!--a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations. </br-->
+                    <a href="{{ url_for('contact', uname=staff.username) }}?speak=True" type="button" class="btn btn-default">Book {{ staff.f_name }} to speak</a>
                 </p>
             </div>
         </div>

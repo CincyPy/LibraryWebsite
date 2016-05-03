@@ -77,6 +77,9 @@ $(function() {
     contactChange();
 });
 </script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/css/bootstrap-datepicker.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -92,86 +95,114 @@ $(function() {
     </div>
     <div class="col-md-8">
     <form method="POST" action="{{ url_for('contact', uname=staff.username) }}" role="form">
-        <fieldset id="conversation-type">
-            <legend>How do you want to have this conversation?</legend>
+        {% if speak %}
+            <legend>Fill in the following to request {{ staff.username }} to speak</legend>
             <p>Required fields are followed by {{ required() }}.</p>
+            <input name='contact' value='speak' hidden />
+            Select a date:
+            <div style="overflow:hidden;">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div id="datetimepicker">
+                                <input name='times' value='{{ inputs.times }}' hidden />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    $(function () {
+                        $('#datetimepicker').datetimepicker({
+                            inline: true,
+                            sideBySide: true
+                        });
+                    });
+                </script>
+            </div>
+            <label for="location">Location Address {{ required() }}</label>
+            <input name="location" class="form-control" value="{{ inputs.location }}" /></br>
+        {% else %}
+            <fieldset id="conversation-type">
+                <legend>How do you want to have this conversation?</legend>
+                <p>Required fields are followed by {{ required() }}.</p>
+                {% if staff.email %}
+                {{ contact_radio('email', 'Email') }}
+                {% endif %}
+                {% if staff.phone %}
+                {{ contact_radio('phone', 'Phone') }}
+                {% endif %}
+                {% if staff.chat %}
+                {{ contact_radio('chat', 'Online Chat') }}
+                {% endif %}
+                {% if staff.irl %}
+                {{ contact_radio('irl', 'In Person') }}
+                {% endif %}
+                <p class="form-control-static">Pick one.</p>
+            </fieldset>
+    
             {% if staff.email %}
-            {{ contact_radio('email', 'Email') }}
+                <div class="hidden" id="email_input">
+        
+                    <div class="form-group">
+                        <label for="likes">Tell us about a few books or authors you've enjoyed. What made these books great?</label>
+                        <textarea id="likes" class="form-control" name="likes">{{ inputs.likes }}</textarea>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="dislikes">Describe some authors or titles that you DID NOT like and why</label>
+                        <textarea id="dislikes" class="form-control" name="dislikes">{{ inputs.dislikes }}</textarea>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="comment">Is there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?</label>
+                        <textarea id="comment" class="form-control" name="comment">{{ inputs.comment }}</textarea>
+                    </div>
+        
+                    <fieldset>
+                        <legend>Are you interested in books for adults, teens, or children?</legend>
+                        {% for a in auds %}
+                            {{ audience_checkbox(a.0, a.1) }}
+                        {% endfor %}
+                        <p class="form-control-static">Check all that apply.</p>
+                    </fieldset>
+        
+                    <fieldset>
+                        <legend>Do you have a preferred format?</legend>
+                        {% for f in formats %}
+                            {{ preferred_format_checkbox(f.0, f.1) }}
+                        {% endfor %}
+                    </fieldset>
+                </div>
             {% endif %}
+    
             {% if staff.phone %}
-            {{ contact_radio('phone', 'Phone') }}
+                <div class="hidden form-group" id="phone_input">
+                    <label for="phone" class="form-label">Please enter your phone number (incl area code) {{ required() }}<input id="phone" type="text" placeholder="555-555-5555" class="form-control" name="phone" value="{{ inputs.phone }}"></label>
+                </div>
             {% endif %}
+    
             {% if staff.chat %}
-            {{ contact_radio('chat', 'Online Chat') }}
+                <div class="hidden" id="chat_input">
+                    <div class="hidden form-group" >
+                        <label for="chat">Select the online chat service {{ required() }}</label>
+                        <select id="chat" class="form-control" name="chat">
+                           <option value="" selected="selected">- Select -</option>
+                           <option value="google">Google+</option>
+                           <option value="skype">Skype</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="handle" class="form-label">What's your chat handle? {{ required() }}</label>
+                        <input id="handle" type="text" class="form-control" name="handle" value="{{ inputs.handle }}">
+                    </div>
+                </div>
             {% endif %}
-            {% if staff.irl %}
-            {{ contact_radio('irl', 'In Person') }}
-            {% endif %}
-            <p class="form-control-static">Pick one.</p>
-        </fieldset>
-
-        {% if staff.email %}
-        <div class="hidden" id="email_input">
-
-            <div class="form-group">
-                <label for="likes">Tell us about a few books or authors you've enjoyed. What made these books great?</label>
-                <textarea id="likes" class="form-control" name="likes">{{ inputs.likes }}</textarea>
+    
+            <div class="hidden form-group" id="times_input">
+                <label for="times">What time works for you?</label>
+                <input id="times" type="textarea" class="form-control" placeholder="Suggest a couple days and times. We will email or phone to confirm." name="times" value="{{ inputs.times }}">
             </div>
-
-            <div class="form-group">
-                <label for="dislikes">Describe some authors or titles that you DID NOT like and why</label>
-                <textarea id="dislikes" class="form-control" name="dislikes">{{ inputs.dislikes }}</textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="comment">Is there anything else you'd like to tell us about your interests, reading or otherwise, that would help us make your list?</label>
-                <textarea id="comment" class="form-control" name="comment">{{ inputs.comment }}</textarea>
-            </div>
-
-            <fieldset>
-                <legend>Are you interested in books for adults, teens, or children?</legend>
-                {% for a in auds %}
-                    {{ audience_checkbox(a.0, a.1) }}
-                {% endfor %}
-                <p class="form-control-static">Check all that apply.</p>
-            </fieldset>
-
-            <fieldset>
-                <legend>Do you have a preferred format?</legend>
-                {% for f in formats %}
-                    {{ preferred_format_checkbox(f.0, f.1) }}
-                {% endfor %}
-            </fieldset>
-        </div>
         {% endif %}
-
-        {% if staff.phone %}
-        <div class="hidden form-group" id="phone_input">
-            <label for="phone" class="form-label">Please enter your phone number (incl area code) {{ required() }}<input id="phone" type="text" placeholder="555-555-5555" class="form-control" name="phone" value="{{ inputs.phone }}"></label>
-        </div>
-        {% endif %}
-
-        {% if staff.chat %}
-        <div class="hidden" id="chat_input">
-            <div class="hidden form-group" >
-                <label for="chat">Select the online chat service {{ required() }}</label>
-                <select id="chat" class="form-control" name="chat">
-                   <option value="" selected="selected">- Select -</option>
-                   <option value="google">Google+</option>
-                   <option value="skype">Skype</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="handle" class="form-label">What's your chat handle? {{ required() }}</label>
-                <input id="handle" type="text" class="form-control" name="handle" value="{{ inputs.handle }}">
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="hidden form-group" id="times_input">
-            <label for="times">What time works for you?</label>
-            <input id="times" type="textarea" class="form-control" placeholder="Suggest a couple days and times. We will email or phone to confirm." name="times" value="{{ inputs.times }}">
-        </div>
 
         <fieldset>
             <legend>Your Contact Information</legend>
