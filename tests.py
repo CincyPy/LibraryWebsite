@@ -476,7 +476,7 @@ class LibrarySiteTests(unittest.TestCase):
     def test_add_patroncontact(self):
         #test contact page exists
         response = self.app.get("/contact/fred")
-        self.assertIn("Contact fred",response.data)
+        self.assertIn("Contact Fred",response.data)
         #confirm that default contact preference is/not present
         self.assertIn("In Person",response.data)
         self.assertNotIn("Online Chat",response.data)
@@ -592,6 +592,31 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("contact request was received",response.data)
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='email', \
                                                              models.PatronContact.likes=='I like books', models.PatronContact.dislikes=='Sans books', models.PatronContact.comment=='No comment', models.PatronContact.format_pref=='book,eb', models.PatronContact.audience=='adults,children')).first()
+        self.assertIsNotNone(patroncontact)
+          
+        #test incomplete location info on book to speak request
+        response = self.app.post("/contact/fred?speak=True",data=dict(
+            test = True,
+            contact = 'speak',
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            location = '',
+            times = '05/04/2016 2:30 PM',
+        ), follow_redirects=True)
+        self.assertIn("Please provide the address for where you would",response.data)
+
+        #test incomplete location info on book to speak request
+        response = self.app.post("/contact/fred?speak=True",data=dict(
+            test = True,
+            contact = 'speak',
+            name = 'Jeff Johnson',
+            email = 'test@test.net',
+            location = 'My house',
+            times = '05/04/2016 2:30 PM',
+        ), follow_redirects=True)
+        self.assertIn("contact request was received",response.data)
+        patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='speak', \
+                                                             models.PatronContact.location=='My house', models.PatronContact.times=='05/04/2016 2:30 PM')).first()
         self.assertIsNotNone(patroncontact)
     
     def test_edit_patroncontact(self):
