@@ -43,6 +43,8 @@ class Staff(Base):
             pic_file_name = 'uploads/anon.jpg'
         return pic_file_name
 
+    def full_name(self):
+        return str(self.f_name) + ' ' + str(self.l_name)
 
 class ReadingList(Base):
     __tablename__ = 'readinglist'

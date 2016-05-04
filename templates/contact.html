@@ -86,7 +86,7 @@ $(function() {
 <div class="container home-container">
   <div class="row">
     <div class="col-md-12">
-      <h2>Contact {{ staff.username }}</h2>
+      <h2>Contact {{ staff.full_name() }}</h2>
     </div>
     <div class="col-md-4">
       <a href="{{ url_for('profile', uname=staff.username) }}">
@@ -96,10 +96,10 @@ $(function() {
     <div class="col-md-8">
     <form method="POST" action="{{ url_for('contact', uname=staff.username) }}" role="form">
         {% if speak %}
-            <legend>Fill in the following to request {{ staff.username }} to speak</legend>
+            <legend>Fill in the following to request {{ staff.f_name }} to speak</legend>
             <p>Required fields are followed by {{ required() }}.</p>
             <input name='contact' value='speak' hidden />
-            Select a date:
+            <strong>Select a date for {{ staff.f_name }} to speak:</strong>
             <div style="overflow:hidden;">
                 <div class="form-group">
                     <div class="row">
@@ -114,7 +114,8 @@ $(function() {
                     $(function () {
                         $('#datetimepicker').datetimepicker({
                             inline: true,
-                            sideBySide: true
+                            sideBySide: true,
+                            stepping: 15
                         });
                     });
                 </script>
