@@ -38,7 +38,6 @@ def logout_user():
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
-        app.logger.info(session)
         if 'logged_in' in session:
             return test(*args, **kwargs)
         else:
@@ -63,7 +62,6 @@ def login():
         if user and user.password == password:
             session['logged_in'] = True
             session["logged_in_name"] = username
-            app.logger.info(session)
             if user.username == 'admin':
                 return redirect(url_for('admin'))
             else:
