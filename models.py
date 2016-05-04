@@ -1,9 +1,13 @@
 import argparse
-import datetime
+import datetime as dt
 import os
 import sys
+import urllib
+import random
+import string
 
-from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, String, Text
+from sqlalchemy import (Boolean, Column, Date, DateTime, ForeignKey, Integer,
+                        String, Text)
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -44,6 +48,31 @@ class Staff(Base):
         else:
             pic_file_name = 'uploads/anon.jpg'
         return pic_file_name
+
+
+class PasswordReset(Base):
+    __tablename__ = 'passwordreset'
+
+    secret = Column(String, primary_key=True)
+    created = Column(DateTime, default=dt.datetime.now)
+
+    username = Column(String, ForeignKey('staff.username'))
+    staff = relationship('Staff')
+
+    def __init__(self, **kwargs):
+        super(PasswordReset, self).__init__(**kwargs)
+        if 'secret' not in kwargs:
+            self.secret = self.gensecret(8)
+
+    @classmethod
+    def gensecret(self, n):
+        chars = string.ascii_uppercase + string.digits
+        return ''.join(random.SystemRandom().choice(chars) for _ in range(n))
+
+    @property
+    def valid(self):
+        # valid if not over an hour old
+        return (dt.datetime.now() - self.created).total_seconds() / 60 / 60 < 1
 
 
 class ReadingList(Base):
@@ -103,13 +132,13 @@ def init_models(session):
                             phone='5555555555',
                             times='M-Th 12-2 pm'),
                  ])
-    rl1 = ReadingList(recdate=datetime.date(2015,10,1),
+    rl1 = ReadingList(recdate=dt.date(2015,10,1),
                       ISBN='9780394800301',
                       book='ABCs',
                       author='Dr. Suess',
                       comment='best seller',
                       category='Mystery')
-    rl2 = ReadingList(recdate=datetime.date(2015,10,2),
+    rl2 = ReadingList(recdate=dt.date(2015,10,2),
                       ISBN=' 9781402750656',
                       book='Night Before Christmas',
                       author='Santa',
@@ -160,14 +189,14 @@ def init_models(session):
     session.commit()
     session.query(Staff).get('elmo').readinglist = [
         ReadingList(
-            recdate=datetime.date(2015,12,21),
+            recdate=dt.date(2015,12,21),
             ISBN='9789380028293',
             book='The Invinsible Man',
             author='H. G. Wells',
             comment='my fav',
             category='History'),
         ReadingList(
-            recdate=datetime.date(2015,12,21),
+            recdate=dt.date(2015,12,21),
             ISBN='9780393972832',
             book='Moby Dick',
             author='Herman Melville',

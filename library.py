@@ -4,6 +4,7 @@ import ast
 import re
 import time
 import os
+import urllib
 
 from random import shuffle
 from functools import wraps
@@ -16,7 +17,7 @@ from os import environ
 from sqlalchemy import or_, and_
 
 from database import Database
-from models import ReadingList, Staff, PatronContact
+from models import PasswordReset, PatronContact, ReadingList, Staff
 
 from upload_form import UploadForm
 from flask.ext.bootstrap import Bootstrap
@@ -37,6 +38,7 @@ def logout_user():
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
+        app.logger.info(session)
         if 'logged_in' in session:
             return test(*args, **kwargs)
         else:
@@ -61,6 +63,7 @@ def login():
         if user and user.password == password:
             session['logged_in'] = True
             session["logged_in_name"] = username
+            app.logger.info(session)
             if user.username == 'admin':
                 return redirect(url_for('admin'))
             else:
@@ -447,6 +450,11 @@ def contact_status(PCID):
         return redirect(url_for('librarian'))
 
 
+def is_valid_password(s):
+    #XXX: password requirements?
+    return len(s) >= 3
+
+
 @app.route('/changepassword', methods=['GET', 'POST'])
 @login_required
 def changepassword():
@@ -460,9 +468,7 @@ def changepassword():
             flash("Password verification failed")
         else:
             newpass = request.form.get('newpass', '').strip()
-            #XXX: password requirements?
-            #     validate decorator in Staff
-            if len(newpass) < 3:
+            if not is_valid_password(newpass):
                 flash("Bad new password")
             else:
                 user.password = newpass
@@ -472,6 +478,61 @@ def changepassword():
                 return redirect(url_for('login'))
 
     return render_template('changepassword.html', username=session['logged_in_name'])
+
+
+@app.route('/reset/request', methods=['GET', 'POST'])
+def reset_request():
+    if request.method == 'POST':
+        emailaddress = request.form.get('emailaddress')
+        staff = Staff.query.filter(Staff.emailaddress==emailaddress).one_or_none()
+        if staff is not None:
+            pwreset = PasswordReset(staff=staff)
+            db.session.add(pwreset)
+            db.session.commit()
+            msg = Message('Password Reset', recipients=[staff.emailaddress])
+            msg.html = '<a href="%s">Click to reset your password</a>' % (
+                url_for('reset_password', secret=pwreset.secret,
+                        emailaddress=urllib.quote(staff.emailaddress),
+                        _external=True), )
+            mail.send(msg)
+            flash('Password reset sent')
+            return redirect(url_for('main'))
+        else:
+            flash('Invalid request')
+
+    return render_template('reset_request.html')
+
+
+@app.route('/reset/password', methods=['GET', 'POST'])
+def reset_password():
+    emailaddress = request.args.get('emailaddress')
+    secret = request.args.get('secret')
+
+    if emailaddress is None or secret is None:
+        return redirect(url_for('main'))
+
+    emailaddress = urllib.unquote(emailaddress)
+    pwreset = (PasswordReset.query
+                            .join(Staff)
+                            .filter(PasswordReset.secret==secret,
+                                    Staff.emailaddress==emailaddress)).one_or_none()
+
+    if not (pwreset and pwreset.valid):
+        return redirect(url_for('main'))
+
+    if request.method == 'POST':
+        newpass = request.form.get('newpass')
+        if not is_valid_password(newpass):
+            flash('Bad password')
+        else:
+            pwreset.staff.password = newpass
+            db.session.delete(pwreset)
+            db.session.commit()
+            logout_user()
+            flash('Password reset')
+            return redirect(url_for('login'))
+
+    return render_template('reset_password.html')
 
 
 @app.route('/publish', methods=['POST'])
@@ -491,4 +552,5 @@ if __name__ == '__main__':
         host = environ.get('HOST')
     else:
         host = '127.0.0.1'
+
     app.run(port=port, host=host)
