@@ -25,7 +25,7 @@ class Staff(Base):
     chat = Column(Boolean, default=False)
     irl = Column(Boolean, default=True)
 
-    interests = Column(Text)
+    interests = Column(Text, default='')
 
     patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
 
