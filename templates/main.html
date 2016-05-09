@@ -27,15 +27,10 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        {% if staff.bio|length > 200 %}
-                        <p>{{ staff.bio|truncate(200) }}<a class="truncated-bio" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
+                        {% if staff.interests|length > 200 %}
+                        <p>{{ staff.interests|truncate(200) }}<a class="truncated-bio" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
                         {% else %}
-                        <p>{{ staff.bio }}</p>
-                        {% endif %}
-                        {% if staff.interests|length > 100 %}
-                        <p>Interests: {{ staff.interests|truncate(100) }}<a class="truncated-bio" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
-                        {% else %}
-                        <p>Interests: {{ staff.interests }}</p>
+                        <p>{{ staff.interests }}</p>
                         {% endif %}
                         <p>{{ ask_what_read(staff) }}</p>
                     </div>
