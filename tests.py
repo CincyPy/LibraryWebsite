@@ -601,7 +601,9 @@ class LibrarySiteTests(unittest.TestCase):
             name = 'Jeff Johnson',
             email = 'test@test.net',
             location = '',
+            comment = 'anything',
             org = 'CincyPy',
+            mult = False,
             times = '05/04/2016 2:30 PM',
         ), follow_redirects=True)
         self.assertIn("Please provide the address for where you would",response.data)
@@ -613,12 +615,14 @@ class LibrarySiteTests(unittest.TestCase):
             name = 'Jeff Johnson',
             email = 'test@test.net',
             location = 'My house',
+            comment = 'anything',
             org = 'CincyPy',
+            mult = False,
             times = '05/04/2016 2:30 PM',
         ), follow_redirects=True)
         self.assertIn("contact request was received",response.data)
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='speak', \
-                                                             models.PatronContact.location=='My house', models.PatronContact.org=='CincyPy', models.PatronContact.times=='05/04/2016 2:30 PM')).first()
+                                                             models.PatronContact.location=='My house', models.PatronContact.comment=='anything', models.PatronContact.org=='CincyPy', models.PatronContact.times=='05/04/2016 2:30 PM')).first()
         self.assertIsNotNone(patroncontact)
     
     def test_edit_patroncontact(self):

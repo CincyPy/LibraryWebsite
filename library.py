@@ -379,12 +379,17 @@ def contact(uname):
             flash("Please select a contact method.")
             return  redirect(url_for('contact', uname=uname) + url_inputs)
         if data['contact'] == 'speak':
+            try: # Checks for multiple dates requested
+                if data['mult']:
+                    data['mult'] = True
+                    data['times'] = re.sub(r"^(.*?),", "", data['times']) # Removes calendar date selection that is added to front of list
+            except:
+                data['times'] = re.sub(r",.*", "", data['times']) # Removes any additional date info from multi-date input
             url_inputs = '?speak=True&inputs=' + str(data)
         if not lib:
             flash("Librarian not found")
             return redirect(url_for('contact', uname=uname) + url_inputs)
-
-        try: # Input fields are required so this shouldn't be needed
+        try:
             if data['name'] == '' or data['email'] == '':
                 flash("Please enter your name and email address in the contact area.")
                 return  redirect(url_for('contact', uname=uname) + url_inputs)
@@ -423,6 +428,8 @@ def contact(uname):
                 message += "\n\nLocation: " + data['location']
             if data['org'] != '':
                 message += "\n\nOrganization: " + data['org']
+            if data['comment'] != '':
+                message += "\n\nComment: " + data['comment']
 
         if data['contact'] != 'email' and data['times'] != '':
             message += "\n\nTimes: " + data['times']

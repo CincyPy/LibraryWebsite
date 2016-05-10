@@ -83,6 +83,7 @@ class PatronContact(Base):
     handle = Column(Text)
     location = Column(Text)
     org = Column(Text)
+    mult = Column(Boolean, default=False) # Tracks if selecting multiply dates for booking a speaking engagement
     status = Column(Text)
 
     def __getitem__(self, attr):
