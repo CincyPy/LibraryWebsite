@@ -120,8 +120,18 @@ $(function() {
                     });
                 </script>
             </div>
-            <label for="location">Location Address {{ required() }}</label>
-            <input name="location" class="form-control" value="{{ inputs.location }}" /></br>
+            <div class="form-group">
+                <label for="location">Location Address {{ required() }}</label>
+                <input name="location" class="form-control" value="{{ inputs.location }}" placeholder="Where would you like {{ staff.f_name }} to speak?"/>
+            </div>
+            <div class="form-group">
+                <label for="org">Organization</label>
+                <input name="org" class="form-control" value="{{ inputs.location }}" />
+            </div>
+            <div class="form-group">
+                <label for="comment">Additional Information</label>
+                <textarea id="comment" class="form-control" name="comment" placeholder="What would you like to hear about?">{{ inputs.comment }}</textarea>
+            </div>
         {% else %}
             <fieldset id="conversation-type">
                 <legend>How do you want to have this conversation?</legend>
@@ -209,7 +219,7 @@ $(function() {
             <legend>Your Contact Information</legend>
             <div class="form-group">
                 <label for="name">Your name {{ required() }}</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ inputs.name }}" size="35" maxlength="128">
+                <input type="text" id="name" name="name" class="form-control" value="{{ inputs.name }}" size="35" maxlength="128" placeholder="First and Last Name">
             </div>
             <div class="form-group">
                 <label for="email">Email Address {{ required() }}</label>

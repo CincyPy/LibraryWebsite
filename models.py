@@ -71,7 +71,7 @@ class PatronContact(Base):
     username = Column(String, ForeignKey('staff.username'))
     name = Column(Text)
     email = Column(Text)
-    contact = Column(Text)
+    contact = Column(Text) # Contact methods: phone, email, chat, irl, speak (for booking a speaking engagement)
     phone = Column(Text)
     times = Column(Text)
     likes = Column(Text)
@@ -82,6 +82,7 @@ class PatronContact(Base):
     chat = Column(Text)
     handle = Column(Text)
     location = Column(Text)
+    org = Column(Text)
     status = Column(Text)
 
     def __getitem__(self, attr):

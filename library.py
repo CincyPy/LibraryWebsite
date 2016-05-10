@@ -421,6 +421,8 @@ def contact(uname):
                 return redirect(url_for('contact', uname=uname) + url_inputs)
             else:
                 message += "\n\nLocation: " + data['location']
+            if data['org'] != '':
+                message += "\n\nOrganization: " + data['org']
 
         if data['contact'] != 'email' and data['times'] != '':
             message += "\n\nTimes: " + data['times']
