@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from 'macros/core.html' import ask_what_read, category_tag, profilepic %}
+{% from 'macros/core.html' import ask_what_read, book_to_speak, category_tag, profilepic %}
 
 {% block content %}
 <section id="header">
@@ -18,7 +18,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <a href="{{ url_for('profile', uname=staff.username) }}">
-                            <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
+                            <h4 class="staff-name">{{ staff.full_name() }}</h4>
                         </a>
                     </div>
                     <div class="col-md-6">
@@ -33,6 +33,7 @@
                         <p>{{ staff.interests }}</p>
                         {% endif %}
                         <p>{{ ask_what_read(staff) }}</p>
+                        <p>{{ book_to_speak(staff) }}</p>
                     </div>
                 </div>
             </div>

@@ -43,6 +43,8 @@ class Staff(Base):
             pic_file_name = 'uploads/anon.jpg'
         return pic_file_name
 
+    def full_name(self):
+        return str(self.f_name) + ' ' + str(self.l_name)
 
 class ReadingList(Base):
     __tablename__ = 'readinglist'
@@ -69,7 +71,7 @@ class PatronContact(Base):
     username = Column(String, ForeignKey('staff.username'))
     name = Column(Text)
     email = Column(Text)
-    contact = Column(Text)
+    contact = Column(Text) # Contact methods: phone, email, chat, irl, speak (for booking a speaking engagement)
     phone = Column(Text)
     times = Column(Text)
     likes = Column(Text)
@@ -79,6 +81,9 @@ class PatronContact(Base):
     format_pref = Column(Text)
     chat = Column(Text)
     handle = Column(Text)
+    location = Column(Text)
+    org = Column(Text)
+    mult = Column(Boolean, default=False) # Tracks if selecting multiply dates for booking a speaking engagement
     status = Column(Text)
 
     def __getitem__(self, attr):

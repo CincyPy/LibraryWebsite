@@ -4,6 +4,11 @@
         <b>Chat service: </b>{{ req.chat }}</br>
         <b>Chat handle: </b>{{ req.handle }}</br>
     {% endif %}
+    {% if req.contact == 'speak' %}
+        <b>Location: </b>{{ req.location }}</br>
+        {% if req.org != '' %}<b>Organization: </b>{{ req.org }}</br>{% endif %}
+        {% if req.comment != '' %}<b>Comment: </b>{{ req.comment }}</br>{% endif %}
+    {% endif %}
     {% if req.contact != 'email' and req.times %}
         <b>Times: </b>{{ req.times }}</br>
     {% endif %}
@@ -19,7 +24,7 @@
     {% endif %}
 {%- endmacro %}
 
-<script>
+<script> /*Adds original request info to reply email*/
     function view_req{{ req.PCID }}() {
         var formattedBody = "\n\n-- Original Request--\nContact Pref: {{ req.contact }}";
         if ('{{ req.contact }}' == 'email') {
@@ -33,8 +38,13 @@
                 formattedBody += "\nChat service: {{ req.chat }}";
                 formattedBody += "\nChat handle: {{ req.handle }}";
             } else {
-                formattedBody += "\nTimes: {{ req.times }}";
+                if ('{{ req.contact }}' == 'speak') {
+                    formattedBody += "\nLocation: {{ req.location }}";
+                    formattedBody += "\nOrganization: {{ req.org }}";
+                    formattedBody += "\nComment: {{ req.comment }}";
+                }
             }
+            formattedBody += "\nTimes: {{ req.times }}";
         }
         var mailToLink = "mailto:{{ req.email }}&subject=Response from {{ req.username }} at the Kenton County Library&body=" + encodeURIComponent(formattedBody);
         document.getElementById('default_email{{ req.PCID }}').innerHTML = "<strong>Email: </strong><a href='" + mailToLink + "'>{{ req.email }}</a></br>"

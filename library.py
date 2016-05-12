@@ -348,6 +348,7 @@ def upload_picture(uname):
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
     inputs = request.args.get('inputs')
+    speak = request.args.get('speak')
     formats = [
         ('book','Book'),
         ('lg_print', 'Large Print'),
@@ -364,29 +365,37 @@ def contact(uname):
     if request.method == "GET":  # regular get, present the form to user to edit.
         if inputs != None: # Prepopulate with entered data
             inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
-        return render_template('contact.html', staff=staff, formats=formats, auds=auds, inputs=inputs)
+        return render_template('contact.html', staff=staff, formats=formats, auds=auds, inputs=inputs, speak=speak)
 
     elif request.method == "POST":  # form was submitted, update database
         data = {}
         for key, values in dict(request.form).items():
             data[key] = ",".join(values)
         lib = Staff.query.get(uname)
-        if not lib:
-            flash("Librarian not found")
-            return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+        url_inputs = '?inputs=' + str(data)
         try:
             data['contact']
         except:
             flash("Please select a contact method.")
-            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
-
-        try: # Input fields are required so this shouldn't be needed
+            return  redirect(url_for('contact', uname=uname) + url_inputs)
+        if data['contact'] == 'speak':
+            try: # Checks for multiple dates requested
+                if data['mult']:
+                    data['mult'] = True
+                    data['times'] = re.sub(r"^(.*?),", "", data['times']) # Removes calendar date selection that is added to front of list
+            except:
+                data['times'] = re.sub(r",.*", "", data['times']) # Removes any additional date info from multi-date input
+            url_inputs = '?speak=True&inputs=' + str(data)
+        if not lib:
+            flash("Librarian not found")
+            return redirect(url_for('contact', uname=uname) + url_inputs)
+        try:
             if data['name'] == '' or data['email'] == '':
                 flash("Please enter your name and email address in the contact area.")
-                return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+                return  redirect(url_for('contact', uname=uname) + url_inputs)
         except:
             flash("Please enter your name and email address in the contact area.")
-            return  redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+            return  redirect(url_for('contact', uname=uname) + url_inputs)
 
         message = ""
         if data['contact'] == 'email':
@@ -399,18 +408,28 @@ def contact(uname):
             data['phone'] = re.sub(r"\D","",data['phone'])
             if len(data['phone']) == 0:
                 flash("Please enter your phone number.")
-                return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+                return redirect(url_for('contact', uname=uname) + url_inputs)
             elif len(data['phone']) < 10:
                 flash("Your phone number must include the area code (10 digits total).")
-                return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+                return redirect(url_for('contact', uname=uname) + url_inputs)
             message += "\n\nPhone: " + data['phone']
         elif data['contact'] == 'chat':
             if data['chat'] == '' or data['handle'] == '':
                 flash("Please input your preferred chat service and handle.")
-                return redirect(url_for('contact', uname=uname) + '?inputs=' + str(data))
+                return redirect(url_for('contact', uname=uname) + url_inputs)
             else:
                 message += "\n\nChat service: " + data['chat']
                 message += "\n\nChat handle: " + data['handle']
+        elif data['contact'] == 'speak':
+            if data['location'] == '':
+                flash("Please provide the address for where you would like " + str(uname) + " to speak.")
+                return redirect(url_for('contact', uname=uname) + url_inputs)
+            else:
+                message += "\n\nLocation: " + data['location']
+            if data['org'] != '':
+                message += "\n\nOrganization: " + data['org']
+            if data['comment'] != '':
+                message += "\n\nComment: " + data['comment']
 
         if data['contact'] != 'email' and data['times'] != '':
             message += "\n\nTimes: " + data['times']
