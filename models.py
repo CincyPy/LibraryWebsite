@@ -25,7 +25,7 @@ class Staff(Base):
     chat = Column(Boolean, default=False)
     irl = Column(Boolean, default=True)
 
-    interests = Column(Text)
+    interests = Column(Text, default='')
 
     patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
 
@@ -97,6 +97,7 @@ def init_models(session):
 
     fred = Staff(username='fred', password='fred', f_name='Fred', emailaddress='KentonCountyLibrary@gmail.com',
                  l_name='Fredderson', phonenumber=2222222222, bio='I am Fred\'s incomplete bio',
+                 interests='long walks, hobbies, interests, model cars',
                  patron_contacts=[
                      PatronContact(reqdate='2016-01-07',
                             status='open',
@@ -123,6 +124,7 @@ def init_models(session):
     session.add(fred)
 
     loremipsum = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'''
+    loreminterests = 'long walks on the beach, hobbies, interests, model cars, real python, meatballs, 80s jock jams, hangin with mr cooper, drawing with chalk, bird watching, trying to make long interests lists, trying not to run out of ideas and failing'
 
     session.add(Staff(username='ernie',
                          password='ernie',
@@ -130,35 +132,40 @@ def init_models(session):
                          l_name='Ernieston',
                          phonenumber=3333333333,
                          emailaddress='KentonCountyLibrary@gmail.com',
-                         bio=loremipsum))
+                         bio=loremipsum,
+                         interests = loreminterests))
     session.add(Staff(username='bert',
                          password='bert',
                          f_name='Bert',
                          l_name='Burterson',
                          phonenumber=4444444444,
                          emailaddress='KentonCountyLibrary@gmail.com',
-                         bio=loremipsum))
+                         bio=loremipsum,
+                         interests = loreminterests))
     session.add(Staff(username='bigbird',
                          password='bigbird',
                          f_name='Big',
                          l_name='Bird',
                          phonenumber=5555555555,
                          emailaddress='KentonCountyLibrary@gmail.com',
-                         bio=loremipsum))
+                         bio=loremipsum,
+                         interests = loreminterests))
     session.add(Staff(username='oscar',
                          password='oscar',
                          f_name='Oscar',
                          l_name='Thegrouch',
                          phonenumber=6666666666,
                          emailaddress='KentonCountyLibrary@gmail.com',
-                         bio=loremipsum))
+                         bio=loremipsum,
+                         interests = loreminterests))
     session.add(Staff(username='elmo',
                          password='elmo',
                          f_name='Elmo',
                          l_name='Elmostein',
                          phonenumber=7777777777,
                          emailaddress='KentonCountyLibrary@gmail.com',
-                         bio=loremipsum))
+                         bio=loremipsum,
+                         interests = loreminterests))
 
     session.commit()
     session.query(Staff).get('elmo').readinglist = [
