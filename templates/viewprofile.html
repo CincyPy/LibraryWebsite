@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from 'macros/core.html' import ask_what_read, book_image, category_tag,
+{% from 'macros/core.html' import ask_what_read, book_to_speak, book_image, category_tag,
                                   contact, profilepic, submit %}
 {% from 'macros/icons.html' import exclamation_sign %}
 
@@ -61,7 +61,7 @@ $(function() {
 <div class="container">
     <div class="row">
         <div class="col-sm-6 col-md-4">
-            <h2>{{ staff.f_name }} {{ staff.l_name }}</h2></br>
+            <h2>{{ staff.full_name() }}</h2></br>
         </div>
     </div>
     <div class="row">
@@ -70,8 +70,9 @@ $(function() {
             <div class="panel-body contact-center">
                 <h3 class="contact-center" >Contact Me</h3>
                 <p class="staff-profile">
-                    {{ ask_what_read(staff) }} </br><br>
-                    <a href="http://eepurl.com/bWNh1L" type="button" class="btn btn-success">Get Recommendations</a>
+                    <p>{{ ask_what_read(staff) }}</p>
+                    <p>{{ book_to_speak(staff) }}</p>
+                    <a href="http://eepurl.com/bWNh1L" type="button" class="btn btn-default">Get Recommendations</a>
                     <!--a href="http://www.kentonlibrary.org/email-newsletter">Sign up </a>for our monthly reading recommendations. </br-->
                 </p>
             </div>
@@ -80,7 +81,9 @@ $(function() {
             <div class="panel panel-default">
                 <div class="panel-body">
                     <h3>Bio</h3>
-                    <p class="staff-profile staff-bio">{{ staff.bio }}</p>
+                    <p class="staff-profile staff-bio">{{ staff.bio }}
+                    </p>
+                    <a href="#recread" type="button" class="btn btn-primary">View Recommendations</a>
                 </div>
             </div>
             <div class="panel panel-default">
@@ -97,7 +100,7 @@ $(function() {
         <div class="container">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3>Reading Recommendations</h3>
+                    <h3 id="recread">Reading Recommendations</h3>
                     <h4>Categories</h4>
                     {{ categories_filter_form(staff) }}
                 </div>

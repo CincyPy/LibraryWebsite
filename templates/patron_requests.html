@@ -33,6 +33,7 @@
     <thead>
         <tr>
             <th>Date</th>
+            {% if session.logged_in_name == 'admin' %}<th>Staff</th>{% endif %}
             <th>Patron</th>
             <th>Type</th>
             <th>Status</th>
@@ -44,6 +45,7 @@
         {% for req in patron_reqs|sort(attribute='reqdate', reverse=True)|sort(attribute='status', reverse=True) %}
         <tr>
             <td>{{ req.reqdate }}</td>
+            {% if session.logged_in_name == 'admin' %}<td>{{ req.username }}</td>{% endif %}
             <td>{{ req.name }}</td>
             <td>{{ req.contact }}</td>
             <td id="edit_status{{ req.PCID }}">{{ req.status }}</td>

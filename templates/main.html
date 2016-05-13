@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from 'macros/core.html' import ask_what_read, category_tag, profilepic %}
+{% from 'macros/core.html' import ask_what_read, book_to_speak, category_tag, profilepic %}
 
 {% block content %}
 <section id="header">
@@ -18,7 +18,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <a href="{{ url_for('profile', uname=staff.username) }}">
-                            <h4 class="staff-name">{{ staff.f_name }} {{ staff.l_name }}</h4>
+                            <h4 class="staff-name">{{ staff.full_name() }}</h4>
                         </a>
                     </div>
                     <div class="col-md-6">
@@ -27,12 +27,13 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        {% if staff.bio|length > 200 %}
-                        <p>{{ staff.bio|truncate(200) }}<a class="truncated-bio" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
+                        {% if staff.interests|length > 200 %}
+                        <p>{{ staff.interests|truncate(200) }}<a class="truncated-bio" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
                         {% else %}
-                        <p>{{ staff.bio }}</p>
+                        <p>{{ staff.interests }}</p>
                         {% endif %}
                         <p>{{ ask_what_read(staff) }}</p>
+                        <p>{{ book_to_speak(staff) }}</p>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,10 @@
 <a href="{{ url_for('contact', uname=staff.username) }}" type="button" class="btn btn-primary">Ask {{ staff.f_name }} what to read</a>
 {%- endmacro %}
 
+{% macro book_to_speak(staff) -%}
+<a href="{{ url_for('contact', uname=staff.username) }}?speak=True" type="button" class="btn btn-success">Book {{ staff.f_name }} to speak</a>
+{%- endmacro %}
+
 {% macro stylesheet(href) -%}
 <link rel="stylesheet" type="text/css" href="{{ href }}">
 {%- endmacro %}
