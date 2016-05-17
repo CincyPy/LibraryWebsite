@@ -20,10 +20,10 @@ class Staff(Base):
     emailaddress = Column(String)
 
     bio = Column(Text, default='')
-    email = Column(Boolean, default=False)
-    phone = Column(Boolean, default=True)
+    email = Column(Boolean, default=True)
+    phone = Column(Boolean, default=False)
     chat = Column(Boolean, default=False)
-    irl = Column(Boolean, default=True)
+    irl = Column(Boolean, default=False)
 
     interests = Column(Text, default='')
 
@@ -97,7 +97,7 @@ def init_models(session):
 
     fred = Staff(username='fred', password='fred', f_name='Fred', emailaddress='KentonCountyLibrary@gmail.com',
                  l_name='Fredderson', phonenumber=2222222222, bio='I am Fred\'s incomplete bio',
-                 interests='long walks, hobbies, interests, model cars',
+                 interests='long walks, hobbies, interests, model cars', irl=True,
                  patron_contacts=[
                      PatronContact(reqdate='2016-01-07',
                             status='open',

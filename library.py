@@ -311,17 +311,21 @@ def edit_profile(uname):
                 return redirect(url_for('edit_profile', uname=uname) + '?inputs=' + str(data))
         except:
             pass
-
+        try:
+            if data['phone'] == 'on':
+                data['phone'] = True
+        except:
+            data['phone'] = False
         try:
             if data['chat'] == 'on':
                 data['chat'] = True
         except:
             data['chat'] = False
         try:
-            if data['email'] == 'on':
-                data['email'] = True
+            if data['irl'] == 'on':
+                data['irl'] = True
         except:
-            data['email'] = False
+            data['irl'] = False
         for key, value in data.iteritems(): # Dynamically update the model values for staff based on inputs
             setattr(staff, key, value)
         db.session.commit()
