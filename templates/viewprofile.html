@@ -81,7 +81,7 @@ $(function() {
             <div class="panel panel-default">
                 <div class="panel-body">
                     <h3>Bio</h3>
-                    <p class="staff-profile staff-bio">{{ staff.bio }}
+                    <p class="staff-profile staff-bio">{{ staff.bio|safe }}
                     </p>
                     <a href="#recread" type="button" class="btn btn-primary">View Recommendations</a>
                 </div>
@@ -89,7 +89,7 @@ $(function() {
             <div class="panel panel-default">
                 <div class="panel-body">
                     <h3>Interests</h3>
-					<p class="staff-profile">{{ staff.interests if staff.interests is not none else '' }}</p>
+					<p class="staff-profile">{{ staff.interests|safe if staff.interests is not none else '' }}</p>
                 </div>
             </div>
         </div>
