@@ -32,6 +32,7 @@
             <li><a href="{{ url_for('logout') }}">Logout {{ session.logged_in_name }}</a></li>
             {% else %}
             {{ nav_link('login', 'Login') }}
+            {{ nav_link('reset_request', 'Reset Password') }}
             {% endif %}
             </ul>
         </div>
