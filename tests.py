@@ -70,6 +70,12 @@ class LibrarySiteTests(unittest.TestCase):
 
         self.assertIn('Welcome to the Librarian Staff Page', response.data)
 
+        #test change password
+        response = self.app.post('/changepassword', data=dict(
+                oldpass='fred', newpass='fred'),
+                follow_redirects=True)
+        self.assertIn('Welcome to the Staff Login', response.data)
+
     def test_logout(self):
         with self.app:
             response = self.app.get('/logout',follow_redirects=True)
@@ -141,8 +147,14 @@ class LibrarySiteTests(unittest.TestCase):
             l_name="t",
             phone="1112223333",
             emailaddress="test@testing.com"),follow_redirects=True)
-        staff=models.Staff.query.filter(and_(models.Staff.username=='t', models.Staff.password=='t', models.Staff.f_name=='t', models.Staff.l_name=='t', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test@testing.com')).first()
+        staff=models.Staff.query.filter(
+            and_(models.Staff.username=='t', models.Staff.f_name=='t',
+                 models.Staff.l_name=='t',
+                 models.Staff.phonenumber==1112223333,
+                 models.Staff.emailaddress=='test@testing.com')).first()
+        #NOTE: password must be verified on the Python side now
         self.assertIsNotNone(staff)
+        self.assertTrue(staff.password=='t')
         #try adding an existing username
         response = self.app.post("/adduser",data=dict(
             username="t",
@@ -169,8 +181,13 @@ class LibrarySiteTests(unittest.TestCase):
             l_name="u",
             phone="111-222-3333",
             emailaddress="test2@testing.com"),follow_redirects=True)
-        staff=models.Staff.query.filter(and_(models.Staff.username=='u', models.Staff.password=='u', models.Staff.f_name=='u', models.Staff.l_name=='u', models.Staff.phonenumber==1112223333, models.Staff.emailaddress=='test2@testing.com')).first()
+        staff=models.Staff.query.filter(
+            and_(models.Staff.username=='u', models.Staff.f_name=='u',
+                 models.Staff.l_name=='u',
+                 models.Staff.phonenumber==1112223333,
+                 models.Staff.emailaddress=='test2@testing.com')).first()
         self.assertIsNotNone(staff)
+        self.assertTrue(staff.password=='u')
 
     def test_deleteuser(self):
         # non-admin can't delete users
