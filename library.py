@@ -304,7 +304,6 @@ def edit_profile(uname):
         data = {}
         for key, values in dict(request.form).items():
             data[key] = ",".join(values)
-
         try:
             data['phonenumber'] = re.sub(r"\D","",data['phonenumber'])
             if len(data['phonenumber']) == 0: # This shouldn't happen since the HTML has a required field
@@ -312,6 +311,9 @@ def edit_profile(uname):
                 return redirect(url_for('edit_profile', uname=uname) + '?inputs=' + str(data))
             elif len(data['phonenumber']) < 10:
                 flash("Your phone number must include the area code (10 digits total).")
+                return redirect(url_for('edit_profile', uname=uname) + '?inputs=' + str(data))
+            if Staff.query.filter(Staff.emailaddress == data['emailaddress']).count() == 1 and data['emailaddress'] != staff.emailaddress:
+                flash("Email address used by another user.")
                 return redirect(url_for('edit_profile', uname=uname) + '?inputs=' + str(data))
         except:
             pass
