@@ -23,13 +23,13 @@ class Staff(Base):
     f_name = Column(String)
     l_name = Column(String)
     phonenumber = Column(String)
-    emailaddress = Column(String)
+    emailaddress = Column(String, unique=True)
 
     bio = Column(Text, default='')
-    email = Column(Boolean, default=False)
-    phone = Column(Boolean, default=True)
+    email = Column(Boolean, default=True)
+    phone = Column(Boolean, default=False)
     chat = Column(Boolean, default=False)
-    irl = Column(Boolean, default=True)
+    irl = Column(Boolean, default=False)
 
     interests = Column(Text, default='')
 
@@ -122,13 +122,13 @@ class PatronContact(Base):
 
 
 def init_models(session):
-    admin = Staff(username='admin', password='admin', f_name='Admin', emailaddress='KentonCountyLibrary@gmail.com',
+    admin = Staff(username='admin', password='admin', f_name='Admin', emailaddress='admin@test.com',
                   l_name='User', phonenumber=1111111111, bio='Admin bio')
     session.add(admin)
 
     fred = Staff(username='fred', password='fred', f_name='Fred', emailaddress='KentonCountyLibrary@gmail.com',
                  l_name='Fredderson', phonenumber=2222222222, bio='I am Fred\'s incomplete bio',
-                 interests='long walks, hobbies, interests, model cars',
+                 interests='long walks, hobbies, interests, model cars', irl=True,
                  patron_contacts=[
                      PatronContact(reqdate='2016-01-07',
                             status='open',
@@ -162,7 +162,7 @@ def init_models(session):
                          f_name='Ernie',
                          l_name='Ernieston',
                          phonenumber=3333333333,
-                         emailaddress='KentonCountyLibrary@gmail.com',
+                         emailaddress='ernie@test.com',
                          bio=loremipsum,
                          interests = loreminterests))
     session.add(Staff(username='bert',
@@ -170,7 +170,7 @@ def init_models(session):
                          f_name='Bert',
                          l_name='Burterson',
                          phonenumber=4444444444,
-                         emailaddress='KentonCountyLibrary@gmail.com',
+                         emailaddress='bert@test.com',
                          bio=loremipsum,
                          interests = loreminterests))
     session.add(Staff(username='bigbird',
@@ -178,7 +178,7 @@ def init_models(session):
                          f_name='Big',
                          l_name='Bird',
                          phonenumber=5555555555,
-                         emailaddress='KentonCountyLibrary@gmail.com',
+                         emailaddress='bigbird@test.com',
                          bio=loremipsum,
                          interests = loreminterests))
     session.add(Staff(username='oscar',
@@ -186,7 +186,7 @@ def init_models(session):
                          f_name='Oscar',
                          l_name='Thegrouch',
                          phonenumber=6666666666,
-                         emailaddress='KentonCountyLibrary@gmail.com',
+                         emailaddress='oscar@test.com',
                          bio=loremipsum,
                          interests = loreminterests))
     session.add(Staff(username='elmo',
@@ -194,7 +194,7 @@ def init_models(session):
                          f_name='Elmo',
                          l_name='Elmostein',
                          phonenumber=7777777777,
-                         emailaddress='KentonCountyLibrary@gmail.com',
+                         emailaddress='elmo@test.com',
                          bio=loremipsum,
                          interests = loreminterests))
 

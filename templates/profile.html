@@ -57,8 +57,13 @@
                 </strong>
             </p>
             <div class="checkbox">
-                <label for="email">
-                    <input id="email" type="checkbox" name="email" {% if inputs.email or staff.email %}checked{% endif %}>Email
+                <label for="phone">
+                    <input id="phone" type="checkbox" name="phone" {% if inputs.phone or staff.phone %}checked{% endif %}>Phone
+                </label>
+            </div>
+            <div class="checkbox">
+                <label for="irl">
+                    <input id="irl" type="checkbox" name="irl" {% if inputs.irl or staff.irl %}checked{% endif %}>In Person
                 </label>
             </div>
             <div class="checkbox">

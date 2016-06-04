@@ -42,19 +42,19 @@ class LibrarySiteTests(unittest.TestCase):
     def test_main(self):
         response = self.app.get('/')
         self.assertIn(config.SITENAME, response.data)
-    
+
     def test_login(self):
         #test initial get request
         response = self.app.get('/login')
         self.assertIn("Welcome to the Staff Login",response.data)
-        
+
         #test invalid user
         response = self.app.post('/login', data=dict(
                 username="invalid",
                 password="invalid",
-        ), follow_redirects=True) 
+        ), follow_redirects=True)
         self.assertIn('Invalid Credentials', response.data)
-        
+
         #test valid user
         with self.app:
             response = self.app.post('/login', data=dict(
@@ -66,22 +66,22 @@ class LibrarySiteTests(unittest.TestCase):
         response = self.app.post('/login', data=dict(
                 username="fred",
                 password="fred",
-        ), follow_redirects=True) 
+        ), follow_redirects=True)
 
         self.assertIn('Welcome to the Librarian Staff Page', response.data)
 
         #test change password
-        response = self.app.post('/changepassword', data=dict(
-                oldpass='fred', newpass='fred'),
-                follow_redirects=True)
-        self.assertIn('Welcome to the Staff Login', response.data)
+        # response = self.app.post('/changepassword', data=dict(
+        #         oldpass='fred', newpass='fred'),
+        #         follow_redirects=True)
+        # self.assertIn('Welcome to the Staff Login', response.data)
 
     def test_logout(self):
         with self.app:
             response = self.app.get('/logout',follow_redirects=True)
             self.assertIn('You were logged out',response.data)
             self.assertNotIn("logged_in",flask.session)
-    
+
     def test_admin(self):
         self.login("admin","admin")
         #test admin
@@ -91,13 +91,13 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("/edit-profile/fred",response.data)
 
         self.logout()
-        
+
         #test normal user
         self.login("fred","fred")
         response = self.app.get("/admin", follow_redirects=True)
         self.logout()
-    
-    
+
+
     def test_librarian(self):
         self.login("fred","fred")
         response = self.app.get("/librarian")
@@ -105,7 +105,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("Night Before Christmas",response.data)
         self.assertNotIn("The Invisible Man",response.data)
         self.assertNotIn("Moby Dick",response.data)
-    
+
     def test_adduser(self):
         #try with non admin
         self.login("fred","fred")
@@ -218,7 +218,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.login("fred","fred")
         response = self.app.get("/edit-profile/fred")
         self.assertIn("2222222222",response.data) # Verify that correct phone number is retrieved for fred
-        
+
         #try name change
         self.login("fred","fred")
         response = self.app.post("/edit-profile/fred",data=dict(
@@ -227,7 +227,7 @@ class LibrarySiteTests(unittest.TestCase):
         ), follow_redirects=True)
         self.assertIn("Profile updated",response.data)
         staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Freddy', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='KentonCountyLibrary@gmail.com', \
-                                             models.Staff.phonenumber=='2222222222', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==0, models.Staff.chat==0)).first()
+                                             models.Staff.phonenumber=='2222222222', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==0, models.Staff.irl==0, models.Staff.email==1, models.Staff.chat==0)).first()
         self.assertIsNotNone(staff)
 
         #try adding interests (and change name back to Fred)
@@ -238,8 +238,7 @@ class LibrarySiteTests(unittest.TestCase):
             interests = 'books',
         ), follow_redirects=True)
         self.assertIn("Profile updated",response.data)
-        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Fred', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='KentonCountyLibrary@gmail.com', models.Staff.interests=='books',\
-                                             models.Staff.phonenumber=='2222222222', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==0, models.Staff.chat==0)).first()
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.interests=='books')).first()
         self.assertIsNotNone(staff)
 
         #try changing with incorrect phone number
@@ -250,8 +249,17 @@ class LibrarySiteTests(unittest.TestCase):
         ), follow_redirects=True)
         self.assertIn("Your phone number must include the area code",response.data)
         self.assertIn("test@test.net",response.data) # Verify that input data was retained
-        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Fred', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='test@test.net', models.Staff.interests=='books',\
-                                             models.Staff.phonenumber=='1111111', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==0, models.Staff.chat==0)).first()
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.emailaddress=='test@test.net', models.Staff.phonenumber=='1111111')).first()
+        self.assertIsNone(staff)
+
+        #try changing to an existing email
+        self.login("fred","fred")
+        response = self.app.post("/edit-profile/fred",data=dict(
+            emailaddress = 'ernie@test.com',
+            phonenumber = '111-111-1111',
+        ), follow_redirects=True)
+        self.assertIn("Email address used by another user.",response.data)
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.emailaddress=='ernie@test.com', models.Staff.phonenumber=='1111111111')).first()
         self.assertIsNone(staff)
 
         #try changing email and phone number
@@ -261,22 +269,57 @@ class LibrarySiteTests(unittest.TestCase):
             phonenumber = '111-111-1111',
         ), follow_redirects=True)
         self.assertIn("Profile updated",response.data)
-        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Fred', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='test@test.net', models.Staff.interests=='books',\
-                                             models.Staff.phonenumber=='1111111111', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==0, models.Staff.chat==0)).first()
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.emailaddress=='test@test.net', models.Staff.phonenumber=='1111111111')).first()
         self.assertIsNotNone(staff)
-        
+
         #try adding email and chat contact pref (change email and phone number back)
         self.login("fred","fred")
         response = self.app.post("/edit-profile/fred",data=dict(
             emailaddress = 'KentonCountyLibrary@gmail.com',
             phonenumber = '222-222-2222',
-            email = 'on',
+            interests = 'I like tests',
+            bio = 'test',
+            phone = 'on',
             chat = 'on',
+            irl = 'on',
         ), follow_redirects=True)
         self.assertIn("Profile updated",response.data)
-        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.f_name=='Fred', models.Staff.l_name=='Fredderson', models.Staff.emailaddress=='KentonCountyLibrary@gmail.com', models.Staff.interests=='books',\
-                                             models.Staff.phonenumber=='2222222222', models.Staff.bio=="I am Fred's incomplete bio", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==1, models.Staff.chat==1)).first()
+        staff=models.Staff.query.filter(and_(models.Staff.username=='fred', models.Staff.emailaddress=='KentonCountyLibrary@gmail.com', models.Staff.phonenumber=='2222222222', models.Staff.bio=="test", models.Staff.phone==1, models.Staff.irl==1, models.Staff.email==1, models.Staff.chat==1)).first()
         self.assertIsNotNone(staff)
+
+        #Change Password
+        #try incorrect old password
+        self.login("fred","fred")
+        response = self.app.post("/changepassword",data=dict(
+            oldpass = 'garbage',
+            newpass = 'password',
+        ), follow_redirects=True)
+        self.assertIn("Password verification failed",response.data)
+        staff=models.Staff.query.filter(
+            and_(models.Staff.username=='fred',
+                 models.Staff.emailaddress=='KentonCountyLibrary@gmail.com')).first()
+        #NOTE: password must be verified on the Python side now
+        self.assertIsNotNone(staff)
+        self.assertTrue(staff.password=='fred')
+
+        #try changing password (then change back)
+        self.login("fred","fred")
+        response = self.app.post("/changepassword",data=dict(
+            oldpass = 'fred',
+            newpass = 'password',
+        ), follow_redirects=True)
+        self.assertIn("Password changed",response.data)
+        staff=models.Staff.query.filter(
+            and_(models.Staff.username=='fred',
+                 models.Staff.emailaddress=='KentonCountyLibrary@gmail.com')).first()
+        #NOTE: password must be verified on the Python side now
+        self.assertIsNotNone(staff)
+        self.assertTrue(staff.password=='password')
+        self.login("fred","password")
+        response = self.app.post("/changepassword",data=dict(
+            oldpass = 'fred',
+            newpass = 'fred',
+        ), follow_redirects=True)
 
     def test_addrecread(self):
         # admin can edit, but book name must exist.
@@ -451,7 +494,7 @@ class LibrarySiteTests(unittest.TestCase):
             models.ReadingList.ISBN == 't',
             models.ReadingList.sticky == True)).first()
         self.assertIsNotNone(recread)
-        
+
     def test_remrecread(self):
         #unknown recread, should not matter
         self.login("fred","fred")
@@ -459,7 +502,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertNotIn("Deleted recommended reading.",response.data)
         #insert a recread, make sure its removed
         fred = models.Staff.query.filter(models.Staff.username=='fred').first()
-        
+
         readinglist = models.ReadingList(
             recdate=datetime.date.today(),
             ISBN="eee",
@@ -474,7 +517,7 @@ class LibrarySiteTests(unittest.TestCase):
         #try another user
         self.logout()
         self.login("elmo","elmo")
-        
+
         response = self.app.post("/remrecread/"+str(rlid),data={},follow_redirects=True)
         self.assertNotIn("Deleted recommended reading.",response.data)
         self.logout()
@@ -484,12 +527,12 @@ class LibrarySiteTests(unittest.TestCase):
         response = self.app.post("/remrecread/"+str(rlid),data={},follow_redirects=True)
         self.assertIn("Deleted recommended reading.",response.data)
         rl = models.ReadingList.query.filter(models.ReadingList.ISBN=="eee").first()
-        self.assertIsNone(rl)                 
-        
+        self.assertIsNone(rl)
+
     def test_profile(self):
         response = self.app.get("/profile/fred")
         self.assertIn("Fredderson",response.data)
-    
+
     def test_add_patroncontact(self):
         #test contact page exists
         response = self.app.get("/contact/fred")
@@ -497,7 +540,7 @@ class LibrarySiteTests(unittest.TestCase):
         #confirm that default contact preference is/not present
         self.assertIn("In Person",response.data)
         self.assertNotIn("Online Chat",response.data)
-        
+
         #add In Person contact request
         response = self.app.post("/contact/fred",data=dict(
             test = True,
@@ -523,7 +566,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("Jeff Johnson",response.data) # Verify that input data was retained
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.contact=='phone', models.PatronContact.times=='Anytime')).first()
         self.assertIsNone(patroncontact)
-        
+
         #test missing contact preference
         response = self.app.post("/contact/fred",data=dict(
             test = True,
@@ -535,7 +578,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("Please select a contact method",response.data)
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.phone=='555-555-5555', models.PatronContact.times=='Anytime')).first()
         self.assertIsNone(patroncontact)
-        
+
         #test missing phone number
         response = self.app.post("/contact/fred",data=dict(
             test = True,
@@ -548,7 +591,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.assertIn("Please enter your phone number",response.data)
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='phone', models.PatronContact.times=='Anytime')).first()
         self.assertIsNone(patroncontact)
-        
+
         #test incomplete phone number
         response = self.app.post("/contact/fred",data=dict(
             test = True,
@@ -559,7 +602,7 @@ class LibrarySiteTests(unittest.TestCase):
             times = 'Anytime',
         ), follow_redirects=True)
         self.assertIn("Your phone number must include the area code",response.data)
-        
+
         #Add chat and email options to fred's contact preferences
         staff = models.Staff.query.get('fred')
         staff.chat, staff.email = True, True
@@ -567,7 +610,7 @@ class LibrarySiteTests(unittest.TestCase):
         self.session.commit()
         response = self.app.get("/contact/fred")
         self.assertIn("Online Chat",response.data)
-        
+
         #Test missing chat request info
         response = self.app.post("/contact/fred",data=dict(
             test = True,
@@ -578,7 +621,7 @@ class LibrarySiteTests(unittest.TestCase):
             handle = 'bigDog',
         ), follow_redirects=True)
         self.assertIn("Please input your preferred chat service and handle",response.data)
-        
+
         #test email entry
         response = self.app.post("/contact/fred",data=dict(
             test = True,
@@ -589,7 +632,7 @@ class LibrarySiteTests(unittest.TestCase):
             times = 'Anytime',
         ), follow_redirects=True)
         self.assertIn("Your phone number must include the area code",response.data)
-        
+
         #test email entry
         response = self.app.post("/contact/fred",data=dict(
             test = True,
@@ -610,7 +653,7 @@ class LibrarySiteTests(unittest.TestCase):
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='email', \
                                                              models.PatronContact.likes=='I like books', models.PatronContact.dislikes=='Sans books', models.PatronContact.comment=='No comment', models.PatronContact.format_pref=='book,eb', models.PatronContact.audience=='adults,children')).first()
         self.assertIsNotNone(patroncontact)
-          
+
         #test incomplete location info on book to speak request
         response = self.app.post("/contact/fred?speak=True",data=dict(
             test = True,
@@ -641,7 +684,7 @@ class LibrarySiteTests(unittest.TestCase):
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Jeff Johnson', models.PatronContact.email=='test@test.net', models.PatronContact.contact=='speak', \
                                                              models.PatronContact.location=='My house', models.PatronContact.comment=='anything', models.PatronContact.org=='CincyPy', models.PatronContact.times=='05/04/2016 2:30 PM')).first()
         self.assertIsNotNone(patroncontact)
-    
+
     def test_edit_patroncontact(self):
         #test patron contact exists on librarian page
         self.login("fred", "fred")
@@ -664,7 +707,7 @@ class LibrarySiteTests(unittest.TestCase):
         patroncontact=models.PatronContact.query.filter(and_(models.PatronContact.username=='fred', models.PatronContact.name=='Joe Johnson', models.PatronContact.email=='jjohanson@bigpimpn.net', models.PatronContact.contact=='phone', \
                                                              models.PatronContact.phone=='5555555555', models.PatronContact.times=='M-Th 12-2 pm', models.PatronContact.status=='closed')).first()
         self.assertIsNotNone(patroncontact)
-        
+
     def test_github_ip_check(self):
         publish = Publisher('192.168.0.1', "dontmatter", "")
         self.assertFalse(publish.in_ip_address_range())
@@ -680,4 +723,3 @@ class LibrarySiteTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
