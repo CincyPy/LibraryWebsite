@@ -29,7 +29,7 @@
             <div class="col-md-8">
                 <div class="form-group">
                     <label for="bio">Bio</label>
-                    <textarea name="bio" id="bio" class="form-control" rows="10">{{ inputs.bio if inputs else staff.bio if staff.bio is not none else '' }}</textarea>
+                    <textarea name="bio" id="Bio" class="form-control widgEditor" rows="10">{{ inputs.bio|safe if inputs else staff.bio|safe if staff.bio is not none else '' }}</textarea>
                 </div>
             </div>
         </div>

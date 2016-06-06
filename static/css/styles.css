@@ -11,6 +11,12 @@ body {
   background: url('../img/symphony.png');
 }
 
+.nicEdit-main {
+    width: auto !important;
+    margin: 0 !important;
+    background-color: white !important;
+}
+
 .navbar-brand, .staff-name {
     /*font-family: 'Merriweather', serif;*/
     font-weight:100;
@@ -125,7 +131,7 @@ section#header h3 {
     margin-top: 1em;
 }
 
-p.truncated-bio{
+p.truncated-interests{
     font-size:110%;
 }
 

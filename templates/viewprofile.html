@@ -81,8 +81,7 @@ $(function() {
             <div class="panel panel-default">
                 <div class="panel-body">
                     <h3>Bio</h3>
-                    <p class="staff-profile staff-bio">{{ staff.bio }}
-                    </p>
+                    <div class="staff-profile staff-bio">{{ staff.bio|safe }}</div>
                     <a href="#recread" type="button" class="btn btn-primary">View Recommendations</a>
                 </div>
             </div>

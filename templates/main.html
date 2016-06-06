@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-md-6">
                         {% if staff.interests|length > 200 %}
-                        <p>{{ staff.interests|truncate(200) }}<a class="truncated-bio" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
+                        <p>{{ staff.interests|truncate(200) }}<a class="truncated-interests" href="{{ url_for('profile', uname=staff.username) }}">find out more</a></p>
                         {% else %}
                         <p>{{ staff.interests }}</p>
                         {% endif %}
