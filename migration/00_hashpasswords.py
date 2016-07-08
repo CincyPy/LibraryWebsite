@@ -1,9 +1,10 @@
 import re
 import argparse
+import bcrypt
 from sqlalchemy.sql import text
 
 try:
-    from passwordtype import hashpassword
+    from passwordtype import hashpassword, encode
     from library import app, db
     from models import Staff
 except ImportError:
@@ -36,9 +37,11 @@ def update_passwords():
             if ishashed(plaintext):
                 continue
 
+            hashed = hashpassword(plaintext)
+
             # Have to sneak around the Staff class to get at the literal database value.
-            conn.execute(text('update staff set password = :hashed'),
-                         hashed=hashpassword(plaintext))
+            sql = text('update staff set password = :hashed where username = :username')
+            conn.execute(sql, hashed=hashed, username=staff.username)
 
         db.session.commit()
 
