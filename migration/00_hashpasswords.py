@@ -3,12 +3,11 @@ import argparse
 import bcrypt
 from sqlalchemy.sql import text
 
-try:
-    from passwordtype import hashpassword, encode
-    from library import app, db
-    from models import Staff
-except ImportError:
-    hashpassword, app, db, Staff = None, None, None, None
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from passwordtype import hashpassword, encode
+from library import app, db
+from models import Staff
 
 def ishashed(s):
     # Surely no one makes their password look like a bcrypt hash.
@@ -47,10 +46,14 @@ def update_passwords():
 
 def main():
     argparser = argparse.ArgumentParser(description=update_passwords.__doc__)
-    argparser.parse_args()
+    argparser.add_argument('--echo', action='store_true', help='Echo SQL commands.')
+    args = argparser.parse_args()
 
     if not any((hashpassword, app, db, Staff)):
         argparser.exit(message='Import error, run as:\n$ python -m migration.00_hashpasswords\n')
+
+    if args.echo:
+        db.engine.echo = True
 
     update_passwords()
 

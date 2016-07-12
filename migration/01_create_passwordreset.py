@@ -2,11 +2,10 @@ import re
 import argparse
 from sqlalchemy.sql import text
 
-try:
-    from library import app, db
-    from models import PasswordReset
-except ImportError:
-    app, db, PasswordReset = None, None, None
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from library import app, db
+from models import PasswordReset
 
 def create_passwordreset():
     """
@@ -19,10 +18,14 @@ def create_passwordreset():
 
 def main():
     argparser = argparse.ArgumentParser(description=create_passwordreset.__doc__)
-    argparser.parse_args()
+    argparser.add_argument('--echo', action='store_true', help='Echo SQL commands.')
+    args = argparser.parse_args()
 
     if not any((app, db, PasswordReset)):
         argparser.exit(message='Import error, run as:\n$ python -m migration.01_create_passwordreset\n')
+
+    if args.echo:
+        db.engine.echo = True
 
     create_passwordreset()
 
