@@ -15,6 +15,15 @@ from passwordtype import PasswordType
 
 Base = declarative_base()
 
+class Meta(Base):
+    """
+    The meta table is to store information about the database or application.
+    It is set up as a simple key/value store.
+    """
+    __tablename__ = 'meta'
+    key = Column(String, primary_key=True)
+    value = Column(String)
+
 class Staff(Base):
     __tablename__ = 'staff'
 
@@ -120,8 +129,12 @@ class PatronContact(Base):
     def __getitem__(self, attr):
         return getattr(self, attr)
 
-
 def init_models(session):
+    version = Meta(key="DB_VERSION", value="-1")
+    session.add(version)
+    session.commit()
+
+def init_test_models(session):
     admin = Staff(username='admin', password='admin', f_name='Admin', emailaddress='admin@test.com',
                   l_name='User', phonenumber=1111111111, bio='Admin bio')
     session.add(admin)
@@ -223,6 +236,7 @@ def ArgParser():
     _a = parser.add_argument
     _a('--noconfirm', action='store_true', help='do not ask for confirmation')
     _a('--echo', action='store_true', help='echo SQL')
+    _a('--test-models', action="store_true", help="Insert test data.")
     return parser
 
 def main():
@@ -267,6 +281,8 @@ def main():
     db.engine.echo = cmdargs.echo
     Base.metadata.create_all(bind=db.engine)
     init_models(db.session)
+    if cmdargs.test_models:
+        init_test_models(db.session)
 
 if __name__ == '__main__':
-    main()
+   main()

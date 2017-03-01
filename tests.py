@@ -25,6 +25,7 @@ class LibrarySiteTests(unittest.TestCase):
         models.Base.metadata.create_all(bind=library.db.engine)
         self.app = library.app.test_client()
         models.init_models(library.db.session)
+        models.init_test_models(library.db.session)
         self.session = library.db.session
 
     def tearDown(self):

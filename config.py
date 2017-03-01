@@ -25,11 +25,11 @@ def splitcamel(s):
 class Config(object):
     # configuration
     NAME = "DEBUG"
-    SECRET_KEY = 'shh'
+    SECRET_KEY = os.environ.get("SECRET_KEY")
     DEBUG = True
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_USERNAME = "KentonCountyLibrary@gmail.com"
-    MAIL_PASSWORD = "CincyPyCoders"
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD",None)
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_DEFAULT_SENDER = "KentonCountyLibrary@gmail.com"

@@ -8,6 +8,7 @@ A group of CincyPy members created the BookUs website for [Kenton County Public 
 * Create a virtualenv, using `virtualenv -p python env`
 * Activate the virtualenv, on windows, `env\Scripts\activate.bat`, on UNIX, `source env/bin/activate`
 * Install dependencies. `pip install -r requirements.txt`
+* Copy env.sh.template to env.sh.  Change the variables to their correct values.  Then run `source env.sh`.
 * Set the environment variable to test. UNIX: `export LIBRARY_ENV=test` Windows: `set LIBRARY_ENV test`.
 * Run the tests. `python tests.py -vf`.
 * Set the environment variable to production. UNIX: `export LIBRARY_ENV=production` Windows: `set LIBRARY_ENV production`.
