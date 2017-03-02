@@ -11,10 +11,12 @@ def create_passwordreset():
     """
     Create the passwordreset table in the database.
     """
-    with app.app_context():
-        conn = db.session.connection()
-        table = PasswordReset.metadata.tables['passwordreset']
-        table.create(bind=db.engine)
+    #commented out because this is done in models.py
+    #with app.app_context():
+    #    conn = db.session.connection()
+    #    table = PasswordReset.metadata.tables['passwordreset']
+    #    table.create(bind=db.engine)
+    pass
 
 def main():
     argparser = argparse.ArgumentParser(description=create_passwordreset.__doc__)

@@ -130,7 +130,7 @@ class PatronContact(Base):
         return getattr(self, attr)
 
 def init_models(session):
-    version = Meta(key="DB_VERSION", value="-1")
+    version = Meta(key="DB_VERSION", value="0")
     session.add(version)
     session.commit()
 

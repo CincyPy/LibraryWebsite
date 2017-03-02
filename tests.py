@@ -709,18 +709,5 @@ class LibrarySiteTests(unittest.TestCase):
                                                              models.PatronContact.phone=='5555555555', models.PatronContact.times=='M-Th 12-2 pm', models.PatronContact.status=='closed')).first()
         self.assertIsNotNone(patroncontact)
 
-    def test_github_ip_check(self):
-        publish = Publisher('192.168.0.1', "dontmatter", "")
-        self.assertFalse(publish.in_ip_address_range())
-        jsonResponse = requests.get("https://api.github.com/meta", auth=("KentonCountyLibrary-Cincypy", "CincyPyCoders2000"))
-        ipranges = jsonResponse.json()["hooks"]
-
-        ipranges = [list(ip_network(ip).hosts()) for ip in ipranges]
-
-        flat_range = list(chain.from_iterable(ipranges))
-
-        publish = Publisher(str(flat_range[0]), "dontmatter", "")
-        self.assertTrue(publish.in_ip_address_range())
-
 if __name__ == '__main__':
     unittest.main()

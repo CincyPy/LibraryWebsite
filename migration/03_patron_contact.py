@@ -8,12 +8,14 @@ def migrate():
     """
     Add columns 'location', 'org', and 'mult' to patroncontact table.
     """
-    with app.app_context():
-        conn = db.session.connection()
-        with conn.begin() as transaction:
-            conn.execute('ALTER TABLE patroncontact ADD COLUMN location TEXT')
-            conn.execute('ALTER TABLE patroncontact ADD COLUMN org TEXT')
-            conn.execute('ALTER TABLE patroncontact ADD COLUMN mult BOOLEAN CHECK (mult IN (0, 1))')
+    #commented out because this is done in models.py
+    #with app.app_context():
+    #    conn = db.session.connection()
+    #    with conn.begin() as transaction:
+    #        conn.execute('ALTER TABLE patroncontact ADD COLUMN location TEXT')
+    #        conn.execute('ALTER TABLE patroncontact ADD COLUMN org TEXT')
+    #        conn.execute('ALTER TABLE patroncontact ADD COLUMN mult BOOLEAN CHECK (mult IN (0, 1))')
+    pass
 
 def main():
     parser = argparse.ArgumentParser(description=migrate.__doc__)
