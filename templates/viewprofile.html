@@ -23,6 +23,7 @@
         <label class="fallback-label" for="category-{{ item }}">{{ item }}</label>
     </div>
     {% endfor %}
+    <form type="hidden" name="_csrf_token" value="{{_csrf_token}}" />
 
     {{ submit('Filter', button_class='secondary') }}
 </form>

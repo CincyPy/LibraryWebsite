@@ -6,8 +6,9 @@
 <div class="container">
     <h2>Reset Password</h2>
     <form action="{{ url_for('reset_request') }}" method="POST">
-        {{ label_text('emailaddress', 'Email', type='email') }}
-        {{ submit('Send Reset') }}
+      {{ label_text('emailaddress', 'Email', type='email') }}
+      <input type="hidden" name="_csrf_token" value="{{_csrf_token}}" />
+      {{ submit('Send Reset') }}
     </form>
 </div>
 {% endblock %}

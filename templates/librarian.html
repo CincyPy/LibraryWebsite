@@ -50,6 +50,7 @@
                     </div>
                 </div>
                 <input class="hidden" name="RLID" value="{{ existingValues.RLID }}">
+		<input type="hidden" name="_csrf_token" value="{{_csrf_token}}" />
                 {{ submit('Save') }}
             </form>
         </div>

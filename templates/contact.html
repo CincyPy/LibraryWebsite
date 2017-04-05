@@ -247,7 +247,7 @@ $(function() {
                 <input type="email" id="email" name="email" class="form-control" value="{{ inputs.email }}" size="35">
             </div>
         </fieldset>
-
+	<input type="hidden" name="_csrf_token" value="{{_csrf_token}}" />
         {{ submit('Submit') }}
     </form>
     <br/>

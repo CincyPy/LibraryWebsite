@@ -5,6 +5,7 @@ import re
 import time
 import os
 import urllib
+import uuid
 
 from random import shuffle
 from functools import wraps
@@ -31,6 +32,18 @@ if config.NAME != "TEST":
 db = Database(app)
 mail = Mail(app)
 bootstrap = Bootstrap(app)
+
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = session.pop('_csrf_token', None)
+        if not token or token != request.form.get('_csrf_token'):
+            abort(403)
+
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = str(uuid.uuid4())
+    return session['_csrf_token']
 
 def logout_user():
     session.pop('logged_in', None)
@@ -68,9 +81,9 @@ def login():
                 return redirect(url_for('librarian'))
         else:
             error = 'Invalid Credentials.  Please try again.'
-            return render_template('login.html', error=error)
+            return render_template('login.html', error=error, _csrf_token=generate_csrf_token())
     else:
-        return render_template('login.html', error=error)
+        return render_template('login.html', error=error, _csrf_token=generate_csrf_token())
 
 
 @app.route('/logout')
@@ -92,7 +105,7 @@ def admin():
     if session["logged_in_name"] != "admin":
         flash("You are not authorized to perform this action.")
         return redirect(url_for('main'))
-    return render_template('admin.html', staff=Staff.query.all(), readinglist=ReadingList.query.all(), patron_reqs=PatronContact.query.all())
+    return render_template('admin.html', staff=Staff.query.all(), readinglist=ReadingList.query.all(), patron_reqs=PatronContact.query.all(), _csrf_token=generate_csrf_token())
 
 @app.route('/librarian')
 @app.route('/librarian/<rlid>', methods=['GET', 'POST'])
@@ -105,15 +118,15 @@ def librarian(rlid=None):
         inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
     if rlid is None:
         if session["logged_in_name"] == 'admin':
-            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=inputs, patron_reqs=patron_reqs)
+            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=inputs, patron_reqs=patron_reqs, _csrf_token=generate_csrf_token())
         else:
-            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=inputs, patron_reqs=patron_reqs)
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=inputs, patron_reqs=patron_reqs, _csrf_token=generate_csrf_token())
     else:
         book = ReadingList.query.filter_by(RLID=rlid).first()
         if book.username == session["logged_in_name"]:
-            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book, patron_reqs=patron_reqs, inputs=inputs)
+            return render_template('librarian.html', readinglist=logged_in_user.readinglist, existingValues=book, patron_reqs=patron_reqs, inputs=inputs, _csrf_token=generate_csrf_token())
         elif session["logged_in_name"] == 'admin':
-            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=book, patron_reqs=patron_reqs, inputs=inputs)
+            return render_template('librarian.html', readinglist=ReadingList.query.all(), existingValues=book, patron_reqs=patron_reqs, inputs=inputs, _csrf_token=generate_csrf_token())
         else:
             flash("Your are not authorized to perform this action.")
             return redirect(url_for('librarian'), existingValues=inputs)
@@ -278,7 +291,8 @@ def profile(uname):
     if staff:
         return render_template('viewprofile.html', staff=staff,
                                readinglist=readinglist,
-                               selected_categories=selected_categories)
+                               selected_categories=selected_categories,
+                               _csrf_token=generate_csrf_token())
     else:
         flash("Profile not found")
         return redirect(url_for('main'))
@@ -296,7 +310,7 @@ def edit_profile(uname):
         if staff:
             if inputs != None: # Prepopulate with entered data
                 inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
-            return render_template('profile.html', staff=staff, inputs=inputs)
+            return render_template('profile.html', staff=staff, inputs=inputs, _csrf_token=generate_csrf_token())
         else:
             flash("No profile found for user.")
             return redirect(url_for('main'))
@@ -375,7 +389,7 @@ def contact(uname):
     if request.method == "GET":  # regular get, present the form to user to edit.
         if inputs != None: # Prepopulate with entered data
             inputs = ast.literal_eval(inputs) # Captures any form inputs from url as (takes literal value of string)
-        return render_template('contact.html', staff=staff, formats=formats, auds=auds, inputs=inputs, speak=speak)
+        return render_template('contact.html', staff=staff, formats=formats, auds=auds, inputs=inputs, speak=speak, _csrf_token=generate_csrf_token())
 
     elif request.method == "POST":  # form was submitted, update database
         data = {}
@@ -500,7 +514,7 @@ def changepassword():
                 logout_user()
                 return redirect(url_for('login'))
 
-    return render_template('changepassword.html', username=session['logged_in_name'])
+    return render_template('changepassword.html', username=session['logged_in_name'], _csrf_token=generate_csrf_token())
 
 
 @app.route('/reset/request', methods=['GET', 'POST'])
@@ -523,7 +537,7 @@ def reset_request():
         else:
             flash('Invalid request')
 
-    return render_template('reset_request.html')
+    return render_template('reset_request.html', _csrf_token=generate_csrf_token())
 
 
 @app.route('/reset/password', methods=['GET', 'POST'])
@@ -555,7 +569,7 @@ def reset_password():
             flash('Password reset')
             return redirect(url_for('login'))
 
-    return render_template('reset_password.html')
+    return render_template('reset_password.html', _csrf_token=generate_csrf_token())
 
 
 @app.route('/publish', methods=['POST'])
@@ -572,8 +586,7 @@ if __name__ == '__main__':
     else:
         port = 5000
     if environ.get('HOST'):
-        host = environ.get('HOST')
+        host = '0.0.0.0'
     else:
-        host = '127.0.0.1'
-
+        host = '0.0.0.0'
     app.run(port=port, host=host)

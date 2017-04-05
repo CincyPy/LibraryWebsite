@@ -8,6 +8,7 @@
     <form id="login-form" action="{{ url_for('login') }}" method="POST">
         {{ label_text('username', 'Username') }}
         {{ label_text('password', 'Password', type='password') }}
+	<input type="hidden" name="_csrf_token" value="{{_csrf_token}}" />
         {{ submit('Login') }}
     </form>
 </div>
