@@ -466,7 +466,8 @@ def contact(uname):
             msg.body = data['name'] + " has requested to contact " + uname + "\n\nMethod: " + data['contact']
             msg.body += message
             mail.send(msg)
-        patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, status='open', **data)
+        kwargs = { k:v for k,v in data.items() if k != '_csrf_token' }
+        patroncontact = PatronContact(reqdate=time.strftime("%Y-%m-%d"), username=uname, status='open', **kwargs)
         db.session.add(patroncontact)
         db.session.commit()
         flash("You're contact request was received!")
