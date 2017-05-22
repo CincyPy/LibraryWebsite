@@ -9,6 +9,7 @@ install:
 script:
     - python tests.py -fv
 env:
-    - LIBRARY_ENV=test
-    - SECRET_KEY=secret
-    - MAIL_PASSWORD=password
+    global:
+        - LIBRARY_ENV=test
+        - SECRET_KEY=secret
+        - MAIL_PASSWORD=password
