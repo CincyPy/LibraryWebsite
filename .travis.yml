@@ -1,14 +1,14 @@
 language: python
 python:
-  - "2.7"
+    - "2.7"
 before_install:
-  - "sudo apt-get update"
-  - "sudo apt-get install python2.7-dev"
-install: 
-  - pip install -r requirements.txt
+    - "sudo apt-get update"
+    - "sudo apt-get install python2.7-dev"
+install:
+    - pip install -r requirements.txt
 script:
-  - python tests.py -fv
+    - python tests.py -fv
 env:
-  - LIBRARY_ENV=test
-  - SECRET_KEY="secret"
-  - MAIL_PASSWORD="password"
+    - LIBRARY_ENV=test
+    - SECRET_KEY=secret
+    - MAIL_PASSWORD=password
