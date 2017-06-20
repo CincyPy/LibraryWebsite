@@ -586,8 +586,5 @@ if __name__ == '__main__':
         port = int(environ.get('PORT'))
     else:
         port = 5000
-    if environ.get('HOST'):
-        host = '0.0.0.0'
-    else:
-        host = '0.0.0.0'
+    host = environ.get('HOST', '0.0.0.0')
     app.run(port=port, host=host)
