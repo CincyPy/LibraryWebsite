@@ -54,6 +54,7 @@
                 {{ link_button(url_for('edit_profile', uname=s.username), 'Edit Profile') }}
                 {% if s.username != 'admin' %}
                 <form style="display: inline-block;" class="form-horizontal" role="form" method="POST" action="{{ url_for('deleteuser', username=s.username) }}">
+                    <input type="hidden" name="_csrf_token" value="{{_csrf_token}}"/>
                     {{ submit('Delete', button_class='danger') }}
                 </form>
                 {% endif %}
