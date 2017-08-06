@@ -14,6 +14,8 @@ from flask import Flask, render_template, request, session, \
 from flask_mail import Mail, Message
 from publisher import Publisher
 from os import environ
+import logging
+from logging.handlers import RotatingFileHandler
 
 from sqlalchemy import or_, and_
 
@@ -28,6 +30,11 @@ app.config.from_object(config)
 
 if config.NAME != "TEST":
     app.config.from_pyfile('production.py', silent=True)
+
+#in production, you have to specifically add a log handler to flask
+handler = RotatingFileHandler('bookus.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
 
 db = Database(app)
 mail = Mail(app)
