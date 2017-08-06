@@ -42,6 +42,8 @@ bootstrap = Bootstrap(app)
 
 @app.before_request
 def csrf_protect():
+    if request.endpoint ==  "upload_picture":
+        return
     if request.method == "POST":
         token = session.pop('_csrf_token', None)
         if not token or token != request.form.get('_csrf_token'):
@@ -372,6 +374,7 @@ def upload_picture(uname):
     image = "uploads/" + uname + ".jpg"
     form = UploadForm()
     if request.method == 'POST' and form.validate_on_submit():
+        import pdb;pdb.set_trace()
         form.image_file.data.save(os.path.join(app.static_folder, image))
         return redirect(url_for('edit_profile', uname=uname))
     return render_template('picture.html', form=form, image=image, staff=staff)
