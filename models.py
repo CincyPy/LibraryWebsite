@@ -52,8 +52,12 @@ class Staff(Base):
         return set([item.category for item in self.readinglist])
 
     def profile_path(self):
-        if os.path.isfile('static/uploads/' + self.username + '.jpg'):
-            pic_file_name = 'uploads/'+ self.username + '.jpg'
+        from library import app
+        uploadsdir = os.path.join(app.static_folder, 'uploads')
+        for fn in os.listdir(uploadsdir):
+            if fn.startswith(self.username):
+                pic_file_name = 'uploads/%s' % fn
+                break
         else:
             pic_file_name = 'uploads/anon.jpg'
         return pic_file_name

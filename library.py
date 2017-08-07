@@ -42,8 +42,6 @@ bootstrap = Bootstrap(app)
 
 @app.before_request
 def csrf_protect():
-    if request.endpoint ==  "upload_picture":
-        return
     if request.method == "POST":
         token = session.pop('_csrf_token', None)
         if not token or token != request.form.get('_csrf_token'):
@@ -371,11 +369,16 @@ def upload_picture(uname):
     if staff is None:
         flash('User %s not found' % uname)
         return redirect(url_for('main'))
-    image = "uploads/" + uname + ".jpg"
+    image = staff.profile_path()
+    generate_csrf_token()
     form = UploadForm()
     if request.method == 'POST' and form.validate_on_submit():
-        import pdb;pdb.set_trace()
-        form.image_file.data.save(os.path.join(app.static_folder, image))
+        uploadsdir = os.path.join(app.static_folder, 'uploads')
+        for fn in os.listdir(uploadsdir):
+            if fn.startswith(uname):
+                os.remove(os.path.join(uploadsdir, fn))
+        imagefn = "uploads/%s-%s.jpg" % (uname, uuid.uuid4())
+        form.image_file.data.save(os.path.join(app.static_folder, imagefn))
         return redirect(url_for('edit_profile', uname=uname))
     return render_template('picture.html', form=form, image=image, staff=staff)
 
