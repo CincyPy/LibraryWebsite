@@ -54,13 +54,9 @@ class Staff(Base):
     def profile_path(self):
         from library import app
         uploadsdir = os.path.join(app.static_folder, 'uploads')
-        for fn in os.listdir(uploadsdir):
-            if app.debug and fn == '%s.jpg' % self.username:
-                # ignore the original naming convention in debugging
-                continue
-            elif fn.startswith(self.username):
-                pic_file_name = 'uploads/%s' % fn
-                break
+        matches = [fn for fn in os.listdir(uploadsdir) if fn.startswith(self.username)]
+        if matches:
+            pic_file_name = 'uploads/%s' % max(matches, key=len)
         else:
             pic_file_name = 'uploads/anon.jpg'
         return pic_file_name
