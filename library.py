@@ -375,7 +375,10 @@ def upload_picture(uname):
     if form.validate_on_submit():
         uploadsdir = os.path.join(app.static_folder, 'uploads')
         for fn in os.listdir(uploadsdir):
-            if fn.startswith(uname):
+            if app.debug and fn == '%s.jpg' % uname:
+                # ignore the original naming convention in debugging
+                continue
+            elif fn.startswith(uname):
                 os.remove(os.path.join(uploadsdir, fn))
         imagefn = "uploads/%s-%s.jpg" % (uname, uuid.uuid4())
         form.image_file.data.save(os.path.join(app.static_folder, imagefn))
