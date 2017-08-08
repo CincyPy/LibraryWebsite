@@ -10,10 +10,10 @@
                 <form action="{{ url_for('upload_picture', uname=staff.username) }}" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="_csrf_token" value="{{ _csrf_token }}">
                     <div class="form-group ">
-                        <label class="control-label" for="image_file">Image file</label>
+                        <label class="control-label" for="image_file">{{ form.image_file.label }}</label>
                         <input id="image_file" name="image_file" type="file">
                     </div>
-                    {{ submit('Submit') }}
+                    {{ submit(form.submit.label.text) }}
                 </form>
             </div>
         </div>
