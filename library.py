@@ -370,9 +370,9 @@ def upload_picture(uname):
         flash('User %s not found' % uname)
         return redirect(url_for('main'))
     image = staff.profile_path()
-    generate_csrf_token()
-    form = UploadForm()
-    if request.method == 'POST' and form.validate_on_submit():
+    # app.before_request handles CSRF
+    form = UploadForm(csrf_enabled=False)
+    if form.validate_on_submit():
         uploadsdir = os.path.join(app.static_folder, 'uploads')
         for fn in os.listdir(uploadsdir):
             if fn.startswith(uname):
@@ -380,7 +380,12 @@ def upload_picture(uname):
         imagefn = "uploads/%s-%s.jpg" % (uname, uuid.uuid4())
         form.image_file.data.save(os.path.join(app.static_folder, imagefn))
         return redirect(url_for('edit_profile', uname=uname))
-    return render_template('picture.html', form=form, image=image, staff=staff)
+
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u'Error in field %s - %s' % (getattr(form, field).label.text, error))
+
+    return render_template('picture.html', form=form, image=image, staff=staff, _csrf_token=generate_csrf_token())
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):
