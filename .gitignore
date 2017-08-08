@@ -1,5 +1,12 @@
 env.sh
 
+# The new-style uuid image filenames
+# The image files already tracked by git will remain. Those are the ones
+# required for the built-in test models. We could remove them and the profiles
+# would just not have pictures. And for the fallback `anon.jpg` the browser
+# would fail to find it.
+static/uploads/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
