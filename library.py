@@ -22,8 +22,7 @@ from sqlalchemy import or_, and_
 from database import Database
 from models import PasswordReset, PatronContact, ReadingList, Staff
 
-from upload_form import UploadForm
-from flask.ext.bootstrap import Bootstrap
+import imghdr
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object(config)
@@ -38,7 +37,6 @@ app.logger.addHandler(handler)
 
 db = Database(app)
 mail = Mail(app)
-bootstrap = Bootstrap(app)
 
 @app.before_request
 def csrf_protect():
@@ -359,6 +357,9 @@ def edit_profile(uname):
         flash("Profile updated!")
     return redirect(url_for('edit_profile', uname=uname))
 
+def valid_image_file(image_file):
+    return image_file.filename[-4:].lower() == '.jpg' and imghdr.what(image_file) == 'jpeg'
+
 @app.route('/edit-profile/<uname>/upload-picture', methods=['GET', 'POST'])
 @login_required
 def upload_picture(uname):
@@ -370,25 +371,27 @@ def upload_picture(uname):
         flash('User %s not found' % uname)
         return redirect(url_for('main'))
     image = staff.profile_path()
-    # app.before_request handles CSRF
-    form = UploadForm(csrf_enabled=False)
-    if form.validate_on_submit():
-        uploadsdir = os.path.join(app.static_folder, 'uploads')
-        for fn in os.listdir(uploadsdir):
-            if app.debug and fn == '%s.jpg' % uname:
-                # ignore the original naming convention in debugging
-                continue
-            elif fn.startswith(uname):
-                os.remove(os.path.join(uploadsdir, fn))
-        imagefn = "uploads/%s-%s.jpg" % (uname, uuid.uuid4())
-        form.image_file.data.save(os.path.join(app.static_folder, imagefn))
+    if request.method == 'POST':
+        if 'image_file' not in request.files:
+            flash('No image file')
+            return redirect(request.url)
+        image_file = request.files['image_file']
+        if image_file.filename == '':
+            flash('No file selected')
+            return redirect(request.url)
+        if image_file and valid_image_file(image_file):
+            uploadsdir = os.path.join(app.static_folder, 'uploads')
+            for fn in os.listdir(uploadsdir):
+                if app.debug and fn == '%s.jpg' % uname:
+                    # ignore the original naming convention in debugging
+                    continue
+                elif fn.startswith(uname):
+                    os.remove(os.path.join(uploadsdir, fn))
+            imagefn = "uploads/%s-%s.jpg" % (uname, uuid.uuid4())
+            image_file.save(os.path.join(app.static_folder, imagefn))
         return redirect(url_for('edit_profile', uname=uname))
 
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash(u'Error in field %s - %s' % (getattr(form, field).label.text, error))
-
-    return render_template('picture.html', form=form, image=image, staff=staff, _csrf_token=generate_csrf_token())
+    return render_template('picture.html', image=image, staff=staff, _csrf_token=generate_csrf_token())
 
 @app.route("/contact/<uname>", methods=['GET', 'POST'])
 def contact(uname):

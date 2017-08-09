@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'macros/core.html' import label_text, link_button, profilepic, submit %}
+{% from 'macros/core.html' import profilepic, submit %}
 
 {% block content %}
     <div class="container">
@@ -10,10 +10,10 @@
                 <form action="{{ url_for('upload_picture', uname=staff.username) }}" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="_csrf_token" value="{{ _csrf_token }}">
                     <div class="form-group ">
-                        <label class="control-label" for="image_file">{{ form.image_file.label }}</label>
+                        <label class="control-label" for="image_file">Image file</label>
                         <input id="image_file" name="image_file" type="file">
                     </div>
-                    {{ submit(form.submit.label.text) }}
+                    {{ submit("Submit") }}
                 </form>
             </div>
         </div>
