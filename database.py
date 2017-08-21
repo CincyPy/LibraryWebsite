@@ -2,7 +2,6 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from config import config
-import sqlite3
 from models import Base
 
 # Enable Foreign Key Support in sqlite
