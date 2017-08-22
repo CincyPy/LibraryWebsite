@@ -180,8 +180,9 @@ def deleteuser(username):
         flash("You are not authorized to perform this action.")
         return redirect(url_for('main'))
     staff = Staff.query.get(username)
-    db.session.delete(staff)
-    db.session.commit()
+    sess = db.session.object_session(staff) or db.session
+    sess.delete(staff)
+    sess.commit()
     flash('User was successfully removed!')
     return redirect(url_for('admin'))
 
