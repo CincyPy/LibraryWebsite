@@ -179,9 +179,6 @@ def deleteuser(username):
     if session["logged_in_name"] != "admin" or username == "admin":
         flash("You are not authorized to perform this action.")
         return redirect(url_for('main'))
-    recread = ReadingList.query.filter(ReadingList.username == username).all()
-    for rr in recread:
-        db.session.delete(rr)
     staff = Staff.query.get(username)
     db.session.delete(staff)
     db.session.commit()
