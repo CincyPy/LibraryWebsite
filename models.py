@@ -236,30 +236,20 @@ def init_test_models(session):
 
     session.commit()
 
-def ArgParser():
-    parser = argparse.ArgumentParser(description=main.__doc__)
-    _a = parser.add_argument
-    _a('--noconfirm', action='store_true', help='do not ask for confirmation')
-    _a('--echo', action='store_true', help='echo SQL')
-    _a('--test-models', action="store_true", help="Insert test data.")
-    return parser
-
-def main():
+def createdb(args):
     """
+    Create database.
     If a sqlite file can be found in the database URI of the app, prompt to
     remove it, if found on the filesystem, and then create it with the database
     structure and initial data.
     """
     from library import app, db
 
-    parser = ArgParser()
-    cmdargs = parser.parse_args()
-
     def raise_unable_to_parse(uri):
         raise RuntimeError('unable to parse URI: %s' % uri)
 
     def confirm(msg):
-        if cmdargs.noconfirm:
+        if args.noconfirm:
             return True
         return raw_input(msg).lower().startswith('y')
 
@@ -283,11 +273,41 @@ def main():
         if not confirm('Create database file "%s"? ' % os.path.abspath(path)):
             abort()
 
-    db.engine.echo = cmdargs.echo
+    db.engine.echo = args.echo
     Base.metadata.create_all(bind=db.engine)
     init_models(db.session)
-    if cmdargs.test_models:
+    if args.test_models:
         init_test_models(db.session)
 
+def dumpschema(args):
+    """
+    Show the database schema produced by the ORM metadata.
+    """
+    from library import db
+    from sqlalchemy.schema import CreateTable
+    for class_ in (Staff, PasswordReset, ReadingList, PatronContact):
+        print CreateTable(class_.__table__).compile(db.engine)
+
+def main():
+    """
+    ORM related command line utility.
+    """
+    parser = argparse.ArgumentParser(description=main.__doc__)
+    subparsers = parser.add_subparsers()
+
+    subparser = subparsers.add_parser('createdb', help=createdb.__doc__)
+    subparser.add_argument('--noconfirm', action='store_true', help='do not ask for confirmation')
+    subparser.add_argument('--echo', action='store_true', help='echo SQL')
+    subparser.add_argument('--test-models', action="store_true", help="Insert test data.")
+    subparser.set_defaults(func=createdb)
+
+    subparser = subparsers.add_parser('dumpschema', help=dumpschema.__doc__)
+    subparser.set_defaults(func=dumpschema)
+
+    args = parser.parse_args()
+    func = args.func
+    delattr(args, 'func')
+    func(args)
+
 if __name__ == '__main__':
-   main()
+    main()
