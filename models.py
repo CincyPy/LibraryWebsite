@@ -42,7 +42,9 @@ class Staff(Base):
 
     interests = Column(Text, default='')
 
-    patron_contacts = relationship('PatronContact', backref=backref('staff', uselist=False))
+    patron_contacts = relationship('PatronContact',
+                                   backref=backref('staff', uselist=False),
+                                   cascade='all, delete-orphan')
 
     def __getitem__(self, attr):
         return getattr(self, attr)
@@ -97,7 +99,7 @@ class ReadingList(Base):
     recdate = Column(Date)
 
     username = Column(String, ForeignKey('staff.username'))
-    staff = relationship('Staff', backref='readinglist')
+    staff = relationship('Staff', backref=backref('readinglist', cascade='all, delete-orphan'))
 
     book = Column(Text)
     author = Column(Text)
