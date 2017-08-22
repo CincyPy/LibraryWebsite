@@ -245,6 +245,16 @@ class LibrarySiteTests(unittest.TestCase):
             self.assertIsNone(rl)
             s = models.Staff.query.filter(models.Staff.username=="elmo").first()
             self.assertIsNone(s)
+            # confirm delete user with patron contacts
+            c.get('/admin', follow_redirects=True)
+            response = c.post("/deleteuser/fred",
+                              data={'_csrf_token': flask.session['_csrf_token']},
+                              follow_redirects=True)
+            self.assertIn("User was successfully removed!", response.data)
+            rl = models.PatronContact.query.filter(models.PatronContact.username=="fred").first()
+            self.assertIsNone(rl)
+            s = models.Staff.query.filter(models.Staff.username=="elmo").first()
+            self.assertIsNone(s)
 
     def test_edituser(self):
         #try with admin
