@@ -247,6 +247,15 @@ def init_test_models(session):
             category='Music')
     ]
 
+    session.add(Staff(username='elmoo',
+                      password='elmoo',
+                      f_name='Elmo',
+                      l_name='Ornstein',
+                      phonenumber=8888888888,
+                      emailaddress='elmoo@sesamestreet.com',
+                      bio=loremipsum,
+                      interests=loreminterests))
+
     session.commit()
 
 def createdb(args):
