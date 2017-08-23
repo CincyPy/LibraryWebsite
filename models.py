@@ -5,6 +5,7 @@ import sys
 import urllib
 import random
 import string
+import re
 
 from sqlalchemy import (Boolean, Column, Date, DateTime, ForeignKey, Integer,
                         String, Text)
@@ -56,11 +57,23 @@ class Staff(Base):
     def profile_path(self):
         from library import app
         uploadsdir = os.path.join(app.static_folder, 'uploads')
-        matches = [fn for fn in os.listdir(uploadsdir) if fn.startswith(self.username)]
-        if matches:
-            pic_file_name = 'uploads/%s' % max(matches, key=len)
+
+        # uuid4 regex
+        # https://stackoverflow.com/a/18359032
+        fnre = re.compile(r'(.+)-[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}\.jpg')
+
+        for fn in os.listdir(uploadsdir):
+            match = fnre.match(fn)
+            if match:
+                fnusername = match.groups(1)[0]
+            else:
+                fnusername, _ = os.path.splitext(fn)
+            if fnusername == self.username:
+                pic_file_name = 'uploads/%s' % fn
+                break
         else:
             pic_file_name = 'uploads/anon.jpg'
+
         return pic_file_name
 
     def full_name(self):
