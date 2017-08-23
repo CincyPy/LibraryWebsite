@@ -44,8 +44,7 @@ class Staff(Base):
     interests = Column(Text, default='')
 
     patron_contacts = relationship('PatronContact',
-                                   backref=backref('staff', uselist=False),
-                                   cascade='all, delete-orphan')
+                                   backref=backref('staff', uselist=False))
 
     def __getitem__(self, attr):
         return getattr(self, attr)
@@ -85,7 +84,7 @@ class PasswordReset(Base):
     secret = Column(String, primary_key=True)
     created = Column(DateTime, default=dt.datetime.now)
 
-    username = Column(String, ForeignKey('staff.username'))
+    username = Column(String, ForeignKey('staff.username', ondelete='CASCADE'))
     staff = relationship('Staff')
 
     def __init__(self, **kwargs):
@@ -111,8 +110,8 @@ class ReadingList(Base):
     ISBN = Column(Text)
     recdate = Column(Date)
 
-    username = Column(String, ForeignKey('staff.username'))
-    staff = relationship('Staff', backref=backref('readinglist', cascade='all, delete-orphan'))
+    username = Column(String, ForeignKey('staff.username', ondelete='CASCADE'))
+    staff = relationship('Staff', backref='readinglist')
 
     book = Column(Text)
     author = Column(Text)
@@ -126,7 +125,7 @@ class PatronContact(Base):
 
     PCID = Column(Integer, primary_key=True)
     reqdate = Column(Text)
-    username = Column(String, ForeignKey('staff.username'))
+    username = Column(String, ForeignKey('staff.username', ondelete='CASCADE'))
     name = Column(Text)
     email = Column(Text)
     contact = Column(Text) # Contact methods: phone, email, chat, irl, speak (for booking a speaking engagement)
