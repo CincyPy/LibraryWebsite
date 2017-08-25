@@ -44,7 +44,9 @@ class Staff(Base):
     interests = Column(Text, default='')
 
     patron_contacts = relationship('PatronContact',
-                                   backref=backref('staff', uselist=False))
+                                   cascade='all, delete-orphan',
+                                   backref=backref('staff',
+                                                   uselist=False))
 
     def __getitem__(self, attr):
         return getattr(self, attr)
@@ -125,7 +127,7 @@ class PatronContact(Base):
 
     PCID = Column(Integer, primary_key=True)
     reqdate = Column(Text)
-    username = Column(String, ForeignKey('staff.username', ondelete='CASCADE'))
+    username = Column(String, ForeignKey('staff.username'))
     name = Column(Text)
     email = Column(Text)
     contact = Column(Text) # Contact methods: phone, email, chat, irl, speak (for booking a speaking engagement)
