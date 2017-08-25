@@ -52,10 +52,13 @@ class DatabaseMigration(object):
                     module = getattr(migration, contents)
                     module.main()
                     self.update_database_version()
-                    
+
         current_version = self.get_database_version()
         print "current db version is " + str(current_version)
-        
-if __name__=="__main__":
+
+def main():
     dm = DatabaseMigration()
     dm.update_database()
+
+if __name__=="__main__":
+    main()
