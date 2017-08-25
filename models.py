@@ -87,7 +87,7 @@ class PasswordReset(Base):
     created = Column(DateTime, default=dt.datetime.now)
 
     username = Column(String, ForeignKey('staff.username', ondelete='CASCADE'))
-    staff = relationship('Staff')
+    staff = relationship('Staff', backref='passwordresets')
 
     def __init__(self, **kwargs):
         super(PasswordReset, self).__init__(**kwargs)
