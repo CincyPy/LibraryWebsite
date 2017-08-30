@@ -33,16 +33,19 @@
             <td>
                 <form action="{{ url_for('changeSticky', rlid=RL.RLID)}}" method="POST">
                     {{ submit(RL.sticky, button_class='default') }}
+                    <input type="hidden" name="_csrf_token" value="{{_csrf_token}}" />
                 </form>
             </td>
             <td>
                 <form action="{{ url_for('librarian', rlid=RL.RLID)}}" method="POST">
                     {{ submit('Edit', button_class='success') }}
+                    <input type="hidden" name="_csrf_token" value="{{_csrf_token}}" />
                 </form>
             </td>
             <td>
                 <form action="{{ url_for('remrecread', rlid=RL.RLID)}}" method="POST">
                     {{ submit(remove_icon(), button_class='danger') }}
+                    <input type="hidden" name="_csrf_token" value="{{_csrf_token}}" />
                 </form>
             </td>
         </tr>
