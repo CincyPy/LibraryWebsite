@@ -221,14 +221,16 @@ def init_test_models(session):
                          emailaddress='oscar@test.com',
                          bio=loremipsum,
                          interests = loreminterests))
-    session.add(Staff(username='elmo',
+    elmo = Staff(username='elmo',
                          password='elmo',
                          f_name='Elmo',
                          l_name='Elmostein',
                          phonenumber=7777777777,
                          emailaddress='elmo@test.com',
                          bio=loremipsum,
-                         interests = loreminterests))
+                         interests = loreminterests)
+    session.add(elmo)
+    session.add(PasswordReset(staff=elmo))
 
     session.commit()
     session.query(Staff).get('elmo').readinglist = [
